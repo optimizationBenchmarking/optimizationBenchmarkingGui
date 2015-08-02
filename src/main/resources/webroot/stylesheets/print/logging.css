@@ -1,0 +1,101 @@
+table.logTable {
+  vertical-align: top;
+}
+
+tr.logHeaderRow {  
+}
+
+th.logHeaderCell {
+  padding-left  : 1px;
+  padding-right : 1px;
+}
+
+code.logCode {
+  background    : transparent;
+  color         : black;
+  padding       : 0px;
+  margin        : 0px;
+}
+
+pre.logPre {
+  font-size     : 90%;
+  background    : transparent;
+  width         : auto;
+  border        : 0px;
+  border-style  : none;
+  max-width     : 485px;
+  margin-top    : 0.3em;
+  margin-bottom : 0.3em;
+  margin-left   : 1px;
+  margin-right  : 1px;
+  padding       : 0px;
+}
+
+
+tr.logAll {
+  font-size : 80%;
+}
+
+tr.logFinest {
+  font-size : 85%;
+}
+
+tr.logFiner {
+  font-size : 90%;
+}
+
+tr.logFine {
+  font-size : 95%;
+}
+
+tr.logConfig {
+}
+
+tr.logInfo {
+}
+
+tr.logSuccess {
+  background-color: #d7fad7;
+  color           : #00e000;
+}
+
+tr.logWarning {
+  background-color: #faeeb6;
+  color           : #ffff00;
+}
+
+tr.logFailure {
+  background-color: #fab6b6;
+  color           : #9f0000;
+}
+
+tr.logSevere {
+  background-color: #f57f7f;
+  color           : #9f0000;
+}
+
+img.logIcon {
+  width   : 1.2em;
+  height  : 1.2em
+}
+
+td.logIconCol {
+  vertical-align: top;
+  text-align    : center;
+  padding-top   : 1px;
+  padding-left  : 2px;
+  padding-right : 2px;
+}
+
+td.logTimeCol {
+  vertical-align: top;
+  padding-left  : 2px;
+  padding-right : 2px;
+}
+
+td.logMsgCol {
+  vertical-align: top;
+  text-align    : left;
+  padding-left  : 2px;
+  padding-right : 2px;
+}
