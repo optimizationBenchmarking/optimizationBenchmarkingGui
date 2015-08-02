@@ -54,7 +54,9 @@
 	</issueManagement>
 
 	<scm>
-		<url>https://github.com/optimizationBenchmarking/optimizationBenchmarkingGui</url>
+		<connection>scm:git:git@github.com:optimizationBenchmarking/optimizationBenchmarkingGui.git</connection>
+		<developerConnection>scm:git:git@github.com:optimizationBenchmarking/optimizationBenchmarkingui.git</developerConnection>
+		<url>git@github.com:optimizationBenchmarking/optimizationBenchmarkingui.git</url>
 	</scm>
 
 	<inceptionYear>2015</inceptionYear>
