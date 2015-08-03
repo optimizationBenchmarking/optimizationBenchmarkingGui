@@ -3,8 +3,6 @@ package org.optimizationBenchmarking.gui.controller;
 import java.io.Closeable;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -14,6 +12,7 @@ import java.util.logging.Logger;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
+import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.TextOutputWriter;
@@ -88,9 +87,6 @@ public final class Handle extends Logger implements Closeable {
 
   /** is this the first invocation? */
   private volatile boolean m_first;
-
-  /** the calendar for date conversation */
-  private GregorianCalendar m_calendar;
 
   /**
    * Create the HTML formatter
@@ -193,7 +189,7 @@ public final class Handle extends Logger implements Closeable {
     final Throwable error;
     final Logger parent;
     Level level;
-    int index, time;
+    int index;
 
     if (record == null) {
       return;
@@ -211,7 +207,6 @@ public final class Handle extends Logger implements Closeable {
       try {
         if (this.m_first) {
           this.m_first = false;
-          this.m_calendar = new GregorianCalendar();
           out.write(//
           "<table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
         }
@@ -233,55 +228,7 @@ public final class Handle extends Logger implements Closeable {
         out.write(".png\" class=\"logIcon\" alt=\""); //$NON-NLS-1$
         out.write(level.getName());
         out.write("\"/></td><td class=\"logTimeCol\">"); //$NON-NLS-1$
-
-        this.m_calendar.setTimeInMillis(record.getMillis());
-        out.print(this.m_calendar.get(Calendar.YEAR));
-        out.write('-');
-        time = (this.m_calendar.get(Calendar.MONTH) + 1);
-        if (time < 10) {
-          out.write('0');
-          out.write((char) ('0' + time));
-        } else {
-          out.write((char) ('0' + (time / 10)));
-          out.write((char) ('0' + (time % 10)));
-        }
-        out.write('-');
-        time = this.m_calendar.get(Calendar.DAY_OF_MONTH);
-        if (time < 10) {
-          out.write('0');
-          out.write((char) ('0' + time));
-        } else {
-          out.write((char) ('0' + (time / 10)));
-          out.write((char) ('0' + (time % 10)));
-        }
-        out.write('-');
-        time = this.m_calendar.get(Calendar.HOUR_OF_DAY);
-        if (time < 10) {
-          out.write('0');
-          out.write((char) ('0' + time));
-        } else {
-          out.write((char) ('0' + (time / 10)));
-          out.write((char) ('0' + (time % 10)));
-        }
-        out.write(':');
-        time = this.m_calendar.get(Calendar.MINUTE);
-        if (time < 10) {
-          out.write('0');
-          out.write((char) ('0' + time));
-        } else {
-          out.write((char) ('0' + (time / 10)));
-          out.write((char) ('0' + (time % 10)));
-        }
-        out.write(':');
-        time = this.m_calendar.get(Calendar.SECOND);
-        if (time < 10) {
-          out.write('0');
-          out.write((char) ('0' + time));
-        } else {
-          out.write((char) ('0' + (time / 10)));
-          out.write((char) ('0' + (time % 10)));
-        }
-
+        out.write(ESimpleDateFormat.DATE_TIME.format(record.getMillis()));
         out.write("</td><td class=\"logMsgCol\">"); //$NON-NLS-1$
 
         format = this.m_format;
@@ -335,7 +282,6 @@ public final class Handle extends Logger implements Closeable {
     synchronized (this) {
       pw = this.m_out;
       this.m_out = null;
-      this.m_calendar = null;
       this.m_encoded = null;
       this.m_format = null;
       this.m_owner = null;

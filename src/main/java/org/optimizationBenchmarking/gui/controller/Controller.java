@@ -3,6 +3,7 @@ package org.optimizationBenchmarking.gui.controller;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ import javax.servlet.jsp.PageContext;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.optimizationBenchmarking.gui.application.ApplicationInstanceBuilder;
 import org.optimizationBenchmarking.utils.config.Configuration;
+import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** The file manager bean */
 public final class Controller implements Serializable {
@@ -26,6 +28,9 @@ public final class Controller implements Serializable {
 
   /** the current path (directory) */
   private Path m_current;
+
+  /** the selected elements */
+  private final HashSet<FSElement> m_selected;
 
   /**
    * Create the file manager bean
@@ -73,8 +78,9 @@ public final class Controller implements Serializable {
       log.setLevel(Result.SUCCESS);
     }
 
-    this.m_root = p;
+    this.m_current = this.m_root = p;
     this.m_logger = log;
+    this.m_selected = new HashSet<>();
   }
 
   /**
@@ -107,12 +113,44 @@ public final class Controller implements Serializable {
   }
 
   /**
-   * Get the current directory
+   * Get the state of the controller
    *
-   * @return the current directory
+   * @param handle
+   *          the handle
+   * @return the current state of the controller
    */
-  public synchronized final Path getCurrentDir() {
-    return this.m_current;
+  public synchronized final ControllerState getState(final Handle handle) {
+    final HashSet<FSElement> collector;
+    final Path root;
+    Path path;
+    int res;
+
+    collector = new HashSet<>();
+    root = this.m_root;
+    path = this.m_current;
+
+    for (;;) {
+      res = FSElement
+          ._addToCollection(root, root, path, collector, handle);
+      path = PathUtils.normalize(path.getParent());
+      if ((path == null) || (root.equals(path))
+          || (!(path.startsWith(root)))) {
+        break;
+      }
+      if (res < 0) {
+        handle.warning("Current path '" + //$NON-NLS-1$
+            root.relativize(this.m_current).toString() + //
+            "' seemingly does no longer exist, setting current path to '" //$NON-NLS-1$
+            + root.relativize(path).toString() + '\'' + '.');
+        this.m_current = path;
+      }
+    }
+
+    return new ControllerState(//
+        root.relativize(this.m_current).toString(),//
+        FSElement._collectionToList(collector),//
+        FSElement._dir(root, this.m_current, handle),//
+        FSElement._collectionToList(this.m_selected));
   }
 
   /**
