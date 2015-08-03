@@ -1,5 +1,5 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.ESimpleDateFormat" %>
-<p>
+<p class="footer">
 <%= ESimpleDateFormat.DATE_TIME.formatNow() %>: 
 [<a href="http://optimizationBenchmarking.github.io/optimizationBenchmarking">project page</a>] &bull;
 [<a href="https://github.com/optimizationBenchmarking/optimizationBenchmarking">GitHub page</a>] &bull;

@@ -1,7 +1,6 @@
 <%@include file="/includes/defaultHeader.jsp" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
-
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>Set the Log Level</h1>  
 <p>

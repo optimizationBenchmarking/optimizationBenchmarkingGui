@@ -1,0 +1,53 @@
+div.controller {
+}
+
+table.folderView {  
+}
+
+tr.folderViewHead {
+}
+
+th.folderViewHead {
+}
+
+tr.folderViewRow {
+}
+
+td.folderViewIcon {
+  padding-left : 1px;
+  padding-right: 1px;
+  max-width    : 1.5em;
+  width        : 1.2em;
+}
+
+td.folderViewName {
+  font-family  : monospace, monospace;
+  text-align   : left;
+  padding-left : 3px;
+  padding-right: 3px;
+}
+
+td.folderViewSize {
+  font-family  : monospace, monospace;
+  text-align   : right;
+  padding-left : 3px;
+  padding-right: 3px;
+  font-size    : 90%;
+  font-style   : italic;
+  color        : #535353;
+}
+
+td.folderViewTime {
+  font-family  : monospace, monospace;
+  text-align   : right;
+  padding-left : 3px;
+  padding-right: 3px;
+  font-size    : 90%;
+  font-style   : italic;
+  color        : #535353;
+}
+
+img.folderIcon {
+  width   : 1.2em;
+  height  : 1.2em
+}

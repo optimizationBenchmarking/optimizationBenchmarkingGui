@@ -17,6 +17,11 @@ import java.util.logging.Level;
 
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
+import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
+import org.optimizationBenchmarking.utils.text.TextUtils;
+import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
+import org.optimizationBenchmarking.utils.text.textOutput.MemoryTextOutput;
+import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** a file system element */
 public class FSElement implements Comparable<FSElement> {
@@ -38,6 +43,11 @@ public class FSElement implements Comparable<FSElement> {
 
   /** the element type */
   private final EFSElementType m_type;
+
+  /** the size string */
+  private String m_sizeString;
+  /** the time string */
+  private String m_timeString;
 
   /**
    * Create the file system element
@@ -103,6 +113,30 @@ public class FSElement implements Comparable<FSElement> {
   }
 
   /**
+   * Get a string representing this element's size, or {@code null} if no
+   * size is available
+   *
+   * @return a string representing this element's size, or {@code null} if
+   *         no size is available
+   */
+  public final String getSizeString() {
+    final MemoryTextOutput mto;
+    final ITextOutput encoded;
+
+    if (this.m_sizeString == null) {
+      if (this.m_size >= 0L) {
+        mto = new MemoryTextOutput();
+        encoded = XMLCharTransformer.getInstance().transform(mto,
+            TextUtils.DEFAULT_NORMALIZER_FORM);
+        TextUtils.appendFileSize(this.m_size, encoded);
+        encoded.flush();
+        this.m_sizeString = mto.toString();
+      }
+    }
+    return this.m_sizeString;
+  }
+
+  /**
    * Get the time when the file was changed the last time, or the time when
    * it was created if the change-time is not supported, or
    * {@link java.lang.Long#MIN_VALUE} if neither are supported.
@@ -111,6 +145,23 @@ public class FSElement implements Comparable<FSElement> {
    */
   public final long getTime() {
     return this.m_changeTime;
+  }
+
+  /**
+   * Get a string representing this element's time, or {@code null} if no
+   * time is available
+   *
+   * @return a string representing this element's time, or {@code null} if
+   *         no time is available
+   */
+  public final String getTimeString() {
+    if (this.m_timeString == null) {
+      if (this.m_changeTime >= 0L) {
+        this.m_timeString = ESimpleDateFormat.DATE_TIME
+            .format(this.m_changeTime);
+      }
+    }
+    return this.m_timeString;
   }
 
   /**
@@ -125,7 +176,6 @@ public class FSElement implements Comparable<FSElement> {
   /** {@inheritDoc} */
   @Override
   public final int compareTo(final FSElement o) {
-    int r;
 
     if (o == this) {
       return 0;
@@ -134,9 +184,21 @@ public class FSElement implements Comparable<FSElement> {
       return (-1);
     }
 
-    r = Integer.compare(this.m_type.ordinal(), o.m_type.ordinal());
-    if (r != 0) {
-      return r;
+    if (this.m_type.isFile()) {
+      if (!(o.m_type.isFile())) {
+        return 1;
+      }
+    } else {
+      if (o.m_type.isFile()) {
+        return (-1);
+      }
+    }
+
+    if (this.m_path.startsWith(o.m_path)) {
+      return 1;
+    }
+    if (o.m_path.startsWith(this.m_path)) {
+      return (-1);
     }
 
     return this.m_path.compareTo(o.m_path);
@@ -193,7 +255,11 @@ public class FSElement implements Comparable<FSElement> {
         if (use.equals(listRoot)) {
           type = EFSElementType.LIST_ROOT;
         } else {
-          type = EFSElementType.FOLDER;
+          if (use.equals(listRoot.getParent())) {
+            type = EFSElementType.NEXT_UP;
+          } else {
+            type = EFSElementType.FOLDER;
+          }
         }
       } else {
         if (attrs.isRegularFile()) {
@@ -328,6 +394,7 @@ public class FSElement implements Comparable<FSElement> {
   static final ArraySetView<FSElement> _dir(final Path root,
       final Path start, final Handle handle) {
     __FSDir col;
+    Path up;
 
     col = null;
     try {
@@ -342,6 +409,12 @@ public class FSElement implements Comparable<FSElement> {
     }
 
     if (col != null) {
+      up = start.getParent();
+      if ((up != null) && (up.startsWith(root))) {
+        FSElement._addToCollection(root, start, up,//
+            col.m_elements, handle);
+      }
+
       return FSElement._collectionToList(col.m_elements);
     }
     return ((ArraySetView) (ArraySetView.EMPTY_SET_VIEW));
@@ -418,10 +491,13 @@ public class FSElement implements Comparable<FSElement> {
     @Override
     public final FileVisitResult postVisitDirectory(final Path dir,
         final IOException exc) {
-      this.m_handle.log(Level.WARNING,//
-          (("Path scan failed somewhere in directory '" //$NON-NLS-1$
-          + dir) + "', aborting scan."), exc);//$NON-NLS-1$
-      return FileVisitResult.TERMINATE;
+      if (exc != null) {
+        this.m_handle.log(Level.WARNING,//
+            (("Path scan failed somewhere in directory '" //$NON-NLS-1$
+            + dir) + "', aborting scan."), exc);//$NON-NLS-1$
+        return FileVisitResult.TERMINATE;
+      }
+      return FileVisitResult.CONTINUE;
     }
   }
 
