@@ -13,6 +13,7 @@ Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
 <h2>Menu</h2>
 <ul class="sideMenu">
 <li><a href="/index.jsp">main</a></li>
+<li><a href="/controller.jsp">control center</a></li>
 <li><a href="/logLevel.jsp">set log level</a></li>
 </ul>
 </aside>

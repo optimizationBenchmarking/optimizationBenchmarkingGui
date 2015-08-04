@@ -53,6 +53,9 @@ td.folderViewTime {
   color        : #535353;
 }
 
+td.folderViewSel {
+}
+
 img.folderIcon {
   width   : 1.2em;
   height  : 1.2em
@@ -61,4 +64,8 @@ img.folderIcon {
 p.breadcrumps {
   border     : 1px solid #ebebeb;
   font-family: monospace, monospace;
+}
+
+p.controllerActions {
+  margin-top: 0.5em;
 }

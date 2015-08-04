@@ -2,7 +2,7 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
-<h1>Set the Log Level</h1>  
+<h1>Log Level</h1>  
 <p>
 Whenever you perform an operation, the system will tell you whether it was successful or not.
 However, some of the operations you may perform can provide (much) more fine-grained details than
@@ -26,14 +26,15 @@ if(submit != null) {
 } 
 final String currentLevel = controller.getLogLevel();
 %>
-
+<h2>Current Log Level</h2>
 <p>
 The current log level is <code><%= currentLevel %></code>.<br/>
 The most verbose level, <code>ALL</code>, means that you will receive all available information &ndash; which could be a lot.
 The least verbose level, <code>SUCCESS</code>, means that you will only be informed about success or failure of your
 operations, as well as warnings and critical errors.
 </p>
-
+<h2>Set Log Level</h2>
+Here you can set the log level.
 <form method="get" action="#">
 Choose log levels:
 <select name="level">

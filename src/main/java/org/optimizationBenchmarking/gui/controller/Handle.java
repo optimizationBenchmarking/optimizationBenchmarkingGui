@@ -208,7 +208,7 @@ public final class Handle extends Logger implements Closeable {
         if (this.m_first) {
           this.m_first = false;
           out.write(//
-          "<table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
+          "<h2>Events</h2><table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
         }
 
         out.write("<tr class=\""); //$NON-NLS-1$

@@ -26,7 +26,8 @@ pre.logPre {
   width         : auto;
   border        : 0px;
   border-style  : none;
-  max-width     : 485px;
+  max-width     : 490px;
+  max-height    : 24em;
   margin-top    : 0.3em;
   margin-bottom : 0.3em;
   margin-left   : 1px;
@@ -96,6 +97,7 @@ td.logTimeCol {
   vertical-align: top;
   padding-left  : 2px;
   padding-right : 2px;
+  white-space   : nowrap;
 }
 
 td.logMsgCol {

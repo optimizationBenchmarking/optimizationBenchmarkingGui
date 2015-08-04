@@ -285,6 +285,52 @@ public final class Controller implements Serializable {
   }
 
   /**
+   * Add some elements to the selection
+   *
+   * @param handle
+   *          the handle
+   * @param values
+   *          the values to add
+   */
+  public synchronized final void select(final Handle handle,
+      final String[] values) {
+    Path path;
+    int added;
+
+    if (values == null) {
+      handle.failure("Selected values cannot be null."); //$NON-NLS-1$
+      return;
+    }
+    if (values.length <= 0) {
+      handle.warning("Selected values are empty, nothing changed."); //$NON-NLS-1$
+      return;
+    }
+
+    added = 0;
+    for (final String string : values) {
+      path = this.__resolve(handle, string, this.m_root);
+      if (path != null) {
+        if (FSElement._addToCollection(this.m_root, this.m_root, path,
+            this.m_selected, handle) > 0) {
+          ++added;
+        }
+      }
+    }
+
+    if (added > 0) {
+      if (added <= 1) {
+        handle.success("One element has been added to the selection.");//$NON-NLS-1$
+        return;
+      }
+      handle
+          .success(added + " elements have been added to the selection.");//$NON-NLS-1$
+      return;
+    }
+
+    handle.warning("The selection has not changed.");//$NON-NLS-1$
+  }
+
+  /**
    * Resolve a path against a given root path
    *
    * @param handle
