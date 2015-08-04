@@ -3,15 +3,43 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerState" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.Encoder " %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <%
- ControllerState cstate = null;
+ final String submit = TextUtils.prepare(request.getParameter("submit"));
+ 
+ ControllerState cstate = null; 
  try(final Handle handle = controller.createHandle(pageContext)) {
+    if(submit != null) {
+      switch(TextUtils.toLowerCase(submit)) {
+        case "cda": { // cd
+          controller.cdAbsolute(handle, request.getParameter("cd"));
+          break;
+        }
+        case "cd": { // relative cd
+          controller.cdRelative(handle, request.getParameter("cd"));
+          break;
+        }
+        
+        default: {
+          handle.unknownSubmit(submit);
+        }
+      }
+    }
     cstate = controller.getState(handle);
   }
  if(cstate != null) {
 %>
-<div class="controller">
+
+<form class="controller" method="get" action="#">
+<p class="breadcrumps">
+  <%
+  for(FSElement element : cstate.getPath()) { %>
+    <a href="?cd=<%= Encoder.urlEncode(element.getRelativePath())%>&amp;submit=cda"><%= Encoder.htmlEncode(element.getName()) %></a> / <% } %>
+<input type="text" name="cd" size="12" />&nbsp;<input type="submit" name="submit" value="cd" />
+</p>
+</form>
+<form class="controller" method="get" action="#">
 <p>The contents of the current folder are:</p>
 <table class="folderView">
 <tr class="folderViewHead">
@@ -22,16 +50,16 @@
 </tr>
 
 <% for(FSElement element : cstate.getCurrent()) { 
-   String name = null; %>
+   String folderName = null; %>
 <tr class="folderViewRow">
   <td class="folderViewIcon">
     <% switch(element.getType()) { %>
       <% case NEXT_UP: {
-         name = ".."; %>
+         folderName = ".."; %>
         <img src="/icons/folderUp.png" class="folderIcon" alt="Move up one folder (to '<%= element.getName()%>')." />
       <% break; } %>
       <% case LIST_ROOT: { 
-         name = "."; %>
+         folderName = "."; %>
         <img src="/icons/folderCur.png" class="folderIcon" alt="The current folder ('<%= element.getName()%>')." />
       <% break; } %>
       <% case FOLDER: { %>
@@ -54,7 +82,19 @@
     } else {
       tag = "";
     } %>
-  <td class="folderViewName"<%= tag%>><%= ((name==null) ? element.getName() : name) %></td>
+  <td class="folderViewName"<%= tag%>>
+    <% switch(element.getType()) { 
+          case NEXT_UP:
+          case LIST_ROOT:
+          case FOLDER: { %>
+      <a href="?cd=<%= Encoder.urlEncode(element.getRelativePath())%>&amp;submit=cda">
+    <% } } %>
+  <%= ((folderName==null) ? Encoder.htmlEncode(element.getName()) : folderName) %>
+    <% switch(element.getType()) { 
+          case NEXT_UP:
+          case LIST_ROOT:
+          case FOLDER: { %></a><% } } %>
+  </td>
   <% if (size >= 0L) {
        if(time < 0L) {
         tag = " colspan=\"2\"";
@@ -69,5 +109,5 @@
 </tr>
 <% } %>
 </table>
-</div>
+</form>
 <% } %>

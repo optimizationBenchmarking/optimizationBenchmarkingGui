@@ -2,7 +2,9 @@ package org.optimizationBenchmarking.gui.controller;
 
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +15,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.optimizationBenchmarking.gui.application.ApplicationInstanceBuilder;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
+import org.optimizationBenchmarking.utils.text.TextUtils;
 
 /** The file manager bean */
 public final class Controller implements Serializable {
@@ -132,9 +135,11 @@ public final class Controller implements Serializable {
     for (;;) {
       res = FSElement
           ._addToCollection(root, root, path, collector, handle);
+      if (root.equals(path)) {
+        break;
+      }
       path = PathUtils.normalize(path.getParent());
-      if ((path == null) || (root.equals(path))
-          || (!(path.startsWith(root)))) {
+      if ((path == null) || (!(path.startsWith(root)))) {
         break;
       }
       if (res < 0) {
@@ -164,17 +169,20 @@ public final class Controller implements Serializable {
   public synchronized final void setLogLevel(final Handle handle,
       final String level) {
     final Level loglevel;
+    final String use;
     String strRep;
 
-    if (level == null) {
-      handle
-          .failure("Log level name cannot be null. Logging remains at level " //$NON-NLS-1$
+    use = TextUtils.prepare(level);
+    if (use == null) {
+      handle.failure(//
+          "Log level name cannot be null, empty, or just consist of white space, but '"//$NON-NLS-1$
+              + level + "' does/is. Logging remains at level " //$NON-NLS-1$
               + this.m_logger.getLevel() + '.');
       return;
     }
 
     try {
-      loglevel = Level.parse(level);
+      loglevel = Level.parse(use);
     } catch (final Throwable error) {
       handle.failure("The string '" + level + //$NON-NLS-1$
           "' does not identify a proper log level. Logging remains at level " //$NON-NLS-1$
@@ -207,5 +215,152 @@ public final class Controller implements Serializable {
    */
   public synchronized final String getLogLevel() {
     return String.valueOf(this.m_logger.getLevel());
+  }
+
+  /**
+   * Change the current working directory.
+   *
+   * @param handle
+   *          the handle
+   * @param relPath
+   *          the relative path
+   */
+  public synchronized final void cdAbsolute(final Handle handle,
+      final String relPath) {
+    this.__cd(handle, this.m_root, relPath);
+  }
+
+  /**
+   * Change the current working directory relative to it.
+   *
+   * @param handle
+   *          the handle
+   * @param relPath
+   *          the relative path
+   */
+  public synchronized final void cdRelative(final Handle handle,
+      final String relPath) {
+    this.__cd(handle, this.m_current, relPath);
+  }
+
+  /**
+   * Change the current working directory.
+   *
+   * @param handle
+   *          the handle
+   * @param root
+   *          the root path to use for resolution
+   * @param relPath
+   *          the relative path
+   */
+  private final void __cd(final Handle handle, final Path root,
+      final String relPath) {
+    final Path p;
+    boolean isDir;
+    Throwable caught;
+
+    p = this.__resolve(handle, relPath, root);
+    if (p != null) {
+
+      isDir = false;
+      caught = null;
+      try {
+        isDir = Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS);
+      } catch (final Throwable error) {
+        caught = error;
+        isDir = false;
+      }
+      if (isDir && (caught == null)) {
+        this.m_current = p;
+        handle.success("Succeeded in setting the current path to '" //$NON-NLS-1$
+            + relPath + "'. The full path is now '" + //$NON-NLS-1$
+            this.m_root.relativize(this.m_current).toString() + //
+            '\'' + '.');
+      } else {
+        handle.failure("Path '" + relPath + //$NON-NLS-1$
+            "' does not identify a directory.",//$NON-NLS-1$
+            caught);
+      }
+    }
+  }
+
+  /**
+   * Resolve a path against a given root path
+   *
+   * @param handle
+   *          the handle
+   * @param relPath
+   *          the path name
+   * @param root
+   *          the root path
+   * @return the resolved path
+   */
+  private final Path __resolve(final Handle handle, final String relPath,
+      final Path root) {
+    final String pre;
+    Path path;
+    Throwable caught;
+
+    pre = TextUtils.prepare(relPath);
+    if (pre == null) {
+      handle.failure(//
+          "Cannot resolve path whose name is either null, consists of only white space, or is the empty string, so folder name '" //$NON-NLS-1$
+              + relPath + "' is not permitted."); //$NON-NLS-1$
+      return null;
+    }
+
+    caught = null;
+    if (FSElement.ROOT_PATH.equals(pre)) {
+      path = this.m_root;
+    } else {
+      path = null;
+      try {
+        path = Paths.get(relPath);
+      } catch (final Throwable error) {
+        caught = error;
+        path = null;
+      }
+
+      if ((path == null) || (caught != null)) {
+        handle.failure("Failed to convert path name '" + relPath + //$NON-NLS-1$
+            "' to a path.",//$NON-NLS-1$
+            caught);
+        return null;
+      }
+
+      try {
+        path = root.resolve(path);
+      } catch (final Throwable error) {
+        caught = error;
+        path = null;
+      }
+
+      if ((path == null) || (caught != null)) {
+        handle.failure("Failed to resolve path '" + relPath + //$NON-NLS-1$
+            '\'' + '.', caught);
+        return null;
+      }
+
+      try {
+        path = PathUtils.normalize(path);
+      } catch (final Throwable error) {
+        caught = error;
+        path = null;
+      }
+    }
+
+    if ((path == null) || (caught != null)) {
+      handle.failure("Failed to normalize path '" + relPath + //$NON-NLS-1$
+          '\'' + '.', caught);
+      return null;
+    }
+
+    if (path.startsWith(this.m_root)) {
+      return path;
+    }
+    handle
+        .failure("Path '" + relPath + //$NON-NLS-1$
+            "' points outside of the root data folder (i.e., towards a folder you are not supposed to see...).");//$NON-NLS-1$
+    return null;
   }
 }

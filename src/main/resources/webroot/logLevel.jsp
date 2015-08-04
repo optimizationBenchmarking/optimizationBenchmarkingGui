@@ -14,10 +14,14 @@ operations.
 </p>
 
 <%
-final String newLevel = TextUtils.prepare(request.getParameter("level")); 
-if(newLevel != null) {
+final String submit   = TextUtils.prepare(request.getParameter("submit"));
+if(submit != null) {
   try(final Handle handle = controller.createHandle(pageContext)) {
-    controller.setLogLevel(handle, newLevel);   
+    if(submit.equalsIgnoreCase("OK")) {
+      controller.setLogLevel(handle, request.getParameter("level"));
+    } else {
+      handle.unknownSubmit(submit);
+    }
   }
 } 
 final String currentLevel = controller.getLogLevel();

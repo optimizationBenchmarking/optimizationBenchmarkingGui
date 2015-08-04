@@ -1,4 +1,10 @@
-div.controller {
+form.controller {
+  background    : transparent;
+  margin-top    : 2px;
+  margin-bottom : 2px;
+  margin-left   : 1px;
+  margin-right  : 1px;
+  padding       : 1px;
 }
 
 table.folderView {  
@@ -50,4 +56,9 @@ td.folderViewTime {
 img.folderIcon {
   width   : 1.2em;
   height  : 1.2em
+}
+
+p.breadcrumps {
+  border     : 1px solid #ebebeb;
+  font-family: monospace, monospace;
 }

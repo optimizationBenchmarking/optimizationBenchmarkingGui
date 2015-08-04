@@ -26,6 +26,9 @@ import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransforme
 /** a file system element */
 public class FSElement implements Comparable<FSElement> {
 
+  /** the root path */
+  static final String ROOT_PATH = "/"; //$NON-NLS-1$
+
   /** the actual path */
   private final Path m_path;
 
@@ -239,9 +242,9 @@ public class FSElement implements Comparable<FSElement> {
       final Path path, final BasicFileAttributes attrs,
       final Collection<FSElement> set, final Handle handle) {
     final EFSElementType type;
-    final Path use;
-    final String name, relativePath;
     final FSElement el;
+    Path use;
+    String name, relativePath;
     FileTime fileTime;
     long size, time;
 
@@ -254,6 +257,7 @@ public class FSElement implements Comparable<FSElement> {
       if (attrs.isDirectory()) {
         if (use.equals(listRoot)) {
           type = EFSElementType.LIST_ROOT;
+          use = listRoot;
         } else {
           if (use.equals(listRoot.getParent())) {
             type = EFSElementType.NEXT_UP;
@@ -293,8 +297,13 @@ public class FSElement implements Comparable<FSElement> {
         }
       }
 
-      name = PathUtils.getName(use);
-      relativePath = root.relativize(use).toString();
+      if (root.equals(use)) {
+        use = root;
+        name = relativePath = FSElement.ROOT_PATH;
+      } else {
+        name = PathUtils.getName(use);
+        relativePath = root.relativize(use).toString();
+      }
 
       el = new FSElement(use, name, relativePath, type, size, time);
       synchronized (set) {
@@ -339,8 +348,8 @@ public class FSElement implements Comparable<FSElement> {
     }
 
     if (attrs == null) {
-      handle.failure(((("Could not get attributes of path '" + //$NON-NLS-1$
-          path) + '\'') + '.'), caught);
+      handle.failure((("Could not get attributes of path '" + //$NON-NLS-1$
+          path) + "' - maybe it does not exist."), caught);//$NON-NLS-1$
       return (-1);
     }
 

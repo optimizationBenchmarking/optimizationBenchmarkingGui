@@ -335,4 +335,15 @@ public final class Handle extends Logger implements Closeable {
   public final void failure(final String message, final Throwable error) {
     this.log(Result.FAILURE, message, error);
   }
+
+  /**
+   * The unknown submit command is ignored
+   *
+   * @param submit
+   *          the submit
+   */
+  public final void unknownSubmit(final String submit) {
+    this.warning("Unknown command '" + submit + //$NON-NLS-1$
+        "' is ignored."); //$NON-NLS-1$
+  }
 }

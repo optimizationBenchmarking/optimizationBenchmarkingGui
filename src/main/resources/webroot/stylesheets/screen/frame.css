@@ -2,5 +2,9 @@ ul.sideMenu {
   font-size: 17px;
 }
 
-p.footer {
+p.footerInfo {
+  margin-top : 1em;
+}
+
+p.footerLinks {
 }

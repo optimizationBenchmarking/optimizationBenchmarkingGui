@@ -1,6 +1,9 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.ESimpleDateFormat" %>
-<p class="footer">
-<%= ESimpleDateFormat.DATE_TIME.formatNow() %>: 
+<p class="footerInfo>
+Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
+Server ip:
+</p>
+<p class="footerLinks"> 
 [<a href="http://optimizationBenchmarking.github.io/optimizationBenchmarking">project page</a>] &bull;
 [<a href="https://github.com/optimizationBenchmarking/optimizationBenchmarking">GitHub page</a>] &bull;
 [<a href="http://optimizationbenchmarking.github.io/optimizationBenchmarking/repo/">downloads</a>] &bull;
