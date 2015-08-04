@@ -3,8 +3,10 @@ ul.sideMenu {
 }
 
 p.footerInfo {
-  margin-top : 1em;
+  margin-top   : 1.25em;
+  margin-bottom: 0em;
 }
 
 p.footerLinks {
+  margin-top   : 0.3em;
 }
