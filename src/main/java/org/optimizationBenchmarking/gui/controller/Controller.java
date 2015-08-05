@@ -39,6 +39,9 @@ public final class Controller implements Serializable {
   /** the selected elements */
   private final HashSet<FSElement> m_selected;
 
+  /** the servlet handle */
+  private final _ServletHandle m_servletHandle;
+
   /**
    * Create the file manager bean
    */
@@ -88,6 +91,7 @@ public final class Controller implements Serializable {
     this.m_current = this.m_root = p;
     this.m_logger = log;
     this.m_selected = new HashSet<>();
+    this.m_servletHandle = new _ServletHandle(this);
   }
 
   /**
@@ -115,8 +119,20 @@ public final class Controller implements Serializable {
    *          the page context object
    * @return the handle
    */
-  public final Handle createHandle(final PageContext pageContext) {
-    return new Handle(this, pageContext);
+  public final Handle createJspHandle(final PageContext pageContext) {
+    final _JspHandle res;
+    res = new _JspHandle(this, pageContext);
+    this.m_servletHandle._flush(res);
+    return res;
+  }
+
+  /**
+   * The servlet handle
+   *
+   * @return the servlet handle
+   */
+  public final Handle createServletHandle() {
+    return this.m_servletHandle;
   }
 
   /**

@@ -10,7 +10,7 @@
  final String submit = TextUtils.prepare(request.getParameter("submit"));
  
  ControllerState cstate = null; 
- try(final Handle handle = controller.createHandle(pageContext)) {
+ try(final Handle handle = controller.createJspHandle(pageContext)) {
     if(submit != null) {
       sub: switch(TextUtils.toLowerCase(submit)) {
         case "cda": { // cd

@@ -11,10 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.FSElement;
+import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** A java servlet for downloading the selected elements. */
-public class DownloadSelected extends _FSDownloaderServlet {
+public final class DownloadSelected extends _FSDownloaderServlet {
   /** the serial version uid */
   private static final long serialVersionUID = 1L;
 
@@ -36,22 +37,31 @@ public class DownloadSelected extends _FSDownloaderServlet {
     controller = ((Controller) (req.getSession()
         .getAttribute(Controller.CONTROLLER_BEAN_NAME)));
     if (controller != null) {
-      selection = req.getParameterValues("select"); //$NON-NLS-1$
-      if ((selection != null) && (selection.length > 0)) {
-        root = controller.getRootDir();
-        selected = new ArrayList<>();
-        for (final String sel : selection) {//
-          chosen = PathUtils.normalize(root.resolve(Paths.get(sel)));
-          if (chosen.startsWith(root)) {
-            FSElement.addToCollection(root, root, chosen, selected,//
-                null);
+      try (final Handle handle = controller.createServletHandle()) {
+        selection = req.getParameterValues("select"); //$NON-NLS-1$
+        if ((selection != null) && (selection.length > 0)) {
+          root = controller.getRootDir();
+          selected = new ArrayList<>();
+          for (final String sel : selection) {//
+            chosen = PathUtils.normalize(root.resolve(Paths.get(sel)));
+            if (chosen.startsWith(root)) {
+              FSElement.addToCollection(root, root, chosen, selected,//
+                  handle);
+            }
+          }
+
+          if (selected.size() > 0) {
+            try {
+              this._download(resp, root, selected, handle);
+              handle.success(//
+                  "Successfully downloaded the selected files.");//$NON-NLS-1$
+            } catch (final Throwable error) {
+              handle.failure("Failed to download selected files.", error);//$NON-NLS-1$
+            }
+            return;
           }
         }
-
-        if (selected.size() > 0) {
-          this._download(resp, root, selected);
-          return;
-        }
+        handle.warning("Nothing to download."); //$NON-NLS-1$
       }
     }
   }

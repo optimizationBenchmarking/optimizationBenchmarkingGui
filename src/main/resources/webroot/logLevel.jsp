@@ -16,7 +16,7 @@ operations.
 <%
 final String submit   = TextUtils.prepare(request.getParameter("submit"));
 if(submit != null) {
-  try(final Handle handle = controller.createHandle(pageContext)) {
+  try(final Handle handle = controller.createJspHandle(pageContext)) {
     if(submit.equalsIgnoreCase("OK")) {
       controller.setLogLevel(handle, request.getParameter("level"));
     } else {

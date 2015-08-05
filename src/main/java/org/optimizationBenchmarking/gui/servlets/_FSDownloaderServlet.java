@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
 import org.optimizationBenchmarking.gui.controller.FSElement;
+import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.io.EArchiveType;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
@@ -33,12 +35,14 @@ class _FSDownloaderServlet extends HttpServlet {
    *          the root path
    * @param elements
    *          the elements
+   * @param handle
+   *          the handle
    * @throws IOException
    *           if I/O fails
    */
   final void _download(final HttpServletResponse response,
-      final Path rootPath, final Iterable<FSElement> elements)
-      throws IOException {
+      final Path rootPath, final Iterable<FSElement> elements,
+      final Handle handle) throws IOException {
     final ArrayList<Path> paths;
     final String name;
     Path root, current, done;
@@ -54,10 +58,20 @@ class _FSDownloaderServlet extends HttpServlet {
       for (i = paths.size(); (--i) >= 0;) {
         done = paths.get(i);
         if (done.equals(current) || current.startsWith(done)) {
+          if (handle.isLoggable(Level.FINE)) {
+            handle.warning("Path '" + rootPath.relativize(current) + //$NON-NLS-1$
+                "' ignored during copying, since it is already considered in '"//$NON-NLS-1$
+                + rootPath.relativize(done) + '\'' + '.');
+          }
           continue outer;
         }
         if (done.startsWith(current)) {
           paths.remove(i);
+          if (handle.isLoggable(Level.FINE)) {
+            handle.warning("Path '" + rootPath.relativize(done) + //$NON-NLS-1$
+                "' ignored during copying, since it is already considered in '"//$NON-NLS-1$
+                + rootPath.relativize(current) + '\'' + '.');
+          }
         }
       }
       paths.add(current);
