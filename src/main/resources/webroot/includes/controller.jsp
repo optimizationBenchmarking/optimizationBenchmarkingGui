@@ -12,18 +12,32 @@
  ControllerState cstate = null; 
  try(final Handle handle = controller.createHandle(pageContext)) {
     if(submit != null) {
-      switch(TextUtils.toLowerCase(submit)) {
+      sub: switch(TextUtils.toLowerCase(submit)) {
         case "cda": { // cd
           controller.cdAbsolute(handle, request.getParameter("cd"));
-          break;
+          break sub;
         }
         case "cd": { // relative cd
           controller.cdRelative(handle, request.getParameter("cd"));
-          break;
+          break sub;
         }
-        case "remember": { // select
-          controller.select(handle, request.getParameterValues("select"));
-          break;
+        case "ok": { // select          
+          String selectionValue = request.getParameter("withSelected");
+          if(selectionValue != null) {
+            switch(TextUtils.toLowerCase(selectionValue)) {
+              case  "remember": {
+                controller.select(handle, request.getParameterValues("select"));
+                break sub;
+                }
+              default: {
+                handle.failure("Unknown selection command '" + selectionValue + '\'' + '.');
+                break sub;
+                }
+              }
+            }
+            
+          handle.warning("OK button pressed, but nothing to do.");
+          break sub;
         }
         
         default: {
@@ -91,17 +105,8 @@
       tag = "";
     } %>
   <td class="folderViewName"<%= tag%>>
-    <% switch(element.getType()) { 
-          case NEXT_UP:
-          case LIST_ROOT:
-          case FOLDER: { %>
-      <a href="?cd=<%= urlEncodedRelativePath%>&amp;submit=cda">
-    <% } } %>
-  <%= elementName %>
-  <% switch(element.getType()) { 
-        case NEXT_UP:
-        case LIST_ROOT:
-        case FOLDER: { %></a><% } } %>
+    <a <% if(element.getType().isFile()) { %>target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%><%
+    } else {%>href="?cd=<%= urlEncodedRelativePath%>&amp;submit=cda<% } %>"><%= elementName %></a>
   </td>
   <% if (size >= 0L) {
        if(time < 0L) {
@@ -120,7 +125,12 @@
 </table>
 <p class="controllerActions">
 Selected elements:
-<input type="submit" name="submit" value="remember" />
+<select name="withSelected">
+<option>remember</option>
+</select>
+<input type="submit" name="submit" value="OK" />
+or
+<input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadSelected" formatarget="_blank" />
 </p>
 </form>
 
@@ -137,20 +147,16 @@ Selected elements:
 <th class="folderViewHead"/>
 </tr>
 
-<% for(FSElement element : selected) {   
+<% for(FSElement element : selected) { 
+   String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); %>
 <tr class="folderViewRow">
   <td class="folderViewIcon">
-    <% switch(element.getType()) { 
-         case NEXT_UP:
-         case LIST_ROOT: 
-         case FOLDER: { %>
+    <% if(element.getType().isFile()) {  %>
+        <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+      <% } else { %>
         <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
-      <% break; } %>
-      <% default: { %>
-        <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />
-      <% break; } 
-     } %>
+      <% } %>
   </td>
   <% final long size = element.getSize();
      final long time = element.getTime();     
@@ -165,7 +171,9 @@ Selected elements:
       tag = "";
     } %>
   <td class="folderViewName"<%= tag%>>
-  <%= htmlEncodedRelativePath %>
+  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%>"><% } %>
+    <%= htmlEncodedRelativePath %>
+  <% if(element.getType().isFile()) { %></a><% } %>
   </td>
   <% if (size >= 0L) {
        if(time < 0L) {
@@ -182,6 +190,10 @@ Selected elements:
 </tr>
 <% } %>
 </table>
+<p class="controllerActions">
+Remembered elements:
+<input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadRemembered" formatarget="_blank" />
+</p>
 </form>
 
 <% } %>

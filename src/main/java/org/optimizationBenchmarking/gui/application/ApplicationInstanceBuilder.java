@@ -11,6 +11,9 @@ import org.optimizationBenchmarking.gui.controller.Result;
 import org.optimizationBenchmarking.gui.server.ServerInstance;
 import org.optimizationBenchmarking.gui.server.ServerInstanceBuilder;
 import org.optimizationBenchmarking.gui.server.ServerTool;
+import org.optimizationBenchmarking.gui.servlets.DownloadRemembered;
+import org.optimizationBenchmarking.gui.servlets.DownloadSelected;
+import org.optimizationBenchmarking.gui.servlets.Viewer;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.error.RethrowMode;
@@ -21,7 +24,7 @@ import org.optimizationBenchmarking.utils.tools.impl.browser.BrowserJob;
 import org.optimizationBenchmarking.utils.tools.spec.IConfigurableToolJobBuilder;
 
 /** The builder for the gui server instance. */
-public class ApplicationInstanceBuilder extends
+public final class ApplicationInstanceBuilder extends
     ToolJobBuilder<ApplicationInstance, ApplicationInstanceBuilder>
     implements IConfigurableToolJobBuilder {
 
@@ -158,6 +161,19 @@ public class ApplicationInstanceBuilder extends
     return this;
   }
 
+  /**
+   * Add servlets to the instance builder
+   *
+   * @param builder
+   *          the builder
+   */
+  private static final void __addServlets(
+      final ServerInstanceBuilder builder) {
+    builder.addServlet(DownloadRemembered.class, "/downloadRemembered"); //$NON-NLS-1$
+    builder.addServlet(DownloadSelected.class, "/downloadSelected"); //$NON-NLS-1$
+    builder.addServlet(Viewer.class, "/viewer"); //$NON-NLS-1$
+  }
+
   /** {@inheritDoc} */
   @SuppressWarnings("resource")
   @Override
@@ -208,6 +224,7 @@ public class ApplicationInstanceBuilder extends
     server.setLogger(logger);
     server.addAttribute(ApplicationInstanceBuilder.PARAM_ROOT_PATH,
         rootPath);
+    ApplicationInstanceBuilder.__addServlets(server);
     instance = server.create();
 
     try {

@@ -107,6 +107,15 @@ public class FSElement implements Comparable<FSElement> {
   }
 
   /**
+   * Get the full path
+   *
+   * @return the full path
+   */
+  public final Path getFullPath() {
+    return this.m_path;
+  }
+
+  /**
    * Get the size of the file
    *
    * @return the size
@@ -289,7 +298,7 @@ public class FSElement implements Comparable<FSElement> {
           }
 
         } else {
-          if (handle.isLoggable(Level.FINE)) {
+          if ((handle != null) && handle.isLoggable(Level.FINE)) {
             handle.fine("Ignoring '" + use + //$NON-NLS-1$
                 "' since it is neither a regular file nor a directory."); //$NON-NLS-1$
           }
@@ -310,9 +319,11 @@ public class FSElement implements Comparable<FSElement> {
         return (set.add(el) ? 1 : 0);
       }
     }
-    handle.warning("The path '" + path + //$NON-NLS-1$
-        "' is not contained in the root path '" + root + //$NON-NLS-1$
-        "' and therefore ignored."); //$NON-NLS-1$
+    if (handle != null) {
+      handle.warning("The path '" + path + //$NON-NLS-1$
+          "' is not contained in the root path '" + root + //$NON-NLS-1$
+          "' and therefore ignored."); //$NON-NLS-1$
+    }
     return (-1);
   }
 
@@ -332,8 +343,9 @@ public class FSElement implements Comparable<FSElement> {
    * @return {@code 1} if adding the path changed the set, {@code 0}
    *         otherwise, {@code -1} if the element could not be found
    */
-  static final int _addToCollection(final Path root, final Path listRoot,
-      final Path path, final Collection<FSElement> set, final Handle handle) {
+  public static final int addToCollection(final Path root,
+      final Path listRoot, final Path path,
+      final Collection<FSElement> set, final Handle handle) {
     BasicFileAttributes attrs;
     Throwable caught;
 
@@ -348,8 +360,10 @@ public class FSElement implements Comparable<FSElement> {
     }
 
     if (attrs == null) {
-      handle.failure((("Could not get attributes of path '" + //$NON-NLS-1$
-          path) + "' - maybe it does not exist."), caught);//$NON-NLS-1$
+      if (handle != null) {
+        handle.failure((("Could not get attributes of path '" + //$NON-NLS-1$
+            path) + "' - maybe it does not exist."), caught);//$NON-NLS-1$
+      }
       return (-1);
     }
 
@@ -365,7 +379,7 @@ public class FSElement implements Comparable<FSElement> {
    * @return the list
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  static final ArraySetView<FSElement> _collectionToList(
+  public static final ArraySetView<FSElement> collectionToList(
       final Collection<FSElement> set) {
     final int size;
     final FSElement[] elements;
@@ -412,19 +426,21 @@ public class FSElement implements Comparable<FSElement> {
           col);
 
     } catch (final Throwable error) {
-      handle.failure(((((("Failed to scan path '" + start) //$NON-NLS-1$
-          + "' under root '") + root) + '\'') + '.'), //$NON-NLS-1$
-          error);
+      if (handle != null) {
+        handle.failure(((((("Failed to scan path '" + start) //$NON-NLS-1$
+            + "' under root '") + root) + '\'') + '.'), //$NON-NLS-1$
+            error);
+      }
     }
 
     if (col != null) {
       up = start.getParent();
       if ((up != null) && (up.startsWith(root))) {
-        FSElement._addToCollection(root, start, up,//
+        FSElement.addToCollection(root, start, up,//
             col.m_elements, handle);
       }
 
-      return FSElement._collectionToList(col.m_elements);
+      return FSElement.collectionToList(col.m_elements);
     }
     return ((ArraySetView) (ArraySetView.EMPTY_SET_VIEW));
   }
@@ -490,9 +506,11 @@ public class FSElement implements Comparable<FSElement> {
     @Override
     public final FileVisitResult visitFileFailed(final Path file,
         final IOException exc) {
-      this.m_handle.log(Level.WARNING,//
-          (("Path scan failed for path '" //$NON-NLS-1$
-          + file) + "', aborting scan."), exc);//$NON-NLS-1$
+      if (this.m_handle != null) {
+        this.m_handle.log(Level.WARNING,//
+            (("Path scan failed for path '" //$NON-NLS-1$
+            + file) + "', aborting scan."), exc);//$NON-NLS-1$
+      }
       return FileVisitResult.TERMINATE;
     }
 
@@ -501,9 +519,11 @@ public class FSElement implements Comparable<FSElement> {
     public final FileVisitResult postVisitDirectory(final Path dir,
         final IOException exc) {
       if (exc != null) {
-        this.m_handle.log(Level.WARNING,//
-            (("Path scan failed somewhere in directory '" //$NON-NLS-1$
-            + dir) + "', aborting scan."), exc);//$NON-NLS-1$
+        if (this.m_handle != null) {
+          this.m_handle.log(Level.WARNING,//
+              (("Path scan failed somewhere in directory '" //$NON-NLS-1$
+              + dir) + "', aborting scan."), exc);//$NON-NLS-1$
+        }
         return FileVisitResult.TERMINATE;
       }
       return FileVisitResult.CONTINUE;

@@ -13,6 +13,7 @@ import javax.servlet.jsp.PageContext;
 
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.optimizationBenchmarking.gui.application.ApplicationInstanceBuilder;
+import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
@@ -22,6 +23,9 @@ public final class Controller implements Serializable {
 
   /** the serial version uid */
   private static final long serialVersionUID = 1L;
+
+  /** the name of the controller bean */
+  public static final String CONTROLLER_BEAN_NAME = "controller"; //$NON-NLS-1$
 
   /** the root path */
   private final Path m_root;
@@ -133,8 +137,7 @@ public final class Controller implements Serializable {
     path = this.m_current;
 
     for (;;) {
-      res = FSElement
-          ._addToCollection(root, root, path, collector, handle);
+      res = FSElement.addToCollection(root, root, path, collector, handle);
       if (root.equals(path)) {
         break;
       }
@@ -153,9 +156,9 @@ public final class Controller implements Serializable {
 
     return new ControllerState(//
         root.relativize(this.m_current).toString(),//
-        FSElement._collectionToList(collector),//
+        FSElement.collectionToList(collector),//
         FSElement._dir(root, this.m_current, handle),//
-        FSElement._collectionToList(this.m_selected));
+        FSElement.collectionToList(this.m_selected));
   }
 
   /**
@@ -310,7 +313,7 @@ public final class Controller implements Serializable {
     for (final String string : values) {
       path = this.__resolve(handle, string, this.m_root);
       if (path != null) {
-        if (FSElement._addToCollection(this.m_root, this.m_root, path,
+        if (FSElement.addToCollection(this.m_root, this.m_root, path,
             this.m_selected, handle) > 0) {
           ++added;
         }
@@ -322,8 +325,8 @@ public final class Controller implements Serializable {
         handle.success("One element has been added to the selection.");//$NON-NLS-1$
         return;
       }
-      handle
-          .success(added + " elements have been added to the selection.");//$NON-NLS-1$
+      handle.success(added + //
+          " elements have been added to the selection.");//$NON-NLS-1$
       return;
     }
 
@@ -408,5 +411,14 @@ public final class Controller implements Serializable {
         .failure("Path '" + relPath + //$NON-NLS-1$
             "' points outside of the root data folder (i.e., towards a folder you are not supposed to see...).");//$NON-NLS-1$
     return null;
+  }
+
+  /**
+   * Obtain the selected elements
+   *
+   * @return the selected elements
+   */
+  public synchronized final ArraySetView<FSElement> getSelected() {
+    return FSElement.collectionToList(this.m_selected);
   }
 }
