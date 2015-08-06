@@ -3,7 +3,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerState" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
-<%@ page import="org.optimizationBenchmarking.gui.controller.Encoder" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArraySetView" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <%
@@ -124,13 +124,13 @@
 <% } %>
 </table>
 <p class="controllerActions">
-Selected elements:
+Selected element(s):
 <select name="withSelected">
 <option>remember</option>
 </select>
-<input type="submit" name="submit" value="OK" />
-or
-<input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadSelected" formatarget="_blank" />
+<input type="submit" name="submit" value="OK" /><br/>
+or <input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadSelected" formatarget="_blank" /> it/them<br/>
+or use them as configuration(s) to <input type="submit" name="submit" value="execute" formmethod="get" formaction="/evaluator.jsp" /> the evaluator
 </p>
 </form>
 

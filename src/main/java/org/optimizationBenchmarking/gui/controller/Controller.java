@@ -278,7 +278,7 @@ public final class Controller implements Serializable {
     boolean isDir;
     Throwable caught;
 
-    p = this.__resolve(handle, relPath, root);
+    p = this.resolve(handle, relPath, root);
     if (p != null) {
 
       isDir = false;
@@ -327,7 +327,7 @@ public final class Controller implements Serializable {
 
     added = 0;
     for (final String string : values) {
-      path = this.__resolve(handle, string, this.m_root);
+      path = this.resolve(handle, string, this.m_root);
       if (path != null) {
         if (FSElement.addToCollection(this.m_root, this.m_root, path,
             this.m_selected, handle) > 0) {
@@ -357,10 +357,10 @@ public final class Controller implements Serializable {
    * @param relPath
    *          the path name
    * @param root
-   *          the root path
+   *          the root path (or {@code null} for the default root)
    * @return the resolved path
    */
-  private final Path __resolve(final Handle handle, final String relPath,
+  public final Path resolve(final Handle handle, final String relPath,
       final Path root) {
     final String pre;
     Path path;
@@ -394,7 +394,7 @@ public final class Controller implements Serializable {
       }
 
       try {
-        path = root.resolve(path);
+        path = ((root != null) ? root : this.m_root).resolve(path);
       } catch (final Throwable error) {
         caught = error;
         path = null;
@@ -423,8 +423,8 @@ public final class Controller implements Serializable {
     if (path.startsWith(this.m_root)) {
       return path;
     }
-    handle
-        .failure("Path '" + relPath + //$NON-NLS-1$
+    handle.failure(//
+        "Path '" + relPath + //$NON-NLS-1$
             "' points outside of the root data folder (i.e., towards a folder you are not supposed to see...).");//$NON-NLS-1$
     return null;
   }

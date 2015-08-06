@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
-import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** A java servlet for viewing an element. */
 public final class Viewer extends _FSDownloaderServlet {
@@ -31,7 +29,7 @@ public final class Viewer extends _FSDownloaderServlet {
       final HttpServletResponse resp) throws ServletException, IOException {
     final Controller controller;
     final String view;
-    final Path path, root;
+    final Path path;
 
     controller = ((Controller) (req.getSession()
         .getAttribute(Controller.CONTROLLER_BEAN_NAME)));
@@ -39,9 +37,8 @@ public final class Viewer extends _FSDownloaderServlet {
       try (final Handle handle = controller.createServletHandle()) {
         view = req.getParameter("view"); //$NON-NLS-1$
         if (view != null) {
-          root = controller.getRootDir();
-          path = PathUtils.normalize(root.resolve(Paths.get(view)));
-          if (path.startsWith(root)) {
+          path = controller.resolve(handle, view, null);
+          if (path != null) {
             try {
               if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
                 resp.setContentType(MimeTypeDetector.getInstance()
@@ -57,9 +54,6 @@ public final class Viewer extends _FSDownloaderServlet {
               handle.failure("Error while providing file '" + //$NON-NLS-1$
                   view + '\'' + '.', error);
             }
-          } else {
-            handle.failure("File '" + view + //$NON-NLS-1$
-                "' to view is outside of permitted root path.");//$NON-NLS-1$
           }
         } else {
           handle.failure("Cannot view file, since no file specified.");//$NON-NLS-1$

@@ -67,5 +67,6 @@ p.breadcrumps {
 }
 
 p.controllerActions {
-  margin-top: 0.5em;
+  margin-top : 0.5em;
+  line-height: 119%;
 }

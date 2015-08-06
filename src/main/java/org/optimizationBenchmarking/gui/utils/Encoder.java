@@ -1,6 +1,8 @@
-package org.optimizationBenchmarking.gui.controller;
+package org.optimizationBenchmarking.gui.utils;
 
 import java.net.URLEncoder;
+
+import org.optimizationBenchmarking.utils.error.ErrorUtils;
 
 /** Some simple methods for on-the-fly encoding */
 public final class Encoder {
@@ -35,4 +37,8 @@ public final class Encoder {
     return Encoder.htmlEncode(enc);
   }
 
+  /** the hidden and forbidden constructor */
+  private Encoder() {
+    ErrorUtils.doNotCall();
+  }
 }

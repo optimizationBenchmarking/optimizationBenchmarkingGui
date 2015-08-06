@@ -2,7 +2,6 @@ package org.optimizationBenchmarking.gui.servlets;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.FSElement;
 import org.optimizationBenchmarking.gui.controller.Handle;
-import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** A java servlet for downloading the selected elements. */
 public final class DownloadSelected extends _FSDownloaderServlet {
@@ -43,8 +41,8 @@ public final class DownloadSelected extends _FSDownloaderServlet {
           root = controller.getRootDir();
           selected = new ArrayList<>();
           for (final String sel : selection) {//
-            chosen = PathUtils.normalize(root.resolve(Paths.get(sel)));
-            if (chosen.startsWith(root)) {
+            chosen = controller.resolve(handle, sel, null);
+            if (chosen != null) {
               FSElement.addToCollection(root, root, chosen, selected,//
                   handle);
             }

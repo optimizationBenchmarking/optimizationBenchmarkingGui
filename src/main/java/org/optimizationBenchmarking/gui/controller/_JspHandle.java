@@ -133,6 +133,13 @@ final class _JspHandle extends Handle {
 
     this.m_format = formatter;
     this.m_first = true;
+
+    try {
+      writer.flush();
+    } catch (final Throwable ignore) {
+      // let's ignore that one
+    }
+
   }
 
   /**
@@ -236,6 +243,7 @@ final class _JspHandle extends Handle {
         }
         out.write("</td></tr>"); //$NON-NLS-1$
 
+        out.flush();
       } catch (final Throwable errorx) {
         throw new IllegalStateException(
             "Something went wrong when logging.", //$NON-NLS-1$
