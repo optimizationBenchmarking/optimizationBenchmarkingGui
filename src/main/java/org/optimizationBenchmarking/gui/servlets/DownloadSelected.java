@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.optimizationBenchmarking.gui.controller.Controller;
+import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.FSElement;
 import org.optimizationBenchmarking.gui.controller.Handle;
 
@@ -32,11 +33,11 @@ public final class DownloadSelected extends _FSDownloaderServlet {
     final ArrayList<FSElement> selected;
     Path chosen;
 
-    controller = ((Controller) (req.getSession()
-        .getAttribute(Controller.CONTROLLER_BEAN_NAME)));
+    controller = ControllerUtils.getController(req);
     if (controller != null) {
       try (final Handle handle = controller.createServletHandle()) {
-        selection = req.getParameterValues("select"); //$NON-NLS-1$
+        selection = req.getParameterValues(//
+            ControllerUtils.PARAMETER_SELECTION);
         if ((selection != null) && (selection.length > 0)) {
           root = controller.getRootDir();
           selected = new ArrayList<>();

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.optimizationBenchmarking.gui.controller.Controller;
+import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
 
@@ -31,8 +32,7 @@ public final class Viewer extends _FSDownloaderServlet {
     final String view;
     final Path path;
 
-    controller = ((Controller) (req.getSession()
-        .getAttribute(Controller.CONTROLLER_BEAN_NAME)));
+    controller = ControllerUtils.getController(req);
     if (controller != null) {
       try (final Handle handle = controller.createServletHandle()) {
         view = req.getParameter("view"); //$NON-NLS-1$

@@ -5,48 +5,10 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArraySetView" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <%
- final String submit = TextUtils.prepare(request.getParameter("submit"));
- 
- ControllerState cstate = null; 
- try(final Handle handle = controller.createJspHandle(pageContext)) {
-    if(submit != null) {
-      sub: switch(TextUtils.toLowerCase(submit)) {
-        case "cda": { // cd
-          controller.cdAbsolute(handle, request.getParameter("cd"));
-          break sub;
-        }
-        case "cd": { // relative cd
-          controller.cdRelative(handle, request.getParameter("cd"));
-          break sub;
-        }
-        case "ok": { // select          
-          String selectionValue = request.getParameter("withSelected");
-          if(selectionValue != null) {
-            switch(TextUtils.toLowerCase(selectionValue)) {
-              case  "remember": {
-                controller.select(handle, request.getParameterValues("select"));
-                break sub;
-                }
-              default: {
-                handle.failure("Unknown selection command '" + selectionValue + '\'' + '.');
-                break sub;
-                }
-              }
-            }
-            
-          handle.warning("OK button pressed, but nothing to do.");
-          break sub;
-        }
-        
-        default: {
-          handle.unknownSubmit(submit);
-        }
-      }
-    }
-    cstate = controller.getState(handle);
-  }
+ final ControllerState cstate = ControllerUtils.performRequest(request, pageContext); 
  if(cstate != null) {
 %>
 
@@ -60,7 +22,7 @@
 </p>
 </form>
 
-<form class="controller" method="get" action="#">
+<form id="mainForm" class="controller" method="get" action="#">
 <h2>Current Folder</h2>
 <table class="folderView">
 <tr class="folderViewHead">
@@ -106,7 +68,7 @@
     } %>
   <td class="folderViewName"<%= tag%>>
     <a <% if(element.getType().isFile()) { %>target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%><%
-    } else {%>href="?cd=<%= urlEncodedRelativePath%>&amp;submit=cda<% } %>"><%= elementName %></a>
+    } else {%>href="?cd=<%= urlEncodedRelativePath%>&amp;<%=ControllerUtils.INPUT_SUBMIT%>=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%><% } %>"><%= elementName %></a>
   </td>
   <% if (size >= 0L) {
        if(time < 0L) {
@@ -119,19 +81,20 @@
   <% if (time >= 0L) { %>
     <td class="folderViewTime"><%= element.getTimeString() %></td>
   <% } %>
-  <td class="folderViewSel"><input type="checkbox" name="select" value="<%= htmlEncodedRelativePath %>"/></td>
+  <td class="folderViewSel"><input type="checkbox" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
 </table>
 <p class="controllerActions">
 Selected element(s):
-<select name="withSelected">
-<option>remember</option>
+<select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange(this)">
+<option><%= ControllerUtils.COMMAND_REMEMBER%></option>
+<option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
+<option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 </select>
-<input type="submit" name="submit" value="OK" /><br/>
-or <input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadSelected" formatarget="_blank" /> it/them<br/>
-or use them as configuration(s) to <input type="submit" name="submit" value="execute" formmethod="get" formaction="/evaluator.jsp" /> the evaluator
+<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </p>
+<p id="mainDesc" class="actionDescription" />
 </form>
 
 <% ArraySetView<FSElement> selected = cstate.getSelected();
@@ -186,15 +149,75 @@ or use them as configuration(s) to <input type="submit" name="submit" value="exe
   <% if (time >= 0L) { %>
     <td class="folderViewTime"><%= element.getTimeString() %></td>
   <% } %>
-  <td class="folderViewSel"><input type="checkbox" name="select" value="<%= htmlEncodedRelativePath %>"/></td>
+  <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
 </table>
 <p class="controllerActions">
 Remembered elements:
-<input type="submit" name="submit" value="download" formmethod="get" formaction="/downloadRemembered" formatarget="_blank" />
+<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.COMMAND_DOWNLOAD%>" formmethod="get" formaction="/downloadRemembered" formatarget="_blank" />
 </p>
 </form>
 
 <% } %>
 <% } %>
+
+<script type="text/javascript">
+function onWithSelectionChange(selection) {
+  var form = null;
+  var desc = null;
+
+  if(selection != null) {
+    if(selection.id == "mainSelection") {
+      form = document.getElementById("mainForm");
+      desc = document.getElementById("mainDesc");
+    }
+  }
+
+  if(form != null) {
+    switch(String(selection.value)) {
+      case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
+        form.method = "get";
+        form.action = "/downloadSelected";
+        form.target = "_blank";
+        break;
+      }
+      case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {
+        form.method = "get";
+        form.action = "/evaluator.jsp";
+        form.target = "_self";      
+        break;
+      }      
+      default: {
+        form.method = "get";
+        form.action = "#";
+        form.target = "_self";
+      }
+    }
+  }
+ 
+  if(desc != null) {  
+    switch(String(selection.value)) {
+      case "<%= ControllerUtils.COMMAND_REMEMBER%>": {
+        desc.innerHTML = "Remember the selected files. The files will be listed at the bottom of the controller window. Remembering files allows you to pick files from different directories, e.g., for download, without having to choose the complete directories.";
+        break;
+      }
+      case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
+        desc.innerHTML = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
+        break;
+      }
+      case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {
+        desc.innerHTML = "The selected file must be a configuration file for an evaluation process. Then evaluation process will be started. It may take some time to finish. During this time, depending on the <a href='/logLevel.jsp'>log level</a> you set, you will receive information about what's going on. While the process is running, do not close or refresh the page. If you selected multiple configuration files, they will be processed one after the other.";      
+        break;
+      }      
+      default: {
+        desc.innerHTML = "";
+      }
+    }
+  }
+}
+
+window.onload = function() {
+  onWithSelectionChange(document.getElementById("mainSelection"));
+  }
+</script>

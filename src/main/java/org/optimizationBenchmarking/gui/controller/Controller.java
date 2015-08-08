@@ -24,9 +24,6 @@ public final class Controller implements Serializable {
   /** the serial version uid */
   private static final long serialVersionUID = 1L;
 
-  /** the name of the controller bean */
-  public static final String CONTROLLER_BEAN_NAME = "controller"; //$NON-NLS-1$
-
   /** the root path */
   private final Path m_root;
 
