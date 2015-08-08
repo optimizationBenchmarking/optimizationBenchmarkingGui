@@ -12,7 +12,6 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
-import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.TextOutputWriter;
 import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
@@ -150,8 +149,7 @@ final class _JspHandle extends Handle {
   private final ITextOutput __getEncoded() {
     if (this.m_encoded == null) {
       this.m_encoded = XMLCharTransformer.getInstance().transform(
-          new _JspWriterTextable(this.m_out),
-          TextUtils.DEFAULT_NORMALIZER_FORM);
+          new _JspWriterTextable(this.m_out));
     }
     return this.m_encoded;
   }

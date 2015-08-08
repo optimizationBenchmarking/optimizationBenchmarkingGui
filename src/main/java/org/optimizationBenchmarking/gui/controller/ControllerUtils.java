@@ -40,6 +40,8 @@ public final class ControllerUtils {
   public static final String COMMAND_DOWNLOAD = "download";//$NON-NLS-1$
   /** execute the evaluator */
   public static final String COMMAND_EXECUTE_EVALUATOR = "evaluate";//$NON-NLS-1$
+  /** edit a file */
+  public static final String COMMAND_EDIT = "edit as plain text";//$NON-NLS-1$
 
   /**
    * Get the controller
@@ -103,11 +105,9 @@ public final class ControllerUtils {
             if (selectionValue != null) {
               switch (TextUtils.toLowerCase(selectionValue)) {
                 case COMMAND_REMEMBER: {
-                  controller
-                  .select(
-                      handle,
-                      request
-                      .getParameterValues(ControllerUtils.PARAMETER_SELECTION));
+                  controller.select(handle,//
+                      request.getParameterValues(//
+                          ControllerUtils.PARAMETER_SELECTION));
                   break sub;
                 }
                 default: {

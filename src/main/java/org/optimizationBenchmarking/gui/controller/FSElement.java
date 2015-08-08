@@ -138,8 +138,7 @@ public class FSElement implements Comparable<FSElement> {
     if (this.m_sizeString == null) {
       if (this.m_size >= 0L) {
         mto = new MemoryTextOutput();
-        encoded = XMLCharTransformer.getInstance().transform(mto,
-            TextUtils.DEFAULT_NORMALIZER_FORM);
+        encoded = XMLCharTransformer.getInstance().transform(mto);
         TextUtils.appendFileSize(this.m_size, encoded);
         encoded.flush();
         this.m_sizeString = mto.toString();

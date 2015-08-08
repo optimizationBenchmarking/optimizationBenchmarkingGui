@@ -90,6 +90,7 @@ Selected element(s):
 <select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange(this)">
 <option><%= ControllerUtils.COMMAND_REMEMBER%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
+<option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 </select>
 <input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
@@ -187,7 +188,13 @@ function onWithSelectionChange(selection) {
         form.action = "/evaluator.jsp";
         form.target = "_self";      
         break;
-      }      
+      }
+      case "<%= ControllerUtils.COMMAND_EDIT%>": {
+        form.method = "get";
+        form.action = "/edit.jsp";
+        form.target = "_self";      
+        break;
+      }
       default: {
         form.method = "get";
         form.action = "#";
@@ -204,6 +211,10 @@ function onWithSelectionChange(selection) {
       }
       case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
         desc.innerHTML = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
+        break;
+      }
+      case "<%= ControllerUtils.COMMAND_EDIT%>": {
+        desc.innerHTML = "Edit the selected file(s) as text file (s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
         break;
       }
       case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {
