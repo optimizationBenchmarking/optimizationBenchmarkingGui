@@ -11,8 +11,7 @@ import org.optimizationBenchmarking.gui.controller.Result;
 import org.optimizationBenchmarking.gui.server.ServerInstance;
 import org.optimizationBenchmarking.gui.server.ServerInstanceBuilder;
 import org.optimizationBenchmarking.gui.server.ServerTool;
-import org.optimizationBenchmarking.gui.servlets.DownloadRemembered;
-import org.optimizationBenchmarking.gui.servlets.DownloadSelected;
+import org.optimizationBenchmarking.gui.servlets.Download;
 import org.optimizationBenchmarking.gui.servlets.Viewer;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
@@ -169,8 +168,7 @@ public final class ApplicationInstanceBuilder extends
    */
   private static final void __addServlets(
       final ServerInstanceBuilder builder) {
-    builder.addServlet(DownloadRemembered.class, "/downloadRemembered"); //$NON-NLS-1$
-    builder.addServlet(DownloadSelected.class, "/downloadSelected"); //$NON-NLS-1$
+    builder.addServlet(Download.class, "/download"); //$NON-NLS-1$
     builder.addServlet(Viewer.class, "/viewer"); //$NON-NLS-1$
   }
 

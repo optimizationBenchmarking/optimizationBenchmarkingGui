@@ -23,7 +23,7 @@ public final class ControllerUtils {
   public static final String COMMAND_CD_RELATIVE = "cd";//$NON-NLS-1$
 
   /** the path to cd to */
-  public static final String CD_PATH = "cd";//$NON-NLS-1$
+  public static final String PARAMETER_CD_PATH = "cd";//$NON-NLS-1$
 
   /** The choice what to do with the selected elements */
   public static final String PARAMETER_WITH_SELECTED = "withSelected";//$NON-NLS-1$
@@ -91,12 +91,12 @@ public final class ControllerUtils {
         sub: switch (TextUtils.prepare(submit)) {
           case COMMAND_CD_ABSOLUTE: { // cd
             controller.cdAbsolute(handle,
-                request.getParameter(ControllerUtils.CD_PATH));
+                request.getParameter(ControllerUtils.PARAMETER_CD_PATH));
             break sub;
           }
           case COMMAND_CD_RELATIVE: { // relative cd
             controller.cdRelative(handle,
-                request.getParameter(ControllerUtils.CD_PATH));
+                request.getParameter(ControllerUtils.PARAMETER_CD_PATH));
             break sub;
           }
           case BUTTON_OK: { // select

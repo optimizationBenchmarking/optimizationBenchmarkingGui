@@ -112,7 +112,7 @@ public final class Evaluation {
             Evaluator.getInstance().use().configure(config)
                 .setLogger(handle).create().run();
             handle.success(//
-                "The evaluation procedure has seemingly completed successfully.");//$NON-NLS-1$
+                "The evaluation procedure has been completed successfully (seemingly).");//$NON-NLS-1$
           } catch (final Throwable error) {
             handle.failure(//
                 "Failed to run evaluation process based on configuration file '" //$NON-NLS-1$

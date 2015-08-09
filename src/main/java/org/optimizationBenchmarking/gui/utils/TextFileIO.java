@@ -131,7 +131,6 @@ public final class TextFileIO {
   public static final void store(final String relPath,
       final Handle handle, final String contents) {
     final Path path;
-    final LineIterator iterator;
 
     path = handle.getController().resolve(handle, relPath, null);
     if (path != null) {
@@ -139,9 +138,8 @@ public final class TextFileIO {
         try (final OutputStream os = PathUtils.openOutputStream(path)) {
           try (final OutputStreamWriter osw = new OutputStreamWriter(os)) {
             try (final BufferedWriter bw = new BufferedWriter(osw)) {
-              iterator = new LineIterator(contents);
-              while (iterator.hasNext()) {
-                bw.write(iterator.next());
+              for (final String str : new LineIterator(contents)) {
+                bw.write(str);
                 bw.newLine();
               }
             }

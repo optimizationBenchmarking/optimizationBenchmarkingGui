@@ -6,6 +6,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +16,7 @@ import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
 
 /** A java servlet for viewing an element. */
-public final class Viewer extends _FSDownloaderServlet {
+public final class Viewer extends HttpServlet {
   /** the serial version uid */
   private static final long serialVersionUID = 1L;
 
