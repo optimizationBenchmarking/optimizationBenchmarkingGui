@@ -150,7 +150,8 @@ public final class Controller implements Serializable {
     path = this.m_current;
 
     for (;;) {
-      res = FSElement.addToCollection(root, root, path, collector, handle);
+      res = FSElement.changeCollection(true, root, root, path, collector,
+          handle);
       if (root.equals(path)) {
         break;
       }
@@ -301,15 +302,18 @@ public final class Controller implements Serializable {
   }
 
   /**
-   * Add some elements to the selection
+   * Add or remove some values from the selection
    *
+   * @param add
+   *          should we add the values ({@code true}) or remove them (
+   *          {@code false})
    * @param handle
    *          the handle
    * @param values
    *          the values to add
    */
-  public synchronized final void select(final Handle handle,
-      final String[] values) {
+  public synchronized final void select(final boolean add,
+      final Handle handle, final String[] values) {
     Path path;
     int added;
 
@@ -326,8 +330,8 @@ public final class Controller implements Serializable {
     for (final String string : values) {
       path = this.resolve(handle, string, this.m_root);
       if (path != null) {
-        if (FSElement.addToCollection(this.m_root, this.m_root, path,
-            this.m_selected, handle) > 0) {
+        if (FSElement.changeCollection(add, this.m_root, this.m_root,
+            path, this.m_selected, handle) > 0) {
           ++added;
         }
       }

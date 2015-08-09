@@ -31,7 +31,7 @@
 <th class="folderViewHead">name</th>
 <th class="folderViewHead">size</th>
 <th class="folderViewHead">changed</th>
-<th class="folderViewHead"/>
+<th class="folderViewHead"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
 </tr>
 
 <% for(FSElement element : cstate.getCurrent()) { 
@@ -85,6 +85,7 @@
   <td class="folderViewSel"><input type="checkbox" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
+<tr><td colspan="4" /><td><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', false)" value="&#x2610;"/></td></tr>
 </table>
 <p class="controllerActions">
 Selected element(s):
@@ -109,7 +110,7 @@ Selected element(s):
 <th class="folderViewHead">name</th>
 <th class="folderViewHead">size</th>
 <th class="folderViewHead">changed</th>
-<th class="folderViewHead" />
+<th class="folderViewHead"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
 </tr>
 
 <% for(FSElement element : selected) { 
@@ -154,10 +155,13 @@ Selected element(s):
   <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
+
+<tr><td colspan="4" /><td><input type="button" class="selButton" onclick="onSelButtonClick('remForm', false)" value="&#x2610;"/></td></tr>
 </table>
 <p class="controllerActions">
 Selected remembered element(s):
 <select id="remSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('rem', this)">
+<option><%= ControllerUtils.COMMAND_FORGET%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
 <option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
@@ -166,7 +170,6 @@ Selected remembered element(s):
 </p>
 <p id="remDesc" class="actionDescription" />
 </form>
-
 <% } %>
 <% } %>
 
@@ -215,6 +218,10 @@ function onWithSelectionChange(prefix, selection) {
           desc.innerHTML = "Remember the selected files. The files will be listed at the bottom of the controller window. Remembering files allows you to pick files from different directories, e.g., for download, without having to choose the complete directories.";
           break;
         }
+        case "<%= ControllerUtils.COMMAND_FORGET%>": {
+          desc.innerHTML = "Forget the remembered selected files. The files will be removed from the remembered selection.";
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
           desc.innerHTML = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
           break;
@@ -234,6 +241,24 @@ function onWithSelectionChange(prefix, selection) {
     }
   }
 }
+
+function onSelButtonClick(formId, value) {
+  var form = document.getElementById(formId);
+  if(form != null) {
+    var inputs  = document.getElementsByTagName("input");
+    if(inputs != null) {
+      for(i = inputs.length; (--i) >= 0; ) {
+        var input = inputs[i];
+        if(input.type == "checkbox") {
+          if(input.name == "<%=ControllerUtils.PARAMETER_SELECTION%>") {
+            input.checked = value;  
+          }
+        }
+      }
+    }
+  }
+}
+
 
 window.onload = function() {
   onWithSelectionChange("main", document.getElementById("mainSelection"));

@@ -76,3 +76,12 @@ p.actionDescription {
   margin-bottom: 0.7em;
   margin-top   : 0.35em;
 }
+
+input.selButton {
+  padding        : 0px;
+  background     : transparent;
+  border-style   : none;
+  border         : none;
+  text-shadow    : none;
+  text-decoration: none;
+}

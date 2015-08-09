@@ -36,6 +36,8 @@ public final class ControllerUtils {
 
   /** the command for remembering the selected elements */
   public static final String COMMAND_REMEMBER = "remember";//$NON-NLS-1$
+  /** the command for forgetting the selected elements */
+  public static final String COMMAND_FORGET = "forget";//$NON-NLS-1$
   /** the command for downloading the selected elements */
   public static final String COMMAND_DOWNLOAD = "download";//$NON-NLS-1$
   /** execute the evaluator */
@@ -105,7 +107,13 @@ public final class ControllerUtils {
             if (selectionValue != null) {
               switch (TextUtils.toLowerCase(selectionValue)) {
                 case COMMAND_REMEMBER: {
-                  controller.select(handle,//
+                  controller.select(true, handle,//
+                      request.getParameterValues(//
+                          ControllerUtils.PARAMETER_SELECTION));
+                  break sub;
+                }
+                case COMMAND_FORGET: {
+                  controller.select(false, handle,//
                       request.getParameterValues(//
                           ControllerUtils.PARAMETER_SELECTION));
                   break sub;

@@ -168,7 +168,7 @@ public class FSElement implements Comparable<FSElement> {
   public final String getTimeString() {
     if (this.m_timeString == null) {
       if (this.m_changeTime >= 0L) {
-        this.m_timeString = ESimpleDateFormat.DATE_TIME
+        this.m_timeString = ESimpleDateFormat.DATE_TIME_MIN
             .format(this.m_changeTime);
       }
     }
@@ -229,8 +229,11 @@ public class FSElement implements Comparable<FSElement> {
   }
 
   /**
-   * Add the given path to the set
+   * Add/remove the given path to the set
    *
+   * @param add
+   *          should we add the element ({@code true}) or remove it (
+   *          {@code false}?
    * @param root
    *          the overall root
    * @param listRoot
@@ -246,9 +249,10 @@ public class FSElement implements Comparable<FSElement> {
    * @return {@code 1} if adding the path changed the set, {@code 0}
    *         otherwise, {@code -1} if the element could not be found
    */
-  static final int _addToCollection(final Path root, final Path listRoot,
-      final Path path, final BasicFileAttributes attrs,
-      final Collection<FSElement> set, final Handle handle) {
+  static final int _changeCollection(final boolean add, final Path root,
+      final Path listRoot, final Path path,
+      final BasicFileAttributes attrs, final Collection<FSElement> set,
+      final Handle handle) {
     final EFSElementType type;
     final FSElement el;
     Path use;
@@ -315,7 +319,7 @@ public class FSElement implements Comparable<FSElement> {
 
       el = new FSElement(use, name, relativePath, type, size, time);
       synchronized (set) {
-        return (set.add(el) ? 1 : 0);
+        return ((add ? set.add(el) : set.remove(el)) ? 1 : 0);
       }
     }
     if (handle != null) {
@@ -327,8 +331,11 @@ public class FSElement implements Comparable<FSElement> {
   }
 
   /**
-   * Add the given path to the set
+   * Add or remove the given path to the set
    *
+   * @param add
+   *          should we add the element ({@code true}) or remove it (
+   *          {@code false}?
    * @param root
    *          the overall root
    * @param listRoot
@@ -339,11 +346,12 @@ public class FSElement implements Comparable<FSElement> {
    *          the set
    * @param handle
    *          the handle
-   * @return {@code 1} if adding the path changed the set, {@code 0}
-   *         otherwise, {@code -1} if the element could not be found
+   * @return {@code 1} if adding/removing the path changed the set,
+   *         {@code 0} otherwise, {@code -1} if the element could not be
+   *         found
    */
-  public static final int addToCollection(final Path root,
-      final Path listRoot, final Path path,
+  public static final int changeCollection(final boolean add,
+      final Path root, final Path listRoot, final Path path,
       final Collection<FSElement> set, final Handle handle) {
     BasicFileAttributes attrs;
     Throwable caught;
@@ -366,8 +374,8 @@ public class FSElement implements Comparable<FSElement> {
       return (-1);
     }
 
-    return FSElement._addToCollection(root, listRoot, path, attrs, set,
-        handle);
+    return FSElement._changeCollection(add, root, listRoot, path, attrs,
+        set, handle);
   }
 
   /**
@@ -435,7 +443,7 @@ public class FSElement implements Comparable<FSElement> {
     if (col != null) {
       up = start.getParent();
       if ((up != null) && (up.startsWith(root))) {
-        FSElement.addToCollection(root, start, up,//
+        FSElement.changeCollection(true, root, start, up,//
             col.m_elements, handle);
       }
 
@@ -483,8 +491,8 @@ public class FSElement implements Comparable<FSElement> {
         final BasicFileAttributes attrs) {
       if ((dir != null)
           && (attrs != null)
-          && (FSElement._addToCollection(this.m_root, this.m_start, dir,
-              attrs, this.m_elements, this.m_handle) > 0)) {
+          && (FSElement._changeCollection(true, this.m_root, this.m_start,
+              dir, attrs, this.m_elements, this.m_handle) > 0)) {
         return FileVisitResult.CONTINUE;
       }
       return FileVisitResult.SKIP_SUBTREE;
@@ -495,8 +503,8 @@ public class FSElement implements Comparable<FSElement> {
     public final FileVisitResult visitFile(final Path file,
         final BasicFileAttributes attrs) {
       if ((file != null) && (attrs != null)) {
-        FSElement._addToCollection(this.m_root, this.m_start, file, attrs,
-            this.m_elements, this.m_handle);
+        FSElement._changeCollection(true, this.m_root, this.m_start, file,
+            attrs, this.m_elements, this.m_handle);
       }
       return FileVisitResult.CONTINUE;
     }
