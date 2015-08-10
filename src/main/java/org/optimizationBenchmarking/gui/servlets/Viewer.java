@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
+import org.optimizationBenchmarking.gui.utils.Header;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
 
 /** A java servlet for viewing an element. */
@@ -44,6 +45,7 @@ public final class Viewer extends HttpServlet {
               if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
                 resp.setContentType(MimeTypeDetector.getInstance()
                     .getMimeType(path));
+                Header.defaultHeader(resp);
                 Files.copy(path, resp.getOutputStream());
                 handle.success("Successfully provided file '" + //$NON-NLS-1$
                     view + '\'' + '.');

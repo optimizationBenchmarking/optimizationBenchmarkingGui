@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
+import org.optimizationBenchmarking.gui.utils.Header;
 import org.optimizationBenchmarking.utils.io.EArchiveType;
 import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
@@ -178,6 +179,7 @@ public final class Download extends HttpServlet {
       if (Files.isRegularFile(done, LinkOption.NOFOLLOW_LINKS)) {
         response.setContentType(MimeTypeDetector.getInstance()
             .getMimeType(done));
+        Header.defaultHeader(response);
         response
             .setHeader(
                 "Content-Disposition", //$NON-NLS-1$
@@ -200,6 +202,7 @@ public final class Download extends HttpServlet {
     }
 
     response.setContentType("application/zip"); //$NON-NLS-1$
+    Header.defaultHeader(response);
     response.setHeader("Content-Disposition", //$NON-NLS-1$
         "attachment; filename=\"" + name + '"');//$NON-NLS-1$
     EArchiveType.ZIP.compressPathsToStream(elements, root,
