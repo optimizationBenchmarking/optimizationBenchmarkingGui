@@ -3,8 +3,10 @@ package org.optimizationBenchmarking.gui.controller;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -261,7 +263,7 @@ public final class Controller implements Serializable {
   }
 
   /**
-   * Change the current working directory.
+   * Change the current working directory, create a new one if necessary.
    *
    * @param handle
    *          the handle
@@ -272,23 +274,42 @@ public final class Controller implements Serializable {
    */
   private final void __cd(final Handle handle, final Path root,
       final String relPath) {
-    final Path p;
-    boolean isDir;
+    final Path path;
+    final BasicFileAttributes bfa;
+    boolean isDir, doesNotExist;
     Throwable caught;
 
-    p = this.resolve(handle, relPath, root);
-    if (p != null) {
+    path = this.resolve(handle, relPath, root);
+    if (path != null) {
 
-      isDir = false;
+      doesNotExist = isDir = false;
       caught = null;
       try {
-        isDir = Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS);
+        bfa = Files.readAttributes(path, BasicFileAttributes.class,
+            LinkOption.NOFOLLOW_LINKS);
+        isDir = bfa.isDirectory();
+      } catch (final NoSuchFileException ignore) {
+        doesNotExist = true;
       } catch (final Throwable error) {
         caught = error;
         isDir = false;
       }
+
+      if (doesNotExist) {
+        try {
+          Files.createDirectories(path);
+          isDir = true;
+          handle.info("Directory '" + relPath + //$NON-NLS-1$
+              "' did not exist and was created.");//$NON-NLS-1$
+        } catch (final Throwable error) {
+          handle.failure("Directory '" + relPath + //$NON-NLS-1$
+              "' does not exist and could not be created."); //$NON-NLS-1$
+          return;
+        }
+      }
+
       if (isDir && (caught == null)) {
-        this.m_current = p;
+        this.m_current = path;
         handle.success("Succeeded in setting the current path to '" //$NON-NLS-1$
             + relPath + "'. The full path is now '" + //$NON-NLS-1$
             this.m_root.relativize(this.m_current).toString() + //

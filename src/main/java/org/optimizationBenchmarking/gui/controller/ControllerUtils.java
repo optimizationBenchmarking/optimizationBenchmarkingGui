@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
+import org.optimizationBenchmarking.gui.utils.FileIO;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 
@@ -44,6 +45,8 @@ public final class ControllerUtils {
   public static final String COMMAND_EXECUTE_EVALUATOR = "evaluate";//$NON-NLS-1$
   /** edit a file */
   public static final String COMMAND_EDIT = "edit as plain text";//$NON-NLS-1$
+  /** delete a file or path */
+  public static final String COMMAND_DELETE = "delete";//$NON-NLS-1$
 
   /**
    * Get the controller
@@ -116,6 +119,11 @@ public final class ControllerUtils {
                   controller.select(false, handle,//
                       request.getParameterValues(//
                           ControllerUtils.PARAMETER_SELECTION));
+                  break sub;
+                }
+                case COMMAND_DELETE: {
+                  FileIO.delete(request.getParameterValues(//
+                      ControllerUtils.PARAMETER_SELECTION), handle);
                   break sub;
                 }
                 default: {

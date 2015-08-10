@@ -2,7 +2,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.TextFileIO" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.FileIO" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
 <h1>Edit as Plain Text</h1>
@@ -20,7 +20,7 @@ if(submit != null) {
 <% }
   try(final Handle handle = controller.createJspHandle(pageContext)) {
     if(submit.equalsIgnoreCase(ControllerUtils.BUTTON_OK)) {
-      texts = TextFileIO.load(relPaths, handle);
+      texts = FileIO.load(relPaths, handle);
     } else {
       handle.unknownSubmit(submit);
     }

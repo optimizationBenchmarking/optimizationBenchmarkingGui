@@ -18,9 +18,10 @@
 <p class="breadcrumps">
   <%
   for(FSElement element : cstate.getPath()) { %>
-    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(element.getRelativePath())%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a> / <% } %>
+    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(element.getRelativePath())%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
 <input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="submit" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />
 </p>
+<p class="actionDescription"><code><%= ControllerUtils.COMMAND_CD_RELATIVE%></code> will create a new directory if necessary.</p>
 </form>
 
 <form id="mainForm" class="controller" method="get" action="#">
@@ -94,6 +95,7 @@ Selected element(s):
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
 <option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
+<option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
 <input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </p>
@@ -165,6 +167,7 @@ Selected remembered element(s):
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
 <option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
+<option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
 <input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </p>
@@ -233,7 +236,11 @@ function onWithSelectionChange(prefix, selection) {
         case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {
           desc.innerHTML = "The selected file must be a configuration file for an evaluation process. Then evaluation process will be started. It may take some time to finish. During this time, depending on the <a href='/logLevel.jsp'>log level</a> you set, you will receive information about what's going on. While the process is running, do not close or refresh the page. If you selected multiple configuration files, they will be processed one after the other.";      
           break;
-        }      
+        }  
+        case "<%= ControllerUtils.COMMAND_DELETE%>": {
+          desc.innerHTML = "Delete the selected items. If a folder is deleted, all files and folders therein are deleted recursively. Handle with care.";      
+          break;
+        }         
         default: {
           desc.innerHTML = "";
         }
@@ -245,7 +252,7 @@ function onWithSelectionChange(prefix, selection) {
 function onSelButtonClick(formId, value) {
   var form = document.getElementById(formId);
   if(form != null) {
-    var inputs  = document.getElementsByTagName("input");
+    var inputs  = form.getElementsByTagName("input");
     if(inputs != null) {
       for(i = inputs.length; (--i) >= 0; ) {
         var input = inputs[i];

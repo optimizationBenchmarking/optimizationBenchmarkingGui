@@ -1,7 +1,7 @@
 <%@include file="/includes/defaultHeader.jsp" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.TextFileIO" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.FileIO" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
 <h1>Save Plain Text File</h1>
@@ -11,7 +11,7 @@ try(final Handle handle = controller.createJspHandle(pageContext)) {
   if(submit.equalsIgnoreCase("Save")) {
     final String path = request.getParameter("path");
     if(path != null) {
-      TextFileIO.store(path, handle, request.getParameter("contents"));
+      FileIO.store(path, handle, request.getParameter("contents"));
     } else {
       handle.failure("No path provided.");
     }    
