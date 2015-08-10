@@ -17,11 +17,17 @@
 <h2>Path</h2>
 <p class="breadcrumps">
   <%
-  for(FSElement element : cstate.getPath()) { %>
-    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(element.getRelativePath())%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
-<input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="submit" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />
+  String currentDir = null;
+  for(FSElement element : cstate.getPath()) {
+     currentDir = element.getRelativePath(); %>  
+    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
+<input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_NEW_FILE%>" formaction="/edit.jsp" />
 </p>
-<p class="actionDescription"><code><%= ControllerUtils.COMMAND_CD_RELATIVE%></code> will create a new directory if necessary.</p>
+<p class="actionDescription">
+<code><%= ControllerUtils.COMMAND_CD_RELATIVE%></code> will create a new directory if necessary.
+<code><%= ControllerUtils.COMMAND_NEW_FILE%></code> creates a new file (if it does not exist yet) and opens it as text file in the editor.
+</p>
+<input type="hidden" name="<%= ControllerUtils.INPUT_CURRENT_DIR%>" value="<%= Encoder.htmlEncode(currentDir)%>" />
 </form>
 
 <form id="mainForm" class="controller" method="get" action="#">

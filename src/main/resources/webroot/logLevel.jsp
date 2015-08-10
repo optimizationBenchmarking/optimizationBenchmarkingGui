@@ -46,7 +46,7 @@ Choose log levels:
 <option<% if("INFO".equals(currentLevel))    { %> selected="selected"<% } %>>INFO</option>
 <option<% if("SUCCESS".equals(currentLevel)) { %> selected="selected"<% } %>>SUCCESS</option><br/>
 </select><br/>
-<input type=submit name="submit" value="OK">
+<input type="submit" name="submit" value="OK">
 </form>
 
 </p>

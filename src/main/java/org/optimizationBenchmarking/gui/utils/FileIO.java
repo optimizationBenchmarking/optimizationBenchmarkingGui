@@ -25,17 +25,21 @@ public final class FileIO {
   /**
    * Load a set of files
    *
+   * @param basePath
+   *          the base path
    * @param relPaths
    *          the paths
    * @param handle
    *          the handle
    * @return the file's contents
    */
-  public static final String[] load(final String[] relPaths,
-      final Handle handle) {
+  public static final String[] load(final String basePath,
+      final String[] relPaths, final Handle handle) {
     final String[] res;
     final MemoryTextOutput mto;
     final ITextOutput encoded;
+    final Controller controller;
+    Path root;
     int i;
 
     if (relPaths == null) {
@@ -49,12 +53,18 @@ public final class FileIO {
       return null;
     }
 
+    controller = handle.getController();
+    root = controller.getRootDir();
+    if (basePath != null) {
+      root = controller.resolve(handle, basePath, root);
+    }
+
     res = new String[i];
     mto = new MemoryTextOutput();
     encoded = XMLCharTransformer.getInstance().transform(mto);
 
     for (i = 0; i < res.length; i++) {
-      if (FileIO.__load(relPaths[i], handle, encoded)) {
+      if (FileIO.__load(root, relPaths[i], handle, encoded)) {
         encoded.flush();
         mto.flush();
         res[i] = mto.toString();
@@ -68,6 +78,8 @@ public final class FileIO {
   /**
    * Load a file
    *
+   * @param root
+   *          the root path against which files are resolved
    * @param relPath
    *          the path
    * @param handle
@@ -76,12 +88,12 @@ public final class FileIO {
    *          the text output
    * @return {@code true} on success, {@code false} on failure
    */
-  private static final boolean __load(final String relPath,
-      final Handle handle, final ITextOutput mto) {
+  private static final boolean __load(final Path root,
+      final String relPath, final Handle handle, final ITextOutput mto) {
     final Path path, parent;
     String string;
 
-    path = handle.getController().resolve(handle, relPath, null);
+    path = handle.getController().resolve(handle, relPath, root);
     if (path != null) {
       try {
         // ensure that file exists

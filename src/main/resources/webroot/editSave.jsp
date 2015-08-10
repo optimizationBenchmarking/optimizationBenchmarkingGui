@@ -8,8 +8,8 @@
 <%
 try(final Handle handle = controller.createJspHandle(pageContext)) {
   final String submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
-  if(submit.equalsIgnoreCase("Save")) {
-    final String path = request.getParameter("path");
+  if(submit.equalsIgnoreCase("save")) {
+    final String path = request.getParameter(ControllerUtils.PARAMETER_SELECTION);
     if(path != null) {
       FileIO.store(path, handle, request.getParameter("contents"));
     } else {

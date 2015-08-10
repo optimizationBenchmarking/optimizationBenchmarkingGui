@@ -16,6 +16,8 @@ public final class ControllerUtils {
 
   /** the name of the submit buttons */
   public static final String INPUT_SUBMIT = "submit";//$NON-NLS-1$
+  /** the name of the current dir parameter */
+  public static final String INPUT_CURRENT_DIR = "current";//$NON-NLS-1$
 
   /** change to an absolute directory path */
   public static final String COMMAND_CD_ABSOLUTE = "cda";//$NON-NLS-1$
@@ -47,6 +49,8 @@ public final class ControllerUtils {
   public static final String COMMAND_EDIT = "edit as plain text";//$NON-NLS-1$
   /** delete a file or path */
   public static final String COMMAND_DELETE = "delete";//$NON-NLS-1$
+  /** create a new text file */
+  public static final String COMMAND_NEW_FILE = "new";//$NON-NLS-1$
 
   /**
    * Get the controller
@@ -101,6 +105,7 @@ public final class ControllerUtils {
           }
           case COMMAND_CD_RELATIVE: { // relative cd
             controller.cdRelative(handle,
+                request.getParameter(ControllerUtils.INPUT_CURRENT_DIR),//
                 request.getParameter(ControllerUtils.PARAMETER_CD_PATH));
             break sub;
           }

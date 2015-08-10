@@ -254,12 +254,18 @@ public final class Controller implements Serializable {
    *
    * @param handle
    *          the handle
+   * @param current
+   *          the current directory
    * @param relPath
    *          the relative path
    */
   public synchronized final void cdRelative(final Handle handle,
-      final String relPath) {
-    this.__cd(handle, this.m_current, relPath);
+      final String current, final String relPath) {
+    final Path cur;
+    cur = this.resolve(handle, current, this.m_root);
+    if (cur != null) {
+      this.__cd(handle, cur, relPath);
+    }
   }
 
   /**
