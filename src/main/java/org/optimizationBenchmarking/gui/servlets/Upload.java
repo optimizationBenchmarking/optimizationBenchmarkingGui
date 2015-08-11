@@ -83,13 +83,20 @@ public final class Upload extends HttpServlet {
    */
   private static final void __upload(final Part part, final Path dest,
       final Handle handle) {
-    final String name;
     final Path relPath, destPath;
     final EArchiveType zip;
-    String type, str;
+    String type, str, name;
     boolean isZip;
 
     name = part.getSubmittedFileName();
+    if ((name == null) || (name.length() <= 0)) {
+      if (part.getSize() <= 0L) {
+        handle.warning(//
+            "Message part does not represent file, nothing to do."); //$NON-NLS-1$
+        return;
+      }
+      name = "unknown"; //$NON-NLS-1$
+    }
     relPath = Paths.get(name);
 
     zip = EArchiveType.ZIP;

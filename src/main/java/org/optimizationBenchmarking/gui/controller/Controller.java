@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,6 +145,9 @@ public final class Controller implements Serializable {
   public synchronized final ControllerState getState(final Handle handle) {
     final HashSet<FSElement> collector;
     final Path root;
+    Throwable caught;
+    FSElement ele;
+    Iterator<FSElement> it;
     Path path;
     int res;
 
@@ -168,6 +172,26 @@ public final class Controller implements Serializable {
             + root.relativize(path).toString() + '\'' + '.');
         this.m_current = path;
       }
+    }
+
+    it = this.m_selected.iterator();
+    looper: while (it.hasNext()) {
+      caught = null;
+      ele = it.next();
+      try {
+        if (Files.exists(ele._getPath(), LinkOption.NOFOLLOW_LINKS)) {
+          continue looper;
+        }
+      } catch (final Throwable error) {
+        caught = error;
+      }
+      it.remove();
+      handle
+          .log(
+              Level.WARNING,
+              "Element '" + ele.getRelativePath() + //$NON-NLS-1$
+                  "' seemingly does not exist anymore - removing it from the set of remembered elements.", //$NON-NLS-1$
+              caught);
     }
 
     return new ControllerState(//

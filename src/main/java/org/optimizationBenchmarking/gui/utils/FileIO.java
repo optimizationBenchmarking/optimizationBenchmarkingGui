@@ -207,7 +207,7 @@ public final class FileIO {
         }
         try {
           PathUtils.delete(path);
-          handle.success("Path '" + relPaths[i] + //$NON-NLS-1$
+          handle.success("Element '" + relPaths[i] + //$NON-NLS-1$
               "' has been deleted."); //$NON-NLS-1$
         } catch (final Throwable error) {
           handle.failure(((("Failed to delete path '" //$NON-NLS-1$
