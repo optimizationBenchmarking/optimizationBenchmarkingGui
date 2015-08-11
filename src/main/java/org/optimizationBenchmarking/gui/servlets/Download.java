@@ -32,7 +32,7 @@ public final class Download extends HttpServlet {
 
   /** {@inheritDoc} */
   @Override
-  protected void doGet(final HttpServletRequest req,
+  protected final void doGet(final HttpServletRequest req,
       final HttpServletResponse resp) throws ServletException, IOException {
     final Controller controller;
     final String[] selection;

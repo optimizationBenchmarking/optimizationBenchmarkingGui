@@ -23,9 +23,13 @@
     <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
 <input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_NEW_FILE%>" formaction="/edit.jsp" />
 </p>
+<p>
+<input type="file" name="<%= ControllerUtils.PARAMETER_FILES%>" multiple />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_UPLOAD%>" formmethod="post" formaction="/upload" formenctype="multipart/form-data" />
+</p>
 <p class="actionDescription">
 <code><%= ControllerUtils.COMMAND_CD_RELATIVE%></code> will create a new directory if necessary.
 <code><%= ControllerUtils.COMMAND_NEW_FILE%></code> creates a new file (if it does not exist yet) and opens it as text file in the editor.
+<code><%= ControllerUtils.COMMAND_UPLOAD%></code> uploads a set of files. Uploaded <code>zip</code> archives are automatically extracted.
 </p>
 <input type="hidden" name="<%= ControllerUtils.INPUT_CURRENT_DIR%>" value="<%= Encoder.htmlEncode(currentDir)%>" />
 </form>

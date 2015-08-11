@@ -1,6 +1,7 @@
 package org.optimizationBenchmarking.gui.server;
 
 import java.io.Closeable;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -23,8 +24,14 @@ public final class ServerInstance extends ToolJob implements Closeable {
   /** the connector */
   ServerConnector m_connector;
 
-  /** the temp folder */
+  /** the temp folder (used for the generated classes) */
   private TempDir m_temp;
+
+  /** the second temp folder (used for uploads) */
+  private TempDir m_temp2;
+
+  /** the shutdown hook */
+  private __Shutdown m_shutdown;
 
   /** the web application context */
   private WebAppContext m_webApp;
@@ -40,7 +47,9 @@ public final class ServerInstance extends ToolJob implements Closeable {
    * @param logger
    *          the logger
    * @param temp
-   *          the temp directory
+   *          the temp directory (used for the generated classes)
+   * @param temp2
+   *          the second temp directory (used for uploads)
    * @param server
    *          the server
    * @param connector
@@ -49,13 +58,24 @@ public final class ServerInstance extends ToolJob implements Closeable {
    *          the web application
    */
   ServerInstance(final Logger logger, final TempDir temp,
-      final org.eclipse.jetty.server.Server server,
+      final TempDir temp2, final org.eclipse.jetty.server.Server server,
       final ServerConnector connector, final WebAppContext webApp) {
     super(logger);
     this.m_temp = temp;
+    this.m_temp2 = temp2;
     this.m_server = server;
     this.m_connector = connector;
     this.m_webApp = webApp;
+
+    __Shutdown sd;
+
+    sd = new __Shutdown(this);
+    try {
+      Runtime.getRuntime().addShutdownHook(sd);
+    } catch (final Throwable error) {
+      sd = null;
+    }
+    this.m_shutdown = sd;
   }
 
   /**
@@ -145,26 +165,31 @@ public final class ServerInstance extends ToolJob implements Closeable {
   /** {@inheritDoc} */
   @Override
   public final void close() {
-    final Logger log;
-    final org.eclipse.jetty.server.Server server;
-    final ServerConnector connector;
-    final TempDir temp;
-    final WebAppContext context;
+    Logger log;
+    org.eclipse.jetty.server.Server server;
+    ServerConnector connector;
+    TempDir temp, temp2;
+    WebAppContext context;
+    __Shutdown sd;
     Object error;
 
     synchronized (this) {
       temp = this.m_temp;
-      server = this.m_server;
-      connector = this.m_connector;
-      context = this.m_webApp;
       this.m_temp = null;
+      temp2 = this.m_temp2;
+      this.m_temp2 = null;
+      server = this.m_server;
       this.m_server = null;
+      connector = this.m_connector;
       this.m_connector = null;
+      context = this.m_webApp;
       this.m_webApp = null;
+      sd = this.m_shutdown;
+      this.m_shutdown = null;
     }
 
     if ((server == null) && (connector == null) && (temp == null)
-        && (context == null)) {
+        && (temp2 == null) && (context == null) && (sd == null)) {
       return;
     }
 
@@ -175,6 +200,17 @@ public final class ServerInstance extends ToolJob implements Closeable {
     }
 
     error = null;
+
+    if (sd != null) {
+      try {
+        Runtime.getRuntime().removeShutdownHook(sd);
+      } catch (final Throwable err) {
+        error = err;
+      } finally {
+        sd = null;
+      }
+    }
+
     if (server != null) {
       try {
         try {
@@ -184,7 +220,9 @@ public final class ServerInstance extends ToolJob implements Closeable {
           server.destroy();
         }
       } catch (final Throwable err) {
-        error = err;
+        ErrorUtils.aggregateError(error, err);
+      } finally {
+        server = null;
       }
     }
 
@@ -193,6 +231,8 @@ public final class ServerInstance extends ToolJob implements Closeable {
         connector.close();
       } catch (final Throwable err) {
         ErrorUtils.aggregateError(error, err);
+      } finally {
+        connector = null;
       }
     }
 
@@ -201,6 +241,8 @@ public final class ServerInstance extends ToolJob implements Closeable {
         context.destroy();
       } catch (final Throwable err) {
         ErrorUtils.aggregateError(error, err);
+      } finally {
+        context = null;
       }
     }
 
@@ -209,6 +251,18 @@ public final class ServerInstance extends ToolJob implements Closeable {
         temp.close();
       } catch (final Throwable err) {
         ErrorUtils.aggregateError(error, err);
+      } finally {
+        temp = null;
+      }
+    }
+
+    if (temp2 != null) {
+      try {
+        temp2.close();
+      } catch (final Throwable err) {
+        ErrorUtils.aggregateError(error, err);
+      } finally {
+        temp2 = null;
       }
     }
 
@@ -219,6 +273,35 @@ public final class ServerInstance extends ToolJob implements Closeable {
     } else {
       if ((log != null) && (log.isLoggable(Level.INFO))) {
         log.info("Web server successfully shut down."); //$NON-NLS-1$
+      }
+    }
+  }
+
+  /** the shutdown hook */
+  private static final class __Shutdown extends Thread {
+
+    /** the reference to the instance */
+    private final WeakReference<ServerInstance> m_ref;
+
+    /**
+     * create
+     *
+     * @param inst
+     *          the server instance
+     */
+    __Shutdown(final ServerInstance inst) {
+      super();
+      this.m_ref = new WeakReference<>(inst);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("resource")
+    @Override
+    public final void run() {
+      final ServerInstance inst;
+      inst = this.m_ref.get();
+      if (inst != null) {
+        inst.close();
       }
     }
   }

@@ -7,11 +7,14 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.optimizationBenchmarking.gui.controller.Result;
 import org.optimizationBenchmarking.gui.server.ServerInstance;
 import org.optimizationBenchmarking.gui.server.ServerInstanceBuilder;
 import org.optimizationBenchmarking.gui.server.ServerTool;
 import org.optimizationBenchmarking.gui.servlets.Download;
+import org.optimizationBenchmarking.gui.servlets.Upload;
 import org.optimizationBenchmarking.gui.servlets.Viewer;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
@@ -169,6 +172,8 @@ public final class ApplicationInstanceBuilder extends
   private static final void __addServlets(
       final ServerInstanceBuilder builder) {
     builder.addServlet(Download.class, "/download"); //$NON-NLS-1$
+    builder.addServlet(Upload.class, "/upload", //$NON-NLS-1$
+        new MultipartConfigElement(null, -1L, -1L, (16 * 1024 * 1024)));
     builder.addServlet(Viewer.class, "/viewer"); //$NON-NLS-1$
   }
 

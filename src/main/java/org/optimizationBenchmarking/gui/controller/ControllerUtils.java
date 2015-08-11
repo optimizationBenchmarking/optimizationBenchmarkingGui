@@ -33,6 +33,8 @@ public final class ControllerUtils {
 
   /** The selection array parameter */
   public static final String PARAMETER_SELECTION = "select";//$NON-NLS-1$
+  /** The files array parameter */
+  public static final String PARAMETER_FILES = "files[]";//$NON-NLS-1$
 
   /** the name of the ok button */
   public static final String BUTTON_OK = "OK";//$NON-NLS-1$
@@ -51,6 +53,8 @@ public final class ControllerUtils {
   public static final String COMMAND_DELETE = "delete";//$NON-NLS-1$
   /** create a new text file */
   public static final String COMMAND_NEW_FILE = "new";//$NON-NLS-1$
+  /** the command for uploading the selected elements */
+  public static final String COMMAND_UPLOAD = "upload";//$NON-NLS-1$
 
   /**
    * Get the controller

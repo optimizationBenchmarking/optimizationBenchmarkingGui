@@ -3,14 +3,14 @@ package org.optimizationBenchmarking.gui.server;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.tomcat.InstanceManager;
@@ -60,10 +60,7 @@ public final class ServerInstanceBuilder extends
   private String m_webRoot;
 
   /** the list of servlets */
-  private LinkedHashMap<Class<? extends HttpServlet>, String> m_servlets;
-
-  /** the used servlet paths */
-  private HashSet<String> m_usedPaths;
+  private ArrayList<_Servlet> m_servlets;
 
   /** the attributes */
   private HashMap<String, Object> m_attributes;
@@ -72,9 +69,7 @@ public final class ServerInstanceBuilder extends
   ServerInstanceBuilder() {
     super();
     this.m_port = ServerInstanceBuilder.DEFAULT_PORT;
-    this.m_servlets = new LinkedHashMap<>();
-    this.m_usedPaths = new HashSet<>();
-    this.m_usedPaths.add("/"); //$NON-NLS-1$
+    this.m_servlets = new ArrayList<>();
 
     this.m_attributes = new HashMap<>();
     // block some attributes
@@ -191,44 +186,34 @@ public final class ServerInstanceBuilder extends
   }
 
   /**
+   * Add a servlet
+   *
+   * @param clazz
+   *          the servlet class
+   * @param path
+   *          the path of the servlet
+   */
+  public final void addServlet(final Class<? extends HttpServlet> clazz,
+      final String path) {
+    this.addServlet(clazz, path, null);
+  }
+
+  /**
    * Add servlet
    *
    * @param clazz
-   *          the clazz of the servlet
+   *          the servlet class
    * @param path
-   *          the path to the servlet
+   *          the path of the servlet
+   * @param multipart
+   *          the multi-part configuration, if any ({@code null} if the
+   *          servlet is not multi-part enabled)
    */
   public synchronized final void addServlet(
-      final Class<? extends HttpServlet> clazz, final String path) {
-    final String prep;
-
-    if (clazz == null) {
-      throw new IllegalArgumentException(//
-          "Servlet class must be instance of HttpServlet, but is " //$NON-NLS-1$
-              + TextUtils.className(clazz));
-    }
-
-    prep = TextUtils.prepare(path);
-    if (prep == null) {
-      throw new IllegalArgumentException(//
-          "Path to servlet cannot be empty, null, or just consist of white space, but is '"//$NON-NLS-1$
-              + path + '\'');
-    }
-
+      final Class<? extends HttpServlet> clazz, final String path,
+      final MultipartConfigElement multipart) {
     this.__checkCreated();
-
-    if (!(this.m_usedPaths.add(prep))) {
-      throw new IllegalArgumentException(//
-          "Path '" + path + "' is already assigned to a servlet.");//$NON-NLS-1$//$NON-NLS-2$
-    }
-
-    if (this.m_servlets.get(clazz) != null) {
-      throw new IllegalArgumentException(//
-          "Servlet '" //$NON-NLS-1$
-              + TextUtils.className(clazz) + //
-              "' is already assigned to a path.");//$NON-NLS-1$
-    }
-    this.m_servlets.put(clazz, prep);
+    this.m_servlets.add(new _Servlet(clazz, path, multipart));
   }
 
   /**
@@ -251,13 +236,18 @@ public final class ServerInstanceBuilder extends
   @SuppressWarnings("resource")
   private static final ServerInstance __create(final Logger logger,
       final int port, final String webRoot,
-      final LinkedHashMap<Class<? extends HttpServlet>, String> servlets,
+      final ArrayList<_Servlet> servlets,
       final HashMap<String, Object> attributes) throws Exception {
     final String baseURI;
     final TempDir temp;
     final org.eclipse.jetty.server.Server server;
     final ServerConnector connector;
     final WebAppContext context;
+    MultipartConfigElement mpce;
+    TempDir temp2;
+    ServletHolder holder;
+    String path;
+    int threshold;
 
     if (webRoot == null) {
       throw new IllegalStateException("You must set the web root."); //$NON-NLS-1$
@@ -268,6 +258,7 @@ public final class ServerInstanceBuilder extends
     }
 
     temp = new TempDir();
+    temp2 = null;
 
     try {
 
@@ -315,9 +306,26 @@ public final class ServerInstanceBuilder extends
             context.addServlet(ServerInstanceBuilder.__jspServletHolder(),
                 "*.jsp");//$NON-NLS-1$
 
-            for (final Map.Entry<Class<? extends HttpServlet>, String> entry : servlets
-                .entrySet()) {
-              context.addServlet(entry.getKey(), entry.getValue());
+            for (final _Servlet servlet : servlets) {
+              holder = new ServletHolder(servlet.m_clazz);
+              context.addServlet(holder, servlet.m_path);
+              mpce = servlet.m_multipart;
+              if (mpce != null) {
+                path = mpce.getLocation();
+                threshold = mpce.getFileSizeThreshold();
+                if (((path == null) || (path.length() <= 0)) && //
+                    ((threshold > 0) && (threshold < Integer.MAX_VALUE))) {
+                  if (temp2 == null) {
+                    temp2 = new TempDir();
+                  }
+                  path = PathUtils.getPhysicalPath(temp2.getPath(), false);
+                  mpce = new MultipartConfigElement(path,
+                      mpce.getMaxFileSize(), mpce.getMaxRequestSize(),
+                      threshold);
+                }
+
+                holder.getRegistration().setMultipartConfig(mpce);
+              }
             }
 
             context
@@ -328,8 +336,8 @@ public final class ServerInstanceBuilder extends
             server.setHandler(context);
             server.start();
 
-            return new ServerInstance(logger, temp, server, connector,
-                context);
+            return new ServerInstance(logger, temp, temp2, server,
+                connector, context);
 
           } catch (final Exception e4) {
             context.destroy();
@@ -420,16 +428,15 @@ public final class ServerInstanceBuilder extends
   @Override
   public synchronized final ServerInstance create() throws IOException {
     final Logger logger;
-    final LinkedHashMap<Class<? extends HttpServlet>, String> set;
+    final ArrayList<_Servlet> servlets;
     final HashMap<String, Object> attributes;
     ServerInstance inst;
 
     this.__checkCreated();
     this.m_created = true;
 
-    set = this.m_servlets;
+    servlets = this.m_servlets;
     this.m_servlets = null;
-    this.m_usedPaths = null;
     attributes = this.m_attributes;
     this.m_attributes = null;
 
@@ -440,7 +447,7 @@ public final class ServerInstanceBuilder extends
 
     try {
       inst = ServerInstanceBuilder.__create(logger, this.m_port,
-          this.m_webRoot, set, attributes);
+          this.m_webRoot, servlets, attributes);
     } catch (final Exception error) {
       ErrorUtils.logError(logger, "Error while starting web server.",//$NON-NLS-1$
           error, false, RethrowMode.AS_IO_EXCEPTION);
