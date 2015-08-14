@@ -489,11 +489,14 @@ public class FSElement implements Comparable<FSElement> {
     @Override
     public final FileVisitResult preVisitDirectory(final Path dir,
         final BasicFileAttributes attrs) {
-      if ((dir != null)
-          && (attrs != null)
-          && (FSElement._changeCollection(true, this.m_root, this.m_start,
-              dir, attrs, this.m_elements, this.m_handle) > 0)) {
-        return FileVisitResult.CONTINUE;
+      if ((dir != null) && (attrs != null)) {
+        if (dir.equals(this.m_start)) {
+          return FileVisitResult.CONTINUE;
+        }
+        if (FSElement._changeCollection(true, this.m_root, this.m_start,
+            dir, attrs, this.m_elements, this.m_handle) > 0) {
+          return FileVisitResult.CONTINUE;
+        }
       }
       return FileVisitResult.SKIP_SUBTREE;
     }

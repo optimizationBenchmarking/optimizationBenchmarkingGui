@@ -7,6 +7,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -37,7 +38,10 @@ public final class Controller implements Serializable {
   private Path m_current;
 
   /** the selected elements */
-  private final HashSet<FSElement> m_selected;
+  private final HashSet<Path> m_selected;
+
+  /** the temporary array list for FS elements */
+  private final ArrayList<FSElement> m_temp;
 
   /** the servlet handle */
   private final _ServletHandle m_servletHandle;
@@ -92,6 +96,7 @@ public final class Controller implements Serializable {
     this.m_logger = log;
     this.m_selected = new HashSet<>();
     this.m_servletHandle = new _ServletHandle(this);
+    this.m_temp = new ArrayList<>();
   }
 
   /**
@@ -143,21 +148,18 @@ public final class Controller implements Serializable {
    * @return the current state of the controller
    */
   public synchronized final ControllerState getState(final Handle handle) {
-    final HashSet<FSElement> collector;
     final Path root;
-    Throwable caught;
-    FSElement ele;
-    Iterator<FSElement> it;
+    final ArraySetView<FSElement> paths;
     Path path;
     int res;
 
-    collector = new HashSet<>();
     root = this.m_root;
     path = this.m_current;
 
+    this.m_temp.clear();
     for (;;) {
-      res = FSElement.changeCollection(true, root, root, path, collector,
-          handle);
+      res = FSElement.changeCollection(true, root, root, path,
+          this.m_temp, handle);
       if (root.equals(path)) {
         break;
       }
@@ -173,32 +175,14 @@ public final class Controller implements Serializable {
         this.m_current = path;
       }
     }
-
-    it = this.m_selected.iterator();
-    looper: while (it.hasNext()) {
-      caught = null;
-      ele = it.next();
-      try {
-        if (Files.exists(ele._getPath(), LinkOption.NOFOLLOW_LINKS)) {
-          continue looper;
-        }
-      } catch (final Throwable error) {
-        caught = error;
-      }
-      it.remove();
-      handle
-          .log(
-              Level.WARNING,
-              "Element '" + ele.getRelativePath() + //$NON-NLS-1$
-                  "' seemingly does not exist anymore - removing it from the set of remembered elements.", //$NON-NLS-1$
-              caught);
-    }
+    paths = FSElement.collectionToList(this.m_temp);
+    this.m_temp.clear();
 
     return new ControllerState(//
         root.relativize(this.m_current).toString(),//
-        FSElement.collectionToList(collector),//
+        paths,//
         FSElement._dir(root, this.m_current, handle),//
-        FSElement.collectionToList(this.m_selected));
+        this.getSelected(handle));
   }
 
   /**
@@ -381,8 +365,7 @@ public final class Controller implements Serializable {
     for (final String string : values) {
       path = this.resolve(handle, string, this.m_root);
       if (path != null) {
-        if (FSElement.changeCollection(add, this.m_root, this.m_root,
-            path, this.m_selected, handle) > 0) {
+        if (this.m_selected.add(path)) {
           ++added;
         }
       }
@@ -484,9 +467,37 @@ public final class Controller implements Serializable {
   /**
    * Obtain the selected elements
    *
+   * @param handle
+   *          the handle
    * @return the selected elements
    */
-  public synchronized final ArraySetView<FSElement> getSelected() {
-    return FSElement.collectionToList(this.m_selected);
+  public synchronized final ArraySetView<FSElement> getSelected(
+      final Handle handle) {
+    final Iterator<Path> it;
+    final ArraySetView<FSElement> list;
+    Throwable caught;
+    Path path;
+
+    it = this.m_selected.iterator();
+    this.m_temp.clear();
+    while (it.hasNext()) {
+      caught = null;
+      path = it.next();
+      if (FSElement.changeCollection(true, this.m_root, this.m_root, path,
+          this.m_temp, handle) < 0) {
+        it.remove();
+        handle
+            .log(
+                Level.WARNING,
+                "Element '" //$NON-NLS-1$
+                    + this.m_root.relativize(path) + //
+                    "' seemingly does not exist anymore - removing it from the set of remembered elements.", //$NON-NLS-1$
+                caught);
+      }
+    }
+
+    list = FSElement.collectionToList(this.m_temp);
+    this.m_temp.clear();
+    return list;
   }
 }
