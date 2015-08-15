@@ -552,6 +552,8 @@ public final class ConfigIO {
 
               ConfigurationXMLOutput.getInstance().use().setLogger(handle)
                   .setPath(realPath).setSource(config).create().call();
+              handle.success("Successfully stored configuration file '" + //$NON-NLS-1$
+                  path + '\'' + '.');
             }
           } catch (final Throwable error) {
             handle.failure("Failed to store configuration file '" //$NON-NLS-1$

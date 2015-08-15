@@ -29,7 +29,11 @@ Take it easy, relax, and let the program do its job.</p>
         handle.failure("Unknown selection command: " + withSelected);
       }      
     } else {
-      handle.unknownSubmit(submit);
+      if(ControllerUtils.COMMAND_EXECUTE_EVALUATOR.equalsIgnoreCase(submit)) {
+        Evaluation.evaluate(select, handle);
+      } else {
+        handle.unknownSubmit(submit);
+      }
     }
   }
 %>
