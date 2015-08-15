@@ -16,7 +16,20 @@ tr.folderViewHead {
 th.folderViewHead {
 }
 
+tr.folderViewBottom {
+}
+
+td.folderViewBottomInfo {
+}
+
+td.folderViewSelect {
+}
+
 tr.folderViewRow {
+}
+
+tr.folderViewRowEven {
+  background   : #e9e9ff;
 }
 
 td.folderViewIcon {

@@ -38,18 +38,16 @@
 <h2>Current Folder</h2>
 <table class="folderView">
 <tr class="folderViewHead">
-<th class="folderViewHead" />
-<th class="folderViewHead">name</th>
-<th class="folderViewHead">size</th>
-<th class="folderViewHead">changed</th>
-<th class="folderViewHead"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
+<th class="folderViewHead" colspan="4" />
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
 </tr>
 
-<% for(FSElement element : cstate.getCurrent()) { 
+<% int row = 0;
+   for(FSElement element : cstate.getCurrent()) { 
    String elementName             = Encoder.htmlEncode(element.getName());
    String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); %>
-<tr class="folderViewRow">
+<tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% switch(element.getType()) { %>
       <% case NEXT_UP: { %>
@@ -96,7 +94,7 @@
   <td class="folderViewSel"><input type="checkbox" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
-<tr><td colspan="4" /><td><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', false)" value="&#x2610;"/></td></tr>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', false)" value="&#x2610;"/></td></tr>
 </table>
 <p class="controllerActions">
 Selected element(s):
@@ -119,17 +117,15 @@ Selected element(s):
 <h2>Remembered Elements</h2>
 <table class="folderView">
 <tr class="folderViewHead">
-<th class="folderViewHead" />
-<th class="folderViewHead">name</th>
-<th class="folderViewHead">size</th>
-<th class="folderViewHead">changed</th>
-<th class="folderViewHead"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
+<th class="folderViewHead" colspan="4" />
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
 </tr>
 
-<% for(FSElement element : selected) { 
+<% row = 0;
+   for(FSElement element : selected) { 
    String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); %>
-<tr class="folderViewRow">
+<tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% if(element.getType().isFile()) {  %>
         <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
@@ -168,8 +164,7 @@ Selected element(s):
   <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
-
-<tr><td colspan="4" /><td><input type="button" class="selButton" onclick="onSelButtonClick('remForm', false)" value="&#x2610;"/></td></tr>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', false)" value="&#x2610;"/></td></tr>
 </table>
 <p class="controllerActions">
 Selected remembered element(s):
@@ -233,40 +228,43 @@ function onWithSelectionChange(prefix, selection) {
       }
     }
    
-    if(desc != null) {  
+    if(desc != null) {
+      var text = "";  
       switch(String(selection.value)) {
         case "<%= ControllerUtils.COMMAND_REMEMBER%>": {
-          desc.innerHTML = "Remember the selected files. The files will be listed at the bottom of the controller window. Remembering files allows you to pick files from different directories, e.g., for download, without having to choose the complete directories.";
+          text = "Remember the selected files. The files will be listed at the bottom of the controller window. Remembering files allows you to pick files from different directories, e.g., for download, without having to choose the complete directories.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_FORGET%>": {
-          desc.innerHTML = "Forget the remembered selected files. The files will be removed from the remembered selection.";
+          text = "Forget the remembered selected files. The files will be removed from the remembered selection.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
-          desc.innerHTML = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
+          text = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
-          desc.innerHTML = "Edit the selected file(s) as text file (s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
+          text = "Edit the selected file(s) as text file (s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
-          desc.innerHTML = "Edit the selected file(s) as configuration file (s). A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
+          text = "Edit the selected file(s) as configuration file (s). A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {
-          desc.innerHTML = "The selected file must be a configuration file for an evaluation process. Then evaluation process will be started. It may take some time to finish. During this time, depending on the <a href='/logLevel.jsp'>log level</a> you set, you will receive information about what's going on. While the process is running, do not close or refresh the page. If you selected multiple configuration files, they will be processed one after the other.";      
+          text = "The selected file must be a configuration file for an evaluation process. Then evaluation process will be started. It may take some time to finish. During this time, depending on the <a href='/logLevel.jsp'>log level</a> you set, you will receive information about what's going on. While the process is running, do not close or refresh the page. If you selected multiple configuration files, they will be processed one after the other.";      
           break;
         }  
         case "<%= ControllerUtils.COMMAND_DELETE%>": {
-          desc.innerHTML = "Delete the selected items. If a folder is deleted, all files and folders therein are deleted recursively. Handle with care.";      
+          text = "Delete the selected items. If a folder is deleted, all files and folders therein are deleted recursively. Handle with care.";      
           break;
         }         
         default: {
-          desc.innerHTML = "";
+          text = "";
         }
       }
+      
+      desc.innerHTML = '<em>Currently Chosen Action:</em>&nbsp;' + text;
     }
   }
 }

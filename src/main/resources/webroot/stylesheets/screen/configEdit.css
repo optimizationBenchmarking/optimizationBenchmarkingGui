@@ -15,8 +15,9 @@ td.configEnabled {
 }
 
 td.configDesc {
-  text-align: left;
-  border    : 0px none transparent;
+  text-align : left;
+  border     : 0px none transparent;
+  padding-top: 1px;
 }
 
 tr.configFieldRow {
@@ -50,7 +51,9 @@ tr.configChoiceRow {
 }
 
 td.configChoice {
-  border        : 0px none transparent;
+  text-align : left;
+  border     : 0px none transparent;
+  padding-top: 1px;
 }
 
 table.invisible {

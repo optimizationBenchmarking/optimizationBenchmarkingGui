@@ -50,6 +50,10 @@ public final class ConfigIO {
   public static final String SUFFIX_FIELD_ROW = "-field"; //$NON-NLS-1$
   /** the desc row suffix */
   public static final String SUFFIX_DESC_ROW = "-desc"; //$NON-NLS-1$
+  /** the choice row suffix */
+  public static final String SUFFIX_CHOICE_ROW = "-choice"; //$NON-NLS-1$
+  /** the choice row suffix */
+  public static final String SUFFIX_CHOICE_CELL = "-choicetd"; //$NON-NLS-1$
 
   /** the start of the configuration table */
   private static final char[] CONFIG_TABLE_START = { '<', 't', 'a', 'b',
@@ -99,6 +103,21 @@ public final class ConfigIO {
       'i', 'g', 'D', 'e', 's', 'c', '"', ' ', 'c', 'o', 'l', 's', 'p',
       'a', 'n', '=', '"', '3', '"', '>', };
 
+  /** the start of the choice row */
+  private static final char[] CONFIG_CHOICE_ROW_1 = { '<', '/', 't', 'd',
+      '>', '<', '/', 't', 'r', '>', '<', 't', 'r', ' ', 'c', 'l', 'a',
+      's', 's', '=', '"', 'c', 'o', 'n', 'f', 'i', 'g', 'C', 'h', 'o',
+      'i', 'c', 'e', 'R', 'o', 'w', '"', ' ', 'i', 'd', '=', '"' };
+
+  /** the start of the configuration table row */
+  private static final char[] CONFIG_CHOICE_ROW_2 = { '"', '>', '<', 't',
+      'd', ' ', 'c', 'l', 'a', 's', 's', '=', '"', 'c', 'o', 'n', 'f',
+      'i', 'g', 'C', 'h', 'o', 'i', 'c', 'e', '"', ' ', 'c', 'o', 'l',
+      's', 'p', 'a', 'n', '=', '"', '3', '"', ' ', 'i', 'd', '=', '"', };
+  /** the start of the configuration table row */
+  private static final char[] CONFIG_CHOICE_ROW_3 = { '"', '/', '>', '<',
+      '/', 't', 'r', '>' };
+
   /** the end of the configuration table row */
   private static final char[] CONFIG_ROW_END = { '<', '/', 't', 'd', '>',
       '<', '/', 't', 'r', '>', };
@@ -109,7 +128,9 @@ public final class ConfigIO {
       't', '/', 'j', 'a', 'v', 'a', 's', 'c', 'r', 'i', 'p', 't', '"', '>' };
 
   /** the toggle function name */
-  private static final String TOGGLE_FUNCTION_NAME = "onEnableBoxClick"; //$NON-NLS-1$
+  private static final String TOGGLE_FUNCTION_NAME = "enabledChange"; //$NON-NLS-1$
+  /** the choice function name */
+  private static final String CHOICE_FUNCTION_NAME = "choiceChange"; //$NON-NLS-1$
 
   /** the end of the java script */
   private static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r',
@@ -250,7 +271,7 @@ public final class ConfigIO {
     String name, field, defstr, cur, js;
     Parser<?> parser;
     EPrimitiveType type;
-    boolean first, integer, bool, enabled;
+    boolean first, integer, bool, enabled, isChoice, needsChoices;
     long lng;
     double dbl;
 
@@ -259,7 +280,9 @@ public final class ConfigIO {
 
     out.write(ConfigIO.CONFIG_TABLE_START);
     first = true;
+    needsChoices = false;
     for (final Map.Entry<Parameter<?>, Object> entry : dump) {
+      isChoice = false;
       param = entry.getKey();
       name = param.getName();
 
@@ -274,10 +297,7 @@ public final class ConfigIO {
         enabled = true;
       }
 
-      field = name;
-      if (prefix != null) {
-        field = prefix + field;
-      }
+      field = ConfigIO.__fieldName(prefix, name);
 
       if (first) {
         first = false;
@@ -298,7 +318,15 @@ public final class ConfigIO {
           encoded.append(field);
           out.write("\" id=\"");//$NON-NLS-1$
           encoded.append(field);
+
+          js = (ConfigIO.__choiceFuncName(prefix, name) + '(' + ')');
+          jsCollector.add(js);
+          out.write("\" onchange=\"");//$NON-NLS-1$
+          out.write(js);
+
           out.write("\">"); //$NON-NLS-1$
+          isChoice = true;
+          needsChoices = true;
 
           if (value != null) {
             defstr = String.valueOf(value);
@@ -456,10 +484,108 @@ public final class ConfigIO {
       out.write(ConfigIO.SUFFIX_DESC_ROW);
       out.write(ConfigIO.CONFIG_DESC_ROW_2);
       encoded.append(param.getDescription());
-      out.write(ConfigIO.CONFIG_ROW_END);
+
+      if (isChoice) {
+        out.write(ConfigIO.CONFIG_CHOICE_ROW_1);
+        out.write(field);
+        out.write(ConfigIO.SUFFIX_CHOICE_ROW);
+        out.write(ConfigIO.CONFIG_CHOICE_ROW_2);
+        out.write(field);
+        out.write(ConfigIO.SUFFIX_CHOICE_CELL);
+        out.write(ConfigIO.CONFIG_CHOICE_ROW_3);
+      } else {
+        out.write(ConfigIO.CONFIG_ROW_END);
+      }
     }
 
     out.write(ConfigIO.CONFIG_TABLE_END);
+    if (needsChoices) {
+      ConfigIO.__putScripts(prefix, dump, out, encoded);
+    }
+  }
+
+  /**
+   * Get the choice function name
+   *
+   * @param prefix
+   *          the prefix
+   * @param name
+   *          the name
+   * @return the choice function name
+   */
+  private static final String __choiceFuncName(final String prefix,
+      final String name) {
+    return ('f' + ConfigIO.__fieldName(prefix,
+        (ConfigIO.CHOICE_FUNCTION_NAME + name)));
+  }
+
+  /**
+   * Get the field name for a given name and prefix
+   *
+   * @param prefix
+   *          the prefix
+   * @param name
+   *          the name
+   * @return the field name
+   */
+  private static final String __fieldName(final String prefix,
+      final String name) {
+    if (prefix == null) {
+      return name;
+    }
+    return (prefix + name);
+  }
+
+  /**
+   * Put the documentation scripts.
+   *
+   * @param prefix
+   *          the id field prefix
+   * @param dump
+   *          the dump
+   * @param out
+   *          the the output destination
+   * @param encoded
+   *          the encoded text output
+   * @throws IOException
+   *           if i/o fails
+   */
+  private static final void __putScripts(final String prefix,
+      final Dump dump, final JspWriter out, final ITextOutput encoded)
+      throws IOException {
+    InstanceParameter<?> instparam;
+    Parameter<?> param;
+    String field;
+
+    out.write(ConfigIO.JAVASCRIPT_START);
+
+    for (final Map.Entry<Parameter<?>, Object> entry : dump) {
+      param = entry.getKey();
+
+      if (param instanceof InstanceParameter) {
+        instparam = ((InstanceParameter<?>) param);
+
+        out.write("function "); //$NON-NLS-1$
+        out.write(ConfigIO.__choiceFuncName(prefix, param.getName()));
+        out.write("(){var text=\"\"; switch(document.getElementById('");//$NON-NLS-1$
+        field = ConfigIO.__fieldName(prefix, param.getName());
+        encoded.append(field);
+        out.write("').value){");//$NON-NLS-1$
+        for (final DefinitionElement de : instparam.getChoices()) {
+          out.write("case '");//$NON-NLS-1$
+          encoded.append(de.getName());
+          out.write("':{text='");//$NON-NLS-1$
+          encoded.append(de.getDescription());
+          out.write("';break;}");//$NON-NLS-1$
+        }
+        out.write("}document.getElementById('");//$NON-NLS-1$
+        encoded.append(field);
+        out.write(ConfigIO.SUFFIX_CHOICE_CELL);
+        out.write("').innerHTML='<em>Current Selection:</em>&nbsp;'+text;}");//$NON-NLS-1$
+      }
+    }
+
+    out.write(ConfigIO.JAVASCRIPT_END);
   }
 
   /**
@@ -487,6 +613,9 @@ public final class ConfigIO {
     out.write(//
     "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}row=document.getElementById(id+\"");//$NON-NLS-1$
     out.write(ConfigIO.SUFFIX_DESC_ROW);
+    out.write(//
+    "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}row=document.getElementById(id+\"");//$NON-NLS-1$
+    out.write(ConfigIO.SUFFIX_CHOICE_ROW);
     out.write(//
     "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}}}"); //$NON-NLS-1$
 
@@ -516,7 +645,7 @@ public final class ConfigIO {
     final Configuration config;
     final String path, submit;
     final Path realPath;
-    String prefix, name, enabled, value;
+    String prefix, name, field, enabled, value;
 
     submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
     if (submit.equalsIgnoreCase(FileIO.PARAM_SAVE)) {
@@ -526,9 +655,6 @@ public final class ConfigIO {
         if (realPath != null) {
 
           prefix = request.getParameter(ConfigIO.PARAMETER_PREFIX);
-          if (prefix == null) {
-            prefix = ""; //$NON-NLS-1$
-          }
 
           try {
             definition = ConfigIO.getDefinition(handle);
@@ -536,11 +662,12 @@ public final class ConfigIO {
               try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
                 for (final Parameter<?> param : definition) {
                   name = param.getName();
-                  enabled = request.getParameter(prefix + name
+                  field = ConfigIO.__fieldName(prefix, name);
+                  enabled = request.getParameter(field
                       + ConfigIO.ENABLER_SUFFIX);
                   if (enabled != null) {
                     if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
-                      value = request.getParameter(prefix + name);
+                      value = request.getParameter(field);
                       if (value != null) {
                         builder.put(name, value);
                       }
