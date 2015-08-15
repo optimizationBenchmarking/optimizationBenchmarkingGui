@@ -21,7 +21,7 @@
   for(FSElement element : cstate.getPath()) {
      currentDir = element.getRelativePath(); %>  
     <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;submit=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
-<input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_NEW_FILE%>" formaction="/edit.jsp" />
+<input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_NEW_FILE%>" formaction="/textEdit.jsp" />
 </p>
 <p>
 <input type="file" name="<%= ControllerUtils.PARAMETER_FILES%>" multiple />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_UPLOAD%>" formmethod="post" formaction="/upload" formenctype="multipart/form-data" />
@@ -103,7 +103,8 @@ Selected element(s):
 <select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('main', this)">
 <option><%= ControllerUtils.COMMAND_REMEMBER%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
-<option><%= ControllerUtils.COMMAND_EDIT%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
@@ -175,7 +176,8 @@ Selected remembered element(s):
 <select id="remSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('rem', this)">
 <option><%= ControllerUtils.COMMAND_FORGET%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
-<option><%= ControllerUtils.COMMAND_EDIT%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
@@ -211,9 +213,15 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
-        case "<%= ControllerUtils.COMMAND_EDIT%>": {
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
           form.method = "get";
-          form.action = "/edit.jsp";
+          form.action = "/textEdit.jsp";
+          form.target = "_self";      
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
+          form.method = "get";
+          form.action = "/configEdit.jsp";
           form.target = "_self";      
           break;
         }
@@ -239,8 +247,12 @@ function onWithSelectionChange(prefix, selection) {
           desc.innerHTML = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
           break;
         }
-        case "<%= ControllerUtils.COMMAND_EDIT%>": {
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
           desc.innerHTML = "Edit the selected file(s) as text file (s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
+          desc.innerHTML = "Edit the selected file(s) as configuration file (s). A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {

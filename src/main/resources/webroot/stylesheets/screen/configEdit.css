@@ -1,0 +1,62 @@
+th.configName {
+  text-align : left;
+  font-weight: bold;
+  border     : 0px none transparent;
+}
+
+td.configField {
+  text-align: left;
+  border    : 0px none transparent;
+}
+
+td.configEnabled {
+  text-align: center;
+  border    : 0px none transparent;
+}
+
+td.configDesc {
+  text-align: left;
+  border    : 0px none transparent;
+}
+
+tr.configFieldRow {
+  border    : 0px none transparent;
+}
+
+tr.configSpacer {
+  height        : 11px;
+  max-height    : 11px;
+  min-height    : 11px;
+  font-size     : 11px;
+  background    : transparent;
+  border        : 0px none transparent;
+}
+
+td.configSpacer {
+  height        : 11px;
+  max-height    : 11px;
+  min-height    : 11px;
+  font-size     : 11px;
+  background    : transparent;
+  border        : 0px none transparent;
+}
+
+tr.configDescRow {
+  border        : 0px none transparent;
+}
+
+tr.configChoiceRow {
+  border        : 0px none transparent;
+}
+
+td.configChoice {
+  border        : 0px none transparent;
+}
+
+table.invisible {
+  background     : transparent;
+  margin         : 0px;
+  padding        : 0px;
+  border-collapse: collapse;
+  border         : 0px none transparent;
+}

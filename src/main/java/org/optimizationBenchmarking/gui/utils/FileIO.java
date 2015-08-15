@@ -22,6 +22,9 @@ import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransforme
 /** A set of utility methods to deal with text files */
 public final class FileIO {
 
+  /** save the stuff */
+  public static final String PARAM_SAVE = "save"; //$NON-NLS-1$
+
   /**
    * Load a set of files
    *

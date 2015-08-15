@@ -51,11 +51,11 @@ if(submit != null) {
         final String relPath = Encoder.htmlEncode(relPaths[i]); 
 %>
 <h2>File &quot;<%= relPath %>&quot;</h2>
-<form action="/editSave.jsp" method="post" target="_blank">
+<form class="invisible" action="/textEditSave.jsp" method="post" target="_blank">
 <textarea class="editor" rows="25" cols="70" name="contents" wrap="off"<% if(i<=0) {%> autofocus<%}%>><%= texts[i]%></textarea>
 <input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= relPath%>" />
 <p class="controllerActions">
-<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
+<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="<%= FileIO.PARAM_SAVE%>">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="get" formaction="/download">
 </p>
 </form>
