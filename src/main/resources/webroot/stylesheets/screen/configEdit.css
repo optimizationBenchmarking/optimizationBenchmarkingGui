@@ -50,6 +50,20 @@ tr.configChoiceRow {
   border        : 0px none transparent;
 }
 
+tr.configAddFieldRow {
+  border        : 0px none transparent;
+}
+
+td.configAddFieldButtonCell {
+  text-align : left;
+  border     : 0px none transparent;
+}
+
+td.configAddNameCell {
+  text-align : left;
+  border     : 0px none transparent;
+}
+
 td.configChoice {
   text-align : left;
   border     : 0px none transparent;

@@ -133,6 +133,12 @@ public final class ConfigIO {
   private static final String TOGGLE_FUNCTION_NAME = "enabledChange"; //$NON-NLS-1$
   /** the choice function name */
   private static final String CHOICE_FUNCTION_NAME = "choiceChange"; //$NON-NLS-1$
+  /** the add field function name */
+  private static final String ADD_FIELD_FUNCTION_NAME = "addField"; //$NON-NLS-1$
+  /** new field name */
+  private static final String NEW_FIELD_NAME = "_new_field_name"; //$NON-NLS-1$
+  /** the id of the add-field-row */
+  private static final String ADD_FIELD_ROW_ID = "_add_field_row"; //$NON-NLS-1$
 
   /** the end of the java script */
   private static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r',
@@ -299,7 +305,7 @@ public final class ConfigIO {
         enabled = true;
       }
 
-      field = ConfigIO.__fieldNameFromNameAndPrefix(prefix, name);
+      field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
 
       if (first) {
         first = false;
@@ -500,6 +506,24 @@ public final class ConfigIO {
       }
     }
 
+    if (dump.allowsMore()) {
+      out.write(ConfigIO.CONFIG_ROW_SPACER);
+      out.write(//
+      "<tr class=\"configAddFieldRow\" id=\""); //$NON-NLS-1$
+      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+          ConfigIO.ADD_FIELD_ROW_ID));
+      out.write(//
+      "\"><td class=\"configAddFieldButtonCell\"><input type=\"button\" onclick=\""); //$NON-NLS-1$
+
+      out.write(ConfigIO.__addFieldFuncName(prefix));
+      out.write(//
+      "()\" value=\"add parameter\"/>&nbsp;:</td><td colspan=\"2\" class=\"configAddFieldButtonCell\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
+      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+          ConfigIO.NEW_FIELD_NAME));
+      out.write(//
+      "\"/></td></tr>");//$NON-NLS-1$
+    }
+
     out.write(ConfigIO.CONFIG_TABLE_END);
     if (needsChoices) {
       ConfigIO.__putScripts(prefix, dump, out, encoded);
@@ -517,8 +541,34 @@ public final class ConfigIO {
    */
   private static final String __choiceFuncName(final String prefix,
       final String name) {
-    return ('f' + ConfigIO.__fieldNameFromNameAndPrefix(prefix,
+    return ('f' + ConfigIO.__fieldNameFromPrefixAndName(prefix,
         (ConfigIO.CHOICE_FUNCTION_NAME + name)));
+  }
+
+  /**
+   * Get the add button function name
+   *
+   * @param prefix
+   *          the prefix
+   * @return the add button function name
+   */
+  private static final String __addFieldFuncName(final String prefix) {
+    return ('f' + ConfigIO.__fieldNameFromPrefixAndName(prefix,
+        ConfigIO.ADD_FIELD_FUNCTION_NAME));
+  }
+
+  /**
+   * Get the field prefix for a given name and prefix
+   *
+   * @param prefix
+   *          the prefix
+   * @return the field name
+   */
+  private static final String __fieldPrefixFromPrefix(final String prefix) {
+    if (prefix == null) {
+      return ""; //$NON-NLS-1$
+    }
+    return (prefix + '_');
   }
 
   /**
@@ -530,7 +580,7 @@ public final class ConfigIO {
    *          the name
    * @return the field name
    */
-  private static final String __fieldNameFromNameAndPrefix(
+  private static final String __fieldNameFromPrefixAndName(
       final String prefix, final String name) {
     if (prefix == null) {
       return name;
@@ -602,7 +652,7 @@ public final class ConfigIO {
         out.write("function "); //$NON-NLS-1$
         out.write(ConfigIO.__choiceFuncName(prefix, param.getName()));
         out.write("(){var text=\"\"; switch(document.getElementById('");//$NON-NLS-1$
-        field = ConfigIO.__fieldNameFromNameAndPrefix(prefix,
+        field = ConfigIO.__fieldNameFromPrefixAndName(prefix,
             param.getName());
         encoded.append(field);
         out.write("').value){");//$NON-NLS-1$
@@ -618,6 +668,52 @@ public final class ConfigIO {
         out.write(ConfigIO.SUFFIX_CHOICE_CELL);
         out.write("').innerHTML='<em>Current Selection:</em>&nbsp;'+text;}");//$NON-NLS-1$
       }
+    }
+
+    if (dump.allowsMore()) {
+      out.write("function "); //$NON-NLS-1$
+      out.write(ConfigIO.__addFieldFuncName(prefix));
+      out.write("(){var name=document.getElementById('");//$NON-NLS-1$
+      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+          ConfigIO.NEW_FIELD_NAME));
+      out.write("').value;if((name!=null)&&(name.length>0)){var newbody='");//$NON-NLS-1$
+
+      out.write(ConfigIO.CONFIG_ROW_START_1);
+      field = ConfigIO.__fieldPrefixFromPrefix(prefix);
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write(ConfigIO.SUFFIX_FIELD_ROW);
+      out.write(ConfigIO.CONFIG_ROW_START_2);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write(ConfigIO.CONFIG_NAME_END);
+
+      out.write("<input type=\"text\" size=\"60\" name=\"");//$NON-NLS-1$
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write("\" id=\"");//$NON-NLS-1$
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write("\">"); //$NON-NLS-1$
+
+      out.write(ConfigIO.CONFIG_FIELD_END);
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write(ConfigIO.ENABLER_SUFFIX);
+      out.write("\" id=\"");//$NON-NLS-1$
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write(ConfigIO.ENABLER_SUFFIX);
+      out.write("\" checked onclick=\"");//$NON-NLS-1$
+      out.write(ConfigIO.TOGGLE_FUNCTION_NAME);
+      out.write("(\\'");//$NON-NLS-1$
+      encoded.append(field);
+      out.write("'+name+'");//$NON-NLS-1$
+      out.write("\\')\"/></td></tr>';var rowToInsertBefore=document.getElementById('");//$NON-NLS-1$
+      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+          ConfigIO.ADD_FIELD_ROW_ID));
+      out.write("');var dummy=document.createElement('table');dummy.innerHTML=newbody;var insert=dummy.firstChild;if(insert.tagName.toUpperCase()=='TBODY'){insert=insert.firstChild;}rowToInsertBefore.parentNode.insertBefore(insert,rowToInsertBefore);dummy.innerHTML='");//$NON-NLS-1$
+      out.write(ConfigIO.CONFIG_ROW_SPACER);
+      out.write("';insert=dummy.firstChild;if(insert.tagName.toUpperCase()=='TBODY'){insert=insert.firstChild;}rowToInsertBefore.parentNode.insertBefore(insert,rowToInsertBefore);}}");//$NON-NLS-1$
     }
 
     out.write(ConfigIO.JAVASCRIPT_END);
@@ -694,7 +790,7 @@ public final class ConfigIO {
       for (final Parameter<?> param : definition) {
         name = param.getName();
 
-        field = ConfigIO.__fieldNameFromNameAndPrefix(prefix, name);
+        field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
         temp = (field + ConfigIO.ENABLER_SUFFIX);
         if (done != null) {
           done.add(field);
@@ -716,17 +812,14 @@ public final class ConfigIO {
         for (final Map.Entry<String, String[]> entry : request
             .getParameterMap().entrySet()) {
           field = entry.getKey();
-
-          if (done.add(field)) {
+          if (!(done.contains(field))) {
             name = ConfigIO.__nameFromPrefixAndFieldName(prefix, field);
             if (name != null) {
               temp = (field + ConfigIO.ENABLER_SUFFIX);
-              if (done.add(temp)) {
-
-                enabled = request.getParameter(temp);
-                if (enabled != null) {
+              enabled = request.getParameter(temp);
+              if (enabled != null) {
+                if (done.add(temp) && done.add(field)) {
                   if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
-
                     value = request.getParameter(field);
                     if (value != null) {
                       builder.put(name, value);
