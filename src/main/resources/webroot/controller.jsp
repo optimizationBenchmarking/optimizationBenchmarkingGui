@@ -38,7 +38,10 @@
 <h2>Current Folder</h2>
 <table class="folderView">
 <tr class="folderViewHead">
-<th class="folderViewHead" colspan="4" />
+<th class="folderViewHead" />
+<th class="folderViewHead">name</th>
+<th class="folderViewHead">size</th>
+<th class="folderViewHead">changed</th>
 <td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
 </tr>
 
@@ -117,7 +120,10 @@ Selected element(s):
 <h2>Remembered Elements</h2>
 <table class="folderView">
 <tr class="folderViewHead">
-<th class="folderViewHead" colspan="4" />
+<th class="folderViewHead" />
+<th class="folderViewHead">name</th>
+<th class="folderViewHead">size</th>
+<th class="folderViewHead">changed</th>
 <td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
 </tr>
 

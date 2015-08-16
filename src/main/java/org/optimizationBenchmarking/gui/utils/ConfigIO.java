@@ -6,6 +6,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -34,6 +35,7 @@ import org.optimizationBenchmarking.utils.parsers.LooseLongParser;
 import org.optimizationBenchmarking.utils.parsers.NumberParser;
 import org.optimizationBenchmarking.utils.parsers.Parser;
 import org.optimizationBenchmarking.utils.reflection.EPrimitiveType;
+import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.AbstractTextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
@@ -226,7 +228,7 @@ public final class ConfigIO {
           }
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
-            result[i] = Dump.EMPTY_DUMP;
+            result[i] = Dump.emptyDumpForDefinition(definition);
             if (handle.isLoggable(Level.INFO)) {
               handle.info("File '" + relPath + //$NON-NLS-1$
                   "' does not exist or is empty, configuration if empty.");//$NON-NLS-1$
@@ -297,7 +299,7 @@ public final class ConfigIO {
         enabled = true;
       }
 
-      field = ConfigIO.__fieldName(prefix, name);
+      field = ConfigIO.__fieldNameFromNameAndPrefix(prefix, name);
 
       if (first) {
         first = false;
@@ -515,7 +517,7 @@ public final class ConfigIO {
    */
   private static final String __choiceFuncName(final String prefix,
       final String name) {
-    return ('f' + ConfigIO.__fieldName(prefix,
+    return ('f' + ConfigIO.__fieldNameFromNameAndPrefix(prefix,
         (ConfigIO.CHOICE_FUNCTION_NAME + name)));
   }
 
@@ -528,12 +530,44 @@ public final class ConfigIO {
    *          the name
    * @return the field name
    */
-  private static final String __fieldName(final String prefix,
-      final String name) {
+  private static final String __fieldNameFromNameAndPrefix(
+      final String prefix, final String name) {
     if (prefix == null) {
       return name;
     }
-    return (prefix + name);
+    return (prefix + '_' + name);
+  }
+
+  /**
+   * Get the parameter name from a given prefix and field name
+   *
+   * @param prefix
+   *          the prefix
+   * @param field
+   *          the field name
+   * @return the parameter name, or {@code null} if it does not match to
+   *         the prefix/field name
+   */
+  private static final String __nameFromPrefixAndFieldName(
+      final String prefix, final String field) {
+    final int prefixLen, fieldLen;
+
+    if ((prefix == null) || (field == null)) {
+      return field;
+    }
+    fieldLen = field.length();
+    prefixLen = prefix.length();
+
+    if (fieldLen <= (prefixLen + 1)) {
+      return null;
+    }
+    if (field.startsWith(prefix)) {
+      if (field.charAt(prefixLen) == '_') {
+        return TextUtils.prepare(field.substring(prefixLen + 1));
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -568,7 +602,8 @@ public final class ConfigIO {
         out.write("function "); //$NON-NLS-1$
         out.write(ConfigIO.__choiceFuncName(prefix, param.getName()));
         out.write("(){var text=\"\"; switch(document.getElementById('");//$NON-NLS-1$
-        field = ConfigIO.__fieldName(prefix, param.getName());
+        field = ConfigIO.__fieldNameFromNameAndPrefix(prefix,
+            param.getName());
         encoded.append(field);
         out.write("').value){");//$NON-NLS-1$
         for (final DefinitionElement de : instparam.getChoices()) {
@@ -632,6 +667,83 @@ public final class ConfigIO {
   }
 
   /**
+   * Load a configuration from a request
+   *
+   * @param request
+   *          the request with all the parameters
+   * @param definition
+   *          the parameter definition
+   * @param prefix
+   *          the prefix
+   * @return the configuration
+   */
+  private static final Configuration __loadConfigFromRequest(
+      final String prefix, final HttpServletRequest request,
+      final Definition definition) {
+    final HashSet<String> done;
+    String name, field, enabled, temp, value;
+
+    try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
+
+      if (definition.allowsMore()) {
+        done = new HashSet<>();
+      } else {
+        done = null;
+      }
+
+      for (final Parameter<?> param : definition) {
+        name = param.getName();
+
+        field = ConfigIO.__fieldNameFromNameAndPrefix(prefix, name);
+        temp = (field + ConfigIO.ENABLER_SUFFIX);
+        if (done != null) {
+          done.add(field);
+          done.add(temp);
+        }
+
+        enabled = request.getParameter(temp);
+        if (enabled != null) {
+          if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+            value = request.getParameter(field);
+            if (value != null) {
+              builder.put(name, value);
+            }
+          }
+        }
+      }
+
+      if (done != null) {
+        for (final Map.Entry<String, String[]> entry : request
+            .getParameterMap().entrySet()) {
+          field = entry.getKey();
+
+          if (done.add(field)) {
+            name = ConfigIO.__nameFromPrefixAndFieldName(prefix, field);
+            if (name != null) {
+              temp = (field + ConfigIO.ENABLER_SUFFIX);
+              if (done.add(temp)) {
+
+                enabled = request.getParameter(temp);
+                if (enabled != null) {
+                  if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+
+                    value = request.getParameter(field);
+                    if (value != null) {
+                      builder.put(name, value);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return builder.getResult();
+    }
+  }
+
+  /**
    * Store the contents into a file.
    *
    * @param handle
@@ -645,7 +757,7 @@ public final class ConfigIO {
     final Configuration config;
     final String path, submit;
     final Path realPath;
-    String prefix, name, field, enabled, value;
+    final String prefix;
 
     submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
     if (submit.equalsIgnoreCase(FileIO.PARAM_SAVE)) {
@@ -654,28 +766,14 @@ public final class ConfigIO {
         realPath = handle.getController().resolve(handle, path, null);
         if (realPath != null) {
 
-          prefix = request.getParameter(ConfigIO.PARAMETER_PREFIX);
+          prefix = TextUtils.prepare(request
+              .getParameter(ConfigIO.PARAMETER_PREFIX));
 
           try {
             definition = ConfigIO.getDefinition(handle);
             if (definition != null) {
-              try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
-                for (final Parameter<?> param : definition) {
-                  name = param.getName();
-                  field = ConfigIO.__fieldName(prefix, name);
-                  enabled = request.getParameter(field
-                      + ConfigIO.ENABLER_SUFFIX);
-                  if (enabled != null) {
-                    if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
-                      value = request.getParameter(field);
-                      if (value != null) {
-                        builder.put(name, value);
-                      }
-                    }
-                  }
-                }
-                config = builder.getResult();
-              }
+              config = ConfigIO.__loadConfigFromRequest(prefix, request,
+                  definition);
 
               ConfigurationXMLOutput.getInstance().use().setLogger(handle)
                   .setPath(realPath).setSource(config).create().call();
