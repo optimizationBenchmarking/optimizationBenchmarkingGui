@@ -1,5 +1,6 @@
 package org.optimizationBenchmarking.gui.controller;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.logging.Formatter;
@@ -72,7 +73,7 @@ final class _JspHandle extends Handle {
   private PrintWriter m_encodedWriter;
 
   /** is this the first invocation? */
-  private volatile boolean m_first;
+  private volatile int m_count;
 
   /**
    * Create the HTML formatter
@@ -131,7 +132,6 @@ final class _JspHandle extends Handle {
     this.setFilter(null);
 
     this.m_format = formatter;
-    this.m_first = true;
 
     try {
       writer.flush();
@@ -167,6 +167,23 @@ final class _JspHandle extends Handle {
     return this.m_encodedWriter;
   }
 
+  /**
+   * the beginning
+   *
+   * @param out
+   *          the writer
+   * @throws IOException
+   *           if something fails
+   */
+  private final void __first(final JspWriter out) throws IOException {
+    out.write(//
+    "<h2>Events</h2>"); //$NON-NLS-1$
+    out.write(//
+    "<script type=\"text/javascript\">function _sc(id){var o=document.getElementById(id);var height=height=window.innerHeight?window.innerHeight:document.documento.clientHeight;var rects=o.getClientRects();for(var i=rects.length;(--i)>=0;){var r=rects[i];if((r.top<0)||(r.top>=height)){location.href='#';location.href=('#'+id);}}}</script>"); //$NON-NLS-1$
+    out.write(//
+    "<table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
+  }
+
   /** {@inheritDoc} */
   @SuppressWarnings("resource")
   @Override
@@ -179,6 +196,9 @@ final class _JspHandle extends Handle {
     final Throwable error;
     final Logger parent;
     final Level level;
+    final int count;
+    final boolean scroll;
+    String id;
     int index;
 
     if (record == null) {
@@ -192,10 +212,15 @@ final class _JspHandle extends Handle {
     out = this.m_out;
     synchronized (out) {
       try {
-        if (this.m_first) {
-          this.m_first = false;
-          out.write(//
-          "<h2>Events</h2><table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
+        scroll = (level.intValue() >= Level.INFO.intValue());
+
+        count = this.m_count;
+        if (count <= 0) {
+          this.m_count = 1;
+          this.__first(out);
+        }
+        if (scroll) {
+          this.m_count = (count + 1);
         }
 
         out.write("<tr class=\""); //$NON-NLS-1$
@@ -210,6 +235,13 @@ final class _JspHandle extends Handle {
 
         levelClass = _JspHandle.LEVEL_CLASSES[index];
         out.write(levelClass);
+        if (scroll) {
+          out.write("\" id=\""); //$NON-NLS-1$
+          id = Integer.toString(count, Character.MAX_RADIX);
+          out.write(id);
+        } else {
+          id = null;
+        }
         out.write("\"><td class=\"logIconCol\">"); //$NON-NLS-1$
         out.write("<img src=\"/icons/"); //$NON-NLS-1$
         out.write(levelClass);
@@ -239,7 +271,15 @@ final class _JspHandle extends Handle {
           }
           out.write("</code></pre>");//$NON-NLS-1$
         }
-        out.write("</td></tr>"); //$NON-NLS-1$
+
+        out.write("</td>");//$NON-NLS-1$
+        if (scroll) {
+          out.write("<script type=\"text/javascript\">_sc('"); //$NON-NLS-1$
+          out.write(id);
+          out.write("');</script></tr>"); //$NON-NLS-1$
+        }
+
+        out.write("</tr>"); //$NON-NLS-1$
 
         out.flush();
       } catch (final Throwable errorx) {
@@ -270,7 +310,7 @@ final class _JspHandle extends Handle {
       }
       if (pw != null) {
         synchronized (pw) {
-          if (!(this.m_first)) {
+          if (this.m_count > 0) {
             try {
               pw.write("</table>"); //$NON-NLS-1$
               pw.flush();
