@@ -34,7 +34,7 @@ Take it easy, relax, and let the program do its job.</p>
       }      
     } else {
       if(ControllerUtils.COMMAND_EXECUTE_EVALUATOR.equalsIgnoreCase(submit)) {
-        Evaluation.evaluate(select, handle);
+        collected = Evaluation.evaluate(select, handle);
       } else {
         handle.unknownSubmit(submit);
       }
@@ -43,9 +43,7 @@ Take it easy, relax, and let the program do its job.</p>
 %>
 <h2>Created Files</h2>
 <% if( (collected != null) && (!(collected.isEmpty())) ) {%>
-
 <form id="prodForm" class="controller" method="get" action="/controller.jsp">
-<h2>Remembered Elements</h2>
 <table class="folderView">
 <tr class="folderViewHead">
 <th class="folderViewHead" />

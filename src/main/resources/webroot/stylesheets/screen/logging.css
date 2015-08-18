@@ -105,4 +105,6 @@ td.logMsgCol {
   text-align    : left;
   padding-left  : 2px;
   padding-right : 2px;
+  word-wrap     : break-word;
+  max-width     : 495px;
 }
