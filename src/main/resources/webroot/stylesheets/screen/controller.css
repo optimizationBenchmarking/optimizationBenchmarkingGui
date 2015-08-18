@@ -44,6 +44,8 @@ td.folderViewName {
   text-align   : left;
   padding-left : 3px;
   padding-right: 3px;
+  word-wrap    : break-word;
+  max-width    : 490px;
 }
 
 td.folderViewSize {

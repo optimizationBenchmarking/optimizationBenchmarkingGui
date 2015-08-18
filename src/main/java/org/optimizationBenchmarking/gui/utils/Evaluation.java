@@ -1,11 +1,15 @@
 package org.optimizationBenchmarking.gui.utils;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.Evaluator;
 import org.optimizationBenchmarking.gui.controller.Controller;
+import org.optimizationBenchmarking.gui.controller.FSElement;
 import org.optimizationBenchmarking.gui.controller.Handle;
+import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
+import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.config.ConfigurationBuilder;
 import org.optimizationBenchmarking.utils.config.ConfigurationPropertiesInput;
@@ -13,6 +17,7 @@ import org.optimizationBenchmarking.utils.config.ConfigurationXMLInput;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
+import org.optimizationBenchmarking.utils.tools.impl.abstr.ProducedFileSet;
 
 /** A class performing the evaluation procedure. */
 public final class Evaluation {
@@ -24,23 +29,52 @@ public final class Evaluation {
    * @param relPaths
    *          the paths
    * @param handle
-   *          the handle
+   *          the handle return the produced files
+   * @return the produced files
    */
-  public static final void evaluate(final String[] relPaths,
-      final Handle handle) {
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public static final ArrayListView<FSElement> evaluate(
+      final String[] relPaths, final Handle handle) {
+    final ProducedFileSet collector;
+
     if (relPaths != null) {
       if (relPaths.length > 0) {
+        collector = new ProducedFileSet();
         for (final String relPath : relPaths) {
-          Evaluation.evaluate(relPath, handle);
+          Evaluation.__evaluate(relPath, handle, collector);
         }
-      } else {
-        handle.warning(//
-            "The provided path list was empty, i.e., there is nothing to do."); //$NON-NLS-1$
+        return Evaluation.__compile(handle, collector);
       }
-    } else {
       handle.warning(//
-          "The provided path list was null (probably because it was not specified at all), i.e., there is nothing to do."); //$NON-NLS-1$
+          "The provided path list was empty, i.e., there is nothing to do."); //$NON-NLS-1$
+      return ((ArrayListView) (ArraySetView.EMPTY_SET_VIEW));
     }
+    handle.warning(//
+        "The provided path list was null (probably because it was not specified at all), i.e., there is nothing to do."); //$NON-NLS-1$
+    return ((ArrayListView) (ArraySetView.EMPTY_SET_VIEW));
+  }
+
+  /**
+   * Get the produced files
+   *
+   * @param handle
+   *          the handle
+   * @param produced
+   *          the produced files
+   * @return the files
+   */
+  private static final ArraySetView<FSElement> __compile(
+      final Handle handle, final ProducedFileSet produced) {
+    final ArrayList<FSElement> list;
+    final Path root;
+
+    list = new ArrayList<>();
+    root = handle.getController().getRootDir();
+    for (final Path path : produced.getProducedFiles().keySet()) {
+      FSElement.changeCollection(true, root, root, path, list, handle);
+    }
+
+    return FSElement.collectionToList(list);
   }
 
   /**
@@ -51,9 +85,11 @@ public final class Evaluation {
    *          the path
    * @param handle
    *          the handle
+   * @param created
+   *          a collector for the created files
    */
-  public static final void evaluate(final String relPath,
-      final Handle handle) {
+  private static final void __evaluate(final String relPath,
+      final Handle handle, final ProducedFileSet created) {
     final Path path;
     final Controller controller;
     String extension;
@@ -110,7 +146,8 @@ public final class Evaluation {
         if (config != null) {
           try {
             Evaluator.getInstance().use().configure(config)
-                .setLogger(handle).create().run();
+                .setFileProducerListener(created).setLogger(handle)
+                .create().run();
             handle.success(//
                 "The evaluation procedure has been completed successfully (seemingly).");//$NON-NLS-1$
           } catch (final Throwable error) {

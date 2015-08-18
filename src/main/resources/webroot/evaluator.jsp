@@ -3,6 +3,9 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Evaluation" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.FSElement" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
+<%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArrayListView" %>
 <%@ page import="java.util.logging.Level" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>Evaluation</h1>
@@ -19,12 +22,13 @@ If the <a href="/logLevel.jsp" target="_blank">log level</a> is higher than <cod
 you may not receive information for quite some time.
 Take it easy, relax, and let the program do its job.</p>
 <%
- final String  submit = TextUtils.prepare(request.getParameter(ControllerUtils.INPUT_SUBMIT));  
+ final String                   submit    = TextUtils.prepare(request.getParameter(ControllerUtils.INPUT_SUBMIT));
+       ArrayListView<FSElement> collected = null;
  try(final Handle handle = controller.createJspHandle(pageContext)) {
     if(ControllerUtils.BUTTON_OK.equalsIgnoreCase(submit)) {
       final String withSelected = request.getParameter(ControllerUtils.PARAMETER_WITH_SELECTED); 
       if(ControllerUtils.COMMAND_EXECUTE_EVALUATOR.equalsIgnoreCase(withSelected)) {
-        Evaluation.evaluate(select, handle);
+        collected = Evaluation.evaluate(select, handle);
       } else {
         handle.failure("Unknown selection command: " + withSelected);
       }      
@@ -37,9 +41,92 @@ Take it easy, relax, and let the program do its job.</p>
     }
   }
 %>
+<h2>Created Files</h2>
+<% if( (collected != null) && (!(collected.isEmpty())) ) {%>
 
+<form id="prodForm" class="controller" method="get" action="/controller.jsp">
+<h2>Remembered Elements</h2>
+<table class="folderView">
+<tr class="folderViewHead">
+<th class="folderViewHead" />
+<th class="folderViewHead">name</th>
+<th class="folderViewHead">size</th>
+<th class="folderViewHead">changed</th>
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', true)" value="&#x2611;"/></th>
+</tr>
+
+<% int row = 0;
+   for(FSElement element : collected) { 
+   String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
+   String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath());
+   String shortPath               = htmlEncodedRelativePath;
+   int    lastSlash               = shortPath.lastIndexOf('/');
+   if((lastSlash > 0)&&(lastSlash<(shortPath.length()-1))) {
+      shortPath = shortPath.substring(lastSlash+1);
+   } %>
+<tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
+  <td class="folderViewIcon">
+    <% if(element.getType().isFile()) {  %>
+        <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+      <% } else { %>
+        <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
+      <% } %>
+  </td>
+  <% final long size = element.getSize();
+     final long time = element.getTime();     
+     String tag;
+     if (size < 0L) {
+      if(time < 0L) {
+        tag = " colspan=\"3\"";
+      } else {
+        tag = " colspan=\"2\"";
+      }
+    } else {
+      tag = "";
+    } %>
+  <td class="folderViewName"<%= tag%>>
+  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%>"><% } %>
+    <%= shortPath %>
+  <% if(element.getType().isFile()) { %></a><% } %>
+  </td>
+  <% if (size >= 0L) {
+       if(time < 0L) {
+        tag = " colspan=\"2\"";
+      } else {
+        tag = "";
+      } %>
+    <td class="folderViewSize"<%= tag%>><%= element.getSizeString() %></td>
+  <% } %>
+  <% if (time >= 0L) { %>
+    <td class="folderViewTime"><%= element.getTimeString() %></td>
+  <% } %>
+  <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
+</tr>
+<% } %>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', false)" value="&#x2610;"/></td></tr>
+</table>
+<p class="controllerActions">
+Selected produced element(s):
+<select id="prodSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('prod', this)">
+<option><%= ControllerUtils.COMMAND_REMEMBER%></option>
+<option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
+<option><%= ControllerUtils.COMMAND_DELETE%></option>
+</select>
+<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
+</p>
+<p id="prodDesc" class="actionDescription" />
+</form>
+
+<script type="text/javascript">
+<%@include file="/includes/controllerJavascript.jsp" %>
+window.onload = function() {
+  onWithSelectionChange("prod", document.getElementById("prodSelection"));
+}
+</script>
+<% } else { %>
+<p>No files were created. Probably something went wrong.</p>
+<% } %>
 <p>
 You can (and probably should) now return to the <a href="/controller.jsp">control center</a>.
 </p>
-
 <%@include file="/includes/defaultFooter.jsp" %>

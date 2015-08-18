@@ -187,6 +187,7 @@ public class FSElement implements Comparable<FSElement> {
   /** {@inheritDoc} */
   @Override
   public final int compareTo(final FSElement o) {
+    Path parent1, parent2;
 
     if (o == this) {
       return 0;
@@ -195,10 +196,13 @@ public class FSElement implements Comparable<FSElement> {
       return (-1);
     }
 
+    parent1 = parent2 = null;
     if (this.m_type.isFile()) {
       if (!(o.m_type.isFile())) {
         return 1;
       }
+      parent1 = this.m_path.getParent();
+      parent2 = o.m_path.getParent();
     } else {
       if (o.m_type.isFile()) {
         return (-1);
@@ -210,6 +214,17 @@ public class FSElement implements Comparable<FSElement> {
     }
     if (o.m_path.startsWith(this.m_path)) {
       return (-1);
+    }
+
+    if ((parent1 != null) && (parent2 != null)) {
+      if (!(parent1.equals(parent2))) {
+        if (parent1.startsWith(parent2)) {
+          return 1;
+        }
+        if (parent2.startsWith(parent1)) {
+          return (-1);
+        }
+      }
     }
 
     return this.m_path.compareTo(o.m_path);
