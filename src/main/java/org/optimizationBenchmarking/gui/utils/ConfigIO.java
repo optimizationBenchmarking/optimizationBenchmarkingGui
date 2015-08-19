@@ -38,6 +38,7 @@ import org.optimizationBenchmarking.utils.reflection.EPrimitiveType;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.AbstractTextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
+import org.optimizationBenchmarking.utils.text.tokenizers.LineIterator;
 import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** Some support for configuration I/O */
@@ -491,7 +492,7 @@ public final class ConfigIO {
       out.write(field);
       out.write(ConfigIO.SUFFIX_DESC_ROW);
       out.write(ConfigIO.CONFIG_DESC_ROW_2);
-      encoded.append(param.getDescription());
+      ConfigIO.__appendText(param.getDescription(), out, encoded);
 
       if (isChoice) {
         out.write(ConfigIO.CONFIG_CHOICE_ROW_1);
@@ -660,7 +661,7 @@ public final class ConfigIO {
           out.write("case '");//$NON-NLS-1$
           encoded.append(de.getName());
           out.write("':{text='");//$NON-NLS-1$
-          encoded.append(de.getDescription());
+          ConfigIO.__appendText(de.getDescription(), out, encoded);
           out.write("';break;}");//$NON-NLS-1$
         }
         out.write("}document.getElementById('");//$NON-NLS-1$
@@ -883,6 +884,33 @@ public final class ConfigIO {
       }
     } else {
       handle.unknownSubmit(submit);
+    }
+  }
+
+  /**
+   * Append a text to an encoded output.
+   *
+   * @param text
+   *          the text
+   * @param out
+   *          the writer
+   * @param encoded
+   *          the destination
+   * @throws IOException
+   *           if i/o fails
+   */
+  private static final void __appendText(final String text,
+      final JspWriter out, final ITextOutput encoded) throws IOException {
+    boolean first;
+
+    first = true;
+    for (final String line : new LineIterator(text)) {
+      if (first) {
+        first = false;
+      } else {
+        out.append("<br/>"); //$NON-NLS-1$
+      }
+      encoded.append(line);
     }
   }
 }
