@@ -87,5 +87,7 @@ public final class Viewer extends HttpServlet {
         }
       }
     }
+
+    resp.sendRedirect("/controller.jsp");//$NON-NLS-1$
   }
 }

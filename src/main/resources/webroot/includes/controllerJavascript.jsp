@@ -11,6 +11,12 @@ function onWithSelectionChange(prefix, selection) {
     
     if(form != null) {
       switch(String(selection.value)) {
+        case "<%= ControllerUtils.COMMAND_REMEMBER%>": {
+          form.method = "post";
+          form.action = "/controller.jsp";
+          form.target = "_self";
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
           form.method = "post";
           form.action = "/download";

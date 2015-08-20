@@ -99,6 +99,7 @@ public final class Download extends HttpServlet {
       handle.warning("Nothing to download."); //$NON-NLS-1$
     }
 
+    resp.sendRedirect("/controller.jsp");//$NON-NLS-1$
   }
 
   /**
