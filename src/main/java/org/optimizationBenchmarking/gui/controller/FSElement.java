@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.logging.Level;
 
+import org.optimizationBenchmarking.gui.utils.FileDesc;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
@@ -24,19 +25,10 @@ import org.optimizationBenchmarking.utils.text.textOutput.MemoryTextOutput;
 import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** a file system element */
-public class FSElement implements Comparable<FSElement> {
+public class FSElement extends FileDesc implements Comparable<FSElement> {
 
   /** the root path */
   static final String ROOT_PATH = "/"; //$NON-NLS-1$
-
-  /** the actual path */
-  private final Path m_path;
-
-  /** the name */
-  private final String m_name;
-
-  /** the relative path */
-  private final String m_relative;
 
   /** the size of the file */
   private final long m_size;
@@ -70,10 +62,7 @@ public class FSElement implements Comparable<FSElement> {
    */
   FSElement(final Path path, final String name, final String relative,
       final EFSElementType type, final long size, final long time) {
-    super();
-    this.m_name = name;
-    this.m_path = path;
-    this.m_relative = relative;
+    super(path, name, relative);
     this.m_type = type;
     this.m_size = size;
     this.m_changeTime = time;
@@ -86,33 +75,6 @@ public class FSElement implements Comparable<FSElement> {
    */
   public final EFSElementType getType() {
     return this.m_type;
-  }
-
-  /**
-   * Get the name of the file system element
-   *
-   * @return the name of the file system element
-   */
-  public final String getName() {
-    return this.m_name;
-  }
-
-  /**
-   * Get the relative path of this file system element
-   *
-   * @return the relative path of this file system element
-   */
-  public final String getRelativePath() {
-    return this.m_relative;
-  }
-
-  /**
-   * Get the full path
-   *
-   * @return the full path
-   */
-  public final Path getFullPath() {
-    return this.m_path;
   }
 
   /**
@@ -175,18 +137,10 @@ public class FSElement implements Comparable<FSElement> {
     return this.m_timeString;
   }
 
-  /**
-   * Get the path of the file system element
-   *
-   * @return the path of the file system element
-   */
-  final Path _getPath() {
-    return this.m_path;
-  }
-
   /** {@inheritDoc} */
   @Override
   public final int compareTo(final FSElement o) {
+    final Path p1, p2;
     Path parent1, parent2;
 
     if (o == this) {
@@ -196,23 +150,25 @@ public class FSElement implements Comparable<FSElement> {
       return (-1);
     }
 
+    p1 = this.getFullPath();
+    p2 = o.getFullPath();
     parent1 = parent2 = null;
     if (this.m_type.isFile()) {
       if (!(o.m_type.isFile())) {
         return 1;
       }
-      parent1 = this.m_path.getParent();
-      parent2 = o.m_path.getParent();
+      parent1 = p1.getParent();
+      parent2 = p2.getParent();
     } else {
       if (o.m_type.isFile()) {
         return (-1);
       }
     }
 
-    if (this.m_path.startsWith(o.m_path)) {
+    if (p1.startsWith(p2)) {
       return 1;
     }
-    if (o.m_path.startsWith(this.m_path)) {
+    if (p2.startsWith(p1)) {
       return (-1);
     }
 
@@ -227,20 +183,7 @@ public class FSElement implements Comparable<FSElement> {
       }
     }
 
-    return this.m_path.compareTo(o.m_path);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public final boolean equals(final Object o) {
-    return ((o == this) || ((o instanceof FSElement) && //
-    (this.m_path.equals(((FSElement) o).m_path))));
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public final int hashCode() {
-    return this.m_path.hashCode();
+    return p1.compareTo(p2);
   }
 
   /**

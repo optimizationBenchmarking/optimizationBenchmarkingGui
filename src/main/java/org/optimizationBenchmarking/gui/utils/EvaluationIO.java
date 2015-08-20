@@ -75,8 +75,8 @@ public final class EvaluationIO {
    *          the handle
    * @return the dumps
    */
-  public static final EvaluationModules[] load(final String basePath,
-      final String[] relPaths, final Handle handle) {
+  public static final Loaded<EvaluationModules> load(
+      final String basePath, final String[] relPaths, final Handle handle) {
     final Controller controller;
     final EvaluationModules[] result;
     BasicFileAttributes bfa;
@@ -121,20 +121,17 @@ public final class EvaluationIO {
             try (final EvaluationModulesBuilder builder = new EvaluationModulesBuilder()) {
               EvaluationXMLInput.getInstance().use().setLogger(handle)
                   .addPath(path).setDestination(builder).create().call();
-              result[i] = builder.getResult();
+              return new Loaded<>(path, root, builder.getResult());
             }
-
-            continue;
           }
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
-            result[i] = EvaluationModules.empty();
             if (handle.isLoggable(Level.INFO)) {
-              handle
-                  .info("Evaluation file '" + relPath + //$NON-NLS-1$
+              handle.info(//
+                  "Evaluation file '" + relPath + //$NON-NLS-1$
                       "' does not exist or is empty, evaluation module list is empty.");//$NON-NLS-1$
             }
-            continue;
+            return new Loaded<>(path, root, EvaluationModules.empty());
           }
 
           handle.failure("Path '" + relPath + //$NON-NLS-1$
@@ -146,7 +143,7 @@ public final class EvaluationIO {
       }
     }
 
-    return result;
+    return null;
   }
 
   /**

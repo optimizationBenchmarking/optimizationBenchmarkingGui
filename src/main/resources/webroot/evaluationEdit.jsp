@@ -6,6 +6,7 @@
 <%@ page import="org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.ModuleEntry" %>
 <%@ page import="org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.EvaluationModules" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.EvaluationIO" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Loaded" %>
 <%@ page import="org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.ModuleDescriptions" %>
 <%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
@@ -14,7 +15,7 @@
 <%
 final String                submit    = request.getParameter(ControllerUtils.INPUT_SUBMIT);
 final ArrayList<String>     jsCollector;
-      EvaluationModules[]   modules   = null;
+      Loaded<EvaluationModules> module = null;
       ModuleDescriptions    descs     = null;
       String[]              relPaths  = null;
       int                   choice    = 2;
@@ -40,10 +41,10 @@ if(submit != null) {
   try(final Handle handle = controller.createJspHandle(pageContext)) {  
     switch(choice) {
       case 0: {
-        modules = EvaluationIO.load(null, relPaths, handle);
+        module = EvaluationIO.load(null, relPaths, handle);
         break; }
       case 1: {
-        modules = EvaluationIO.load(request.getParameter(ControllerUtils.INPUT_CURRENT_DIR),
+        module = EvaluationIO.load(request.getParameter(ControllerUtils.INPUT_CURRENT_DIR),
                               relPaths, handle);
         break; }
       default: {
@@ -53,22 +54,19 @@ if(submit != null) {
     descs = EvaluationIO.getDescriptions(handle);
   }
     
-  if((relPaths!=null) && (relPaths.length > 0) && (modules != null)) {
-    jsCollector = new ArrayList<>();
-    for(int i = 0; i < relPaths.length; i++) {
-      if( (relPaths[i] != null) && (modules[i] != null) ) {
-        final String relPath = Encoder.htmlEncode(relPaths[i]); 
+  if(module != null) {
+    jsCollector = new ArrayList<>(); 
 %>
-<h2>File &quot;<%= relPath %>&quot;</h2>
+<h2>File &quot;<%= Encoder.htmlEncode(module.getName()) %>&quot;</h2>
 <form class="invisible" action="/evaluationEditSave.jsp" method="post" target="_blank">
-<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= relPath%>" />
-<% prefix = String.valueOf(i); %>
+<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= Encoder.htmlEncode(module.getRelativePath())%>" />
+<% prefix = "0"; %>
 <input type="hidden" name="<%= EvaluationIO.PARAMETER_EVALUATION_PREFIX%>" value="<%= prefix%>" />
-<% EvaluationIO.putFormFields(prefix, descs, modules[i], pageContext.getOut(), jsCollector); %>
+<% EvaluationIO.putFormFields(prefix, descs, module.getLoaded(), pageContext.getOut(), jsCollector); %>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 </p>
 </form>
-<% } } ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>
+<% ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>
 <%@include file="/includes/defaultFooter.jsp" %>

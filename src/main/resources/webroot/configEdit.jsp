@@ -3,6 +3,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.ConfigIO" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Loaded" %>
 <%@ page import="org.optimizationBenchmarking.utils.config.ConfigurationBuilder" %>
 <%@ page import="org.optimizationBenchmarking.utils.config.ConfigurationXMLInput" %>
 <%@ page import="org.optimizationBenchmarking.utils.config.DefinitionXMLInput" %>
@@ -18,7 +19,7 @@
 final String            submit   = request.getParameter(ControllerUtils.INPUT_SUBMIT);
 final Definition        definition;
 final ArrayList<String> jsCollector;
-      Dump[]            dumps      = null;
+      Loaded<Dump>[]    dumps      = null;
       String[]          relPaths   = null;
       int               choice     = 2;
       String            prefix;
@@ -58,23 +59,21 @@ if(submit != null) {
     }
   }
     
-  if((relPaths!=null) && (relPaths.length > 0) && (dumps != null)) {
+  if(dumps != null) {
     jsCollector = new ArrayList<>();
-    for(int i = 0; i < relPaths.length; i++) {
-      if( (relPaths[i] != null) && (dumps[i] != null) ) {
-        final String relPath = Encoder.htmlEncode(relPaths[i]); 
+    for(int i = 0; i < dumps.length; i++) { 
 %>
-<h2>File &quot;<%= relPath %>&quot;</h2>
+<h2>File &quot;<%= Encoder.htmlEncode(dumps[i].getName()) %>&quot;</h2>
 <form class="invisible" action="/configEditSave.jsp" method="post" target="_blank">
-<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= relPath%>" />
+<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= Encoder.htmlEncode(dumps[i].getRelativePath())%>" />
 <% prefix = String.valueOf(i); %>
 <input type="hidden" name="<%= ConfigIO.PARAMETER_PREFIX%>" value="<%= prefix%>" />
-<% ConfigIO.putFormFields(prefix, dumps[i], pageContext.getOut(), jsCollector); %>
+<% ConfigIO.putFormFields(prefix, dumps[i].getLoaded(), pageContext.getOut(), jsCollector); %>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR %>" formmethod="get" formaction="/evaluator.jsp">
 </p>
 </form>
-<% } } ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>
+<% } ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>
 <%@include file="/includes/defaultFooter.jsp" %>

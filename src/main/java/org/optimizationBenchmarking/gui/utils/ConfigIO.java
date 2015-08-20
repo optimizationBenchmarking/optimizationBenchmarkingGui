@@ -175,11 +175,11 @@ public final class ConfigIO {
    *          the handle
    * @return the dumps
    */
-  public static final Dump[] load(final String basePath,
+  public static final Loaded<Dump>[] load(final String basePath,
       final String[] relPaths, final Handle handle) {
     final Definition definition;
     final Controller controller;
-    final Dump[] result;
+    final ArrayList<Loaded<Dump>> result;
     BasicFileAttributes bfa;
     Path root, path;
     String relPath;
@@ -214,8 +214,8 @@ public final class ConfigIO {
       root = controller.resolve(handle, basePath, root);
     }
 
-    result = new Dump[relPaths.length];
-    for (i = 0; i < result.length; i++) {
+    result = new ArrayList<>(relPaths.length);
+    for (i = 0; i < relPaths.length; i++) {
       relPath = relPaths[i];
       try {
         path = handle.getController().resolve(handle, relPath, root);
@@ -232,14 +232,16 @@ public final class ConfigIO {
             try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
               ConfigurationXMLInput.getInstance().use().setLogger(handle)
                   .addPath(path).setDestination(builder).create().call();
-              result[i] = definition.dump(builder.getResult());
+              result.add(new Loaded<>(path, root, definition.dump(builder
+                  .getResult())));
             }
 
             continue;
           }
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
-            result[i] = Dump.emptyDumpForDefinition(definition);
+            result.add(new Loaded<>(path, root, Dump
+                .emptyDumpForDefinition(definition)));
             if (handle.isLoggable(Level.INFO)) {
               handle.info("Configuration file '" + relPath + //$NON-NLS-1$
                   "' does not exist or is empty, configuration is empty.");//$NON-NLS-1$
@@ -256,7 +258,11 @@ public final class ConfigIO {
       }
     }
 
-    return result;
+    i = result.size();
+    if (i <= 0) {
+      return null;
+    }
+    return result.toArray(new Loaded[i]);
   }
 
   /**
