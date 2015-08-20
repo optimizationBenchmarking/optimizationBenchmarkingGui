@@ -57,6 +57,9 @@ public final class ConfigIO {
   /** the choice row suffix */
   public static final String SUFFIX_CHOICE_CELL = "-choicetd"; //$NON-NLS-1$
 
+  /** the prefix separator */
+  static final char PREFIX_SEPARATOR = '_';
+
   /** the start of the configuration table */
   private static final char[] CONFIG_TABLE_START = { '<', 't', 'a', 'b',
       'l', 'e', ' ', 'c', 'l', 'a', 's', 's', '=', '"', 'i', 'n', 'v',
@@ -125,9 +128,9 @@ public final class ConfigIO {
       '<', '/', 't', 'r', '>', };
 
   /** the start of the java script */
-  private static final char[] JAVASCRIPT_START = { '<', 's', 'c', 'r',
-      'i', 'p', 't', ' ', 't', 'y', 'p', 'e', '=', '"', 't', 'e', 'x',
-      't', '/', 'j', 'a', 'v', 'a', 's', 'c', 'r', 'i', 'p', 't', '"', '>' };
+  static final char[] JAVASCRIPT_START = { '<', 's', 'c', 'r', 'i', 'p',
+      't', ' ', 't', 'y', 'p', 'e', '=', '"', 't', 'e', 'x', 't', '/',
+      'j', 'a', 'v', 'a', 's', 'c', 'r', 'i', 'p', 't', '"', '>' };
 
   /** the toggle function name */
   private static final String TOGGLE_FUNCTION_NAME = "enabledChange"; //$NON-NLS-1$
@@ -141,8 +144,8 @@ public final class ConfigIO {
   private static final String ADD_FIELD_ROW_ID = "_add_field_row"; //$NON-NLS-1$
 
   /** the end of the java script */
-  private static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r',
-      'i', 'p', 't', '>', };
+  static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r', 'i',
+      'p', 't', '>', };
 
   /** the forbidden constructor */
   private ConfigIO() {
@@ -800,59 +803,59 @@ public final class ConfigIO {
    *          the parameter definition
    * @param prefix
    *          the prefix
-   * @return the configuration
+   * @param handle
+   *          the handle
+   * @param builder
+   *          the configuration builder
    */
-  private static final Configuration __loadConfigFromRequest(
-      final String prefix, final HttpServletRequest request,
-      final Definition definition) {
+  static final void _loadConfigFromRequest(final String prefix,
+      final HttpServletRequest request, final Definition definition,
+      final Handle handle, final ConfigurationBuilder builder) {
     final HashSet<String> done;
     String name, field, enabled, temp, value;
 
-    try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
+    if (definition.allowsMore()) {
+      done = new HashSet<>();
+    } else {
+      done = null;
+    }
 
-      if (definition.allowsMore()) {
-        done = new HashSet<>();
-      } else {
-        done = null;
+    for (final Parameter<?> param : definition) {
+      name = param.getName();
+
+      field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
+      temp = (field + ConfigIO.ENABLER_SUFFIX);
+      if (done != null) {
+        done.add(field);
+        done.add(temp);
       }
 
-      for (final Parameter<?> param : definition) {
-        name = param.getName();
-
-        field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
-        temp = (field + ConfigIO.ENABLER_SUFFIX);
-        if (done != null) {
-          done.add(field);
-          done.add(temp);
-        }
-
-        enabled = request.getParameter(temp);
-        if (enabled != null) {
-          if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
-            value = request.getParameter(field);
-            if (value != null) {
-              builder.put(name, value);
-            }
+      enabled = request.getParameter(temp);
+      if (enabled != null) {
+        if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+          value = request.getParameter(field);
+          if (value != null) {
+            builder.put(name, value);
           }
         }
       }
+    }
 
-      if (done != null) {
-        for (final Map.Entry<String, String[]> entry : request
-            .getParameterMap().entrySet()) {
-          field = entry.getKey();
-          if (!(done.contains(field))) {
-            name = ConfigIO.__nameFromPrefixAndFieldName(prefix, field);
-            if (name != null) {
-              temp = (field + ConfigIO.ENABLER_SUFFIX);
-              enabled = request.getParameter(temp);
-              if (enabled != null) {
-                if (done.add(temp) && done.add(field)) {
-                  if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
-                    value = request.getParameter(field);
-                    if (value != null) {
-                      builder.put(name, value);
-                    }
+    if (done != null) {
+      for (final Map.Entry<String, String[]> entry : request
+          .getParameterMap().entrySet()) {
+        field = entry.getKey();
+        if (!(done.contains(field))) {
+          name = ConfigIO.__nameFromPrefixAndFieldName(prefix, field);
+          if (name != null) {
+            temp = (field + ConfigIO.ENABLER_SUFFIX);
+            enabled = request.getParameter(temp);
+            if (enabled != null) {
+              if (done.add(temp) && done.add(field)) {
+                if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+                  value = request.getParameter(field);
+                  if (value != null) {
+                    builder.put(name, value);
                   }
                 }
               }
@@ -860,8 +863,6 @@ public final class ConfigIO {
           }
         }
       }
-
-      return builder.getResult();
     }
   }
 
@@ -894,8 +895,12 @@ public final class ConfigIO {
           try {
             definition = ConfigIO.getDefinition(handle);
             if (definition != null) {
-              config = ConfigIO.__loadConfigFromRequest(prefix, request,
-                  definition);
+
+              try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
+                ConfigIO._loadConfigFromRequest(prefix, request,
+                    definition, handle, builder);
+                config = builder.getResult();
+              }
 
               ConfigurationXMLOutput.getInstance().use().setLogger(handle)
                   .setPath(realPath).setSource(config).create().call();

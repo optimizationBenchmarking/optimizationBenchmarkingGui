@@ -2,7 +2,6 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.ConfigIO" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
-
 <h1>Save Configuration File</h1>
 <%
 try(final Handle handle = controller.createJspHandle(pageContext)) {

@@ -18,7 +18,6 @@ final ArrayList<String>     jsCollector;
       ModuleDescriptions    descs     = null;
       String[]              relPaths  = null;
       int                   choice    = 2;
-      int                   index     = 0;
       String                prefix;
       
 if(submit != null) {  
@@ -63,7 +62,13 @@ if(submit != null) {
 <h2>File &quot;<%= relPath %>&quot;</h2>
 <form class="invisible" action="/evaluationEditSave.jsp" method="post" target="_blank">
 <input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= relPath%>" />
-<% index = EvaluationIO.putFormFields(index, descs, modules[i], pageContext.getOut(), jsCollector); %>
+<% prefix = String.valueOf(i); %>
+<input type="hidden" name="<%= EvaluationIO.PARAMETER_EVALUATION_PREFIX%>" value="<%= prefix%>" />
+<% EvaluationIO.putFormFields(prefix, descs, modules[i], pageContext.getOut(), jsCollector); %>
+<p class="controllerActions">
+<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
+<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="get" formaction="/download">
+</p>
 </form>
 <% } } ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>
 <%@include file="/includes/defaultFooter.jsp" %>
