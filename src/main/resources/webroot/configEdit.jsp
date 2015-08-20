@@ -72,7 +72,7 @@ if(submit != null) {
 <% ConfigIO.putFormFields(prefix, dumps[i], pageContext.getOut(), jsCollector); %>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
-<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="get" formaction="/download">
+<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR %>" formmethod="get" formaction="/evaluator.jsp">
 </p>
 </form>

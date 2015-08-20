@@ -12,7 +12,7 @@ function onWithSelectionChange(prefix, selection) {
     if(form != null) {
       switch(String(selection.value)) {
         case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
-          form.method = "get";
+          form.method = "post";
           form.action = "/download";
           form.target = "_blank";
           break;

@@ -67,7 +67,7 @@ if(submit != null) {
 <% EvaluationIO.putFormFields(prefix, descs, modules[i], pageContext.getOut(), jsCollector); %>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
-<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="get" formaction="/download">
+<input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 </p>
 </form>
 <% } } ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } } %>

@@ -30,6 +30,30 @@ public final class Viewer extends HttpServlet {
   @Override
   protected final void doGet(final HttpServletRequest req,
       final HttpServletResponse resp) throws ServletException, IOException {
+    Viewer.__process(req, resp);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final void doPost(final HttpServletRequest req,
+      final HttpServletResponse resp) throws ServletException, IOException {
+    Viewer.__process(req, resp);
+  }
+
+  /**
+   * Process a request
+   *
+   * @param req
+   *          the request
+   * @param resp
+   *          the response
+   * @throws ServletException
+   *           the error
+   * @throws IOException
+   *           the io error
+   */
+  private static final void __process(final HttpServletRequest req,
+      final HttpServletResponse resp) throws ServletException, IOException {
     final Controller controller;
     final String view;
     final Path path;

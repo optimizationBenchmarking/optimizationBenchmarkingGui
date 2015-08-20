@@ -34,6 +34,30 @@ public final class Download extends HttpServlet {
   @Override
   protected final void doGet(final HttpServletRequest req,
       final HttpServletResponse resp) throws ServletException, IOException {
+    Download.__process(req, resp);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final void doPost(final HttpServletRequest req,
+      final HttpServletResponse resp) throws ServletException, IOException {
+    Download.__process(req, resp);
+  }
+
+  /**
+   * Process a request
+   *
+   * @param req
+   *          the request
+   * @param resp
+   *          the response
+   * @throws ServletException
+   *           the error
+   * @throws IOException
+   *           the io error
+   */
+  private static final void __process(final HttpServletRequest req,
+      final HttpServletResponse resp) throws ServletException, IOException {
     final Controller controller;
     final String[] selection;
     final Path root;
@@ -205,7 +229,7 @@ public final class Download extends HttpServlet {
     Header.defaultHeader(response);
     response.setHeader("Content-Disposition", //$NON-NLS-1$
         "attachment; filename=\"" + name + '"');//$NON-NLS-1$
-    EArchiveType.ZIP.compressPathsToStream(elements, root,
+    EArchiveType.ZIP.compressPathsToStream(elements, archiveRoot,
         response.getOutputStream());
   }
 }
