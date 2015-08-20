@@ -35,6 +35,12 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%>": {
+          form.method = "get";
+          form.action = "/evaluationEdit.jsp";
+          form.target = "_self";      
+          break;
+        }
         default: {
           form.method = "get";
           form.action = "/controller.jsp";
@@ -59,11 +65,15 @@ function onWithSelectionChange(prefix, selection) {
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
-          text = "Edit the selected file(s) as text file (s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
+          text = "Edit the selected file(s) as text file(s). This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
-          text = "Edit the selected file(s) as configuration file (s). A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
+          text = "Edit the selected file(s) as configuration file(s). A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%>": {
+          text = "Edit the selected file(s) as configuration file(s). An evaluation file tells the evaluation what to do with the experiment data, i.e., what stuff you want in your output report.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {

@@ -39,7 +39,6 @@ import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.AbstractTextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.tokenizers.LineIterator;
-import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** Some support for configuration I/O */
 public final class ConfigIO {
@@ -184,13 +183,15 @@ public final class ConfigIO {
     int i;
 
     if (relPaths == null) {
-      handle.failure("Set of paths to load and edit cannot be null."); //$NON-NLS-1$
+      handle.failure(//
+          "Set of paths to load and edit configuration file cannot be null."); //$NON-NLS-1$
       return null;
     }
 
     i = relPaths.length;
     if (i <= 0) {
-      handle.failure("Set of paths to load and edit cannot empty."); //$NON-NLS-1$
+      handle.failure(//
+          "Set of paths to load and edit configuration file cannot empty."); //$NON-NLS-1$
       return null;
     }
 
@@ -237,8 +238,8 @@ public final class ConfigIO {
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
             result[i] = Dump.emptyDumpForDefinition(definition);
             if (handle.isLoggable(Level.INFO)) {
-              handle.info("File '" + relPath + //$NON-NLS-1$
-                  "' does not exist or is empty, configuration if empty.");//$NON-NLS-1$
+              handle.info("Configuration file '" + relPath + //$NON-NLS-1$
+                  "' does not exist or is empty, configuration is empty.");//$NON-NLS-1$
             }
             continue;
           }
@@ -269,11 +270,41 @@ public final class ConfigIO {
    * @throws IOException
    *           if i/o fails
    */
-  @SuppressWarnings("incomplete-switch")
   public static final void putFormFields(final String prefix,
       final Dump dump, final JspWriter out,
       final ArrayList<String> jsCollector) throws IOException {
     final ITextOutput encoded, wrapper;
+
+    wrapper = AbstractTextOutput.wrap(out);
+    encoded = Encoder.htmlEncode(wrapper);
+
+    ConfigIO._putFormFields(prefix, dump, out, jsCollector, wrapper,
+        encoded);
+  }
+
+  /**
+   * Write the form fields corresponding to the given configuration dump
+   *
+   * @param prefix
+   *          the id field prefix
+   * @param dump
+   *          the dump
+   * @param out
+   *          the the output destination
+   * @param jsCollector
+   *          the java script collector
+   * @param wrapper
+   *          the wrapper
+   * @param encoded
+   *          the encoder
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("incomplete-switch")
+  static final void _putFormFields(final String prefix, final Dump dump,
+      final JspWriter out, final ArrayList<String> jsCollector,
+      final ITextOutput wrapper, final ITextOutput encoded)
+      throws IOException {
     Parameter<?> param;
     NumberParser<?> numpar;
     Object value;
@@ -283,9 +314,6 @@ public final class ConfigIO {
     boolean first, integer, bool, enabled, isChoice, needsChoices;
     long lng;
     double dbl;
-
-    wrapper = AbstractTextOutput.wrap(out);
-    encoded = XMLCharTransformer.getInstance().transform(wrapper);
 
     out.write(ConfigIO.CONFIG_TABLE_START);
     first = true;
@@ -492,7 +520,7 @@ public final class ConfigIO {
       out.write(field);
       out.write(ConfigIO.SUFFIX_DESC_ROW);
       out.write(ConfigIO.CONFIG_DESC_ROW_2);
-      ConfigIO.__appendText(param.getDescription(), out, encoded);
+      ConfigIO.printText(param.getDescription(), out, encoded);
 
       if (isChoice) {
         out.write(ConfigIO.CONFIG_CHOICE_ROW_1);
@@ -661,7 +689,7 @@ public final class ConfigIO {
           out.write("case '");//$NON-NLS-1$
           encoded.append(de.getName());
           out.write("':{text='");//$NON-NLS-1$
-          ConfigIO.__appendText(de.getDescription(), out, encoded);
+          ConfigIO.printText(de.getDescription(), out, encoded);
           out.write("';break;}");//$NON-NLS-1$
         }
         out.write("}document.getElementById('");//$NON-NLS-1$
@@ -899,7 +927,7 @@ public final class ConfigIO {
    * @throws IOException
    *           if i/o fails
    */
-  private static final void __appendText(final String text,
+  public static final void printText(final String text,
       final JspWriter out, final ITextOutput encoded) throws IOException {
     boolean first;
 
@@ -908,7 +936,7 @@ public final class ConfigIO {
       if (first) {
         first = false;
       } else {
-        out.append("<br/>"); //$NON-NLS-1$
+        out.append("<br/>&nbsp;&nbsp;&nbsp;&nbsp;"); //$NON-NLS-1$
       }
       encoded.append(line);
     }

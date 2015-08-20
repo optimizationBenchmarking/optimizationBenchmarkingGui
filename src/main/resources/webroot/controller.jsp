@@ -106,6 +106,7 @@ Selected element(s):
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
@@ -179,6 +180,7 @@ Selected remembered element(s):
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>

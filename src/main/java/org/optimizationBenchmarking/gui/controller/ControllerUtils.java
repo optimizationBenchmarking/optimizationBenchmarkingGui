@@ -51,6 +51,8 @@ public final class ControllerUtils {
   public static final String COMMAND_EDIT_AS_TEXT = "edit as plain text";//$NON-NLS-1$
   /** edit a config file */
   public static final String COMMAND_EDIT_AS_CONFIG = "edit as config file";//$NON-NLS-1$
+  /** edit a evaluation file */
+  public static final String COMMAND_EDIT_AS_EVALUATION = "edit as evaluation file";//$NON-NLS-1$
   /** delete a file or path */
   public static final String COMMAND_DELETE = "delete";//$NON-NLS-1$
   /** create a new text file */
