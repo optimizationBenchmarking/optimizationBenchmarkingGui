@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.Handle;
@@ -36,13 +37,13 @@ public final class FileIO {
    *          the handle
    * @return the file's contents
    */
-  public static final String[] load(final String basePath,
+  public static final Loaded<String>[] load(final String basePath,
       final String[] relPaths, final Handle handle) {
-    final String[] res;
+    final ArrayList<Loaded<String>> res;
     final MemoryTextOutput mto;
     final ITextOutput encoded;
     final Controller controller;
-    Path root;
+    Path root, path;
     int i;
 
     if (relPaths == null) {
@@ -62,20 +63,25 @@ public final class FileIO {
       root = controller.resolve(handle, basePath, root);
     }
 
-    res = new String[i];
+    res = new ArrayList<>(i);
     mto = new MemoryTextOutput();
     encoded = XMLCharTransformer.getInstance().transform(mto);
 
-    for (i = 0; i < res.length; i++) {
-      if (FileIO.__load(root, relPaths[i], handle, encoded)) {
+    for (i = 0; i < relPaths.length; i++) {
+      path = FileIO.__load(root, relPaths[i], handle, encoded);
+      if (path != null) {
         encoded.flush();
         mto.flush();
-        res[i] = mto.toString();
+        res.add(new Loaded<>(path, root, mto.toString()));
       }
       mto.clear();
     }
 
-    return res;
+    i = res.size();
+    if (i <= 0) {
+      return null;
+    }
+    return res.toArray(new Loaded[i]);
   }
 
   /**
@@ -89,10 +95,10 @@ public final class FileIO {
    *          the handle
    * @param mto
    *          the text output
-   * @return {@code true} on success, {@code false} on failure
+   * @return the path, or {@code null} on error
    */
-  private static final boolean __load(final Path root,
-      final String relPath, final Handle handle, final ITextOutput mto) {
+  private static final Path __load(final Path root, final String relPath,
+      final Handle handle, final ITextOutput mto) {
     final Path path, parent;
     String string;
 
@@ -124,14 +130,14 @@ public final class FileIO {
         }
 
         handle.success("Finished loading file '" + relPath + '\'' + '.'); //$NON-NLS-1$
-        return true;
+        return path;
       } catch (final Throwable error) {
         handle.failure(("Failed to load file '" + //$NON-NLS-1$
             relPath + '\'' + '.'), error);
       }
     }
 
-    return false;
+    return null;
   }
 
   /**

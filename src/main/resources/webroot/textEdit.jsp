@@ -3,14 +3,15 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.FileIO" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Loaded" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
 <h1>Edit as Plain Text</h1>
 <%
-final String   submit   = request.getParameter(ControllerUtils.INPUT_SUBMIT);
-      String[] texts    = null;
-      String[] relPaths = null;
-      int      choice   = 2;
+final String           submit   = request.getParameter(ControllerUtils.INPUT_SUBMIT);
+      Loaded<String>[] texts    = null;
+      String[]         relPaths = null;
+      int              choice   = 2;
       
 if(submit != null) {  
   if(submit.equalsIgnoreCase(ControllerUtils.BUTTON_OK)) {
@@ -45,19 +46,17 @@ if(submit != null) {
     }
   }
     
-  if((relPaths!=null) && (relPaths.length > 0) && (texts != null)) {
-    for(int i = 0; i < relPaths.length; i++) {
-      if( (relPaths[i] != null) && (texts[i] != null) ) {
-        final String relPath = Encoder.htmlEncode(relPaths[i]); 
+  if(texts != null) {
+    for(int i = 0; i < texts.length; i++) {
 %>
-<h2>File &quot;<%= relPath %>&quot;</h2>
+<h2>File &quot;<%= Encoder.htmlEncode(texts[i].getName()) %>&quot;</h2>
 <form class="invisible" action="/textEditSave.jsp" method="post" target="_blank">
-<textarea class="editor" rows="25" cols="70" name="contents" wrap="off"<% if(i<=0) {%> autofocus<%}%>><%= texts[i]%></textarea>
-<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= relPath%>" />
+<textarea class="editor" rows="25" cols="70" name="contents" wrap="off"<% if(i<=0) {%> autofocus<%}%>><%= texts[i].getLoaded() %></textarea>
+<input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= Encoder.htmlEncode(texts[i].getRelativePath()) %>" />
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="<%= FileIO.PARAM_SAVE%>">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 </p>
 </form>
-<% } } } } %>
+<% } } } %>
 <%@include file="/includes/defaultFooter.jsp" %>
