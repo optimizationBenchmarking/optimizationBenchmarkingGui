@@ -44,6 +44,14 @@ public final class EvaluationIO {
   /** a module */
   private static final String PARAMETER_MODULE = "module[]";//$NON-NLS-1$
 
+  /** only one file at a time, dude */
+  private static final String ONLY_ONE = //
+  "You can only edit one evaluation file at a time, the other specified files are ignored.";//$NON-NLS-1$
+
+  /** successfully loaded the configuration file */
+  private static final String LOAD_SUCCESS = //
+  "Successfully loaded evaluation file "; //$NON-NLS-1$
+
   /** the definition separator char */
   private static final char DEF_SEP = ';';
 
@@ -78,7 +86,7 @@ public final class EvaluationIO {
   public static final Loaded<EvaluationModules> load(
       final String basePath, final String[] relPaths, final Handle handle) {
     final Controller controller;
-    final EvaluationModules[] result;
+    Loaded<EvaluationModules> result;
     BasicFileAttributes bfa;
     Path root, path;
     String relPath;
@@ -103,8 +111,7 @@ public final class EvaluationIO {
       root = controller.resolve(handle, basePath, root);
     }
 
-    result = new EvaluationModules[relPaths.length];
-    for (i = 0; i < result.length; i++) {
+    for (i = 0; i < relPaths.length; i++) {
       relPath = relPaths[i];
       try {
         path = handle.getController().resolve(handle, relPath, root);
@@ -121,8 +128,14 @@ public final class EvaluationIO {
             try (final EvaluationModulesBuilder builder = new EvaluationModulesBuilder()) {
               EvaluationXMLInput.getInstance().use().setLogger(handle)
                   .addPath(path).setDestination(builder).create().call();
-              return new Loaded<>(path, root, builder.getResult());
+              result = new Loaded<>(path, root, builder.getResult());
             }
+            if (i < (relPaths.length - 1)) {
+              handle.warning(EvaluationIO.ONLY_ONE);
+            }
+            handle.success(EvaluationIO.LOAD_SUCCESS
+                + result.getRelativePath() + '\'');
+            return result;
           }
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
@@ -131,7 +144,13 @@ public final class EvaluationIO {
                   "Evaluation file '" + relPath + //$NON-NLS-1$
                       "' does not exist or is empty, evaluation module list is empty.");//$NON-NLS-1$
             }
-            return new Loaded<>(path, root, EvaluationModules.empty());
+            result = new Loaded<>(path, root, EvaluationModules.empty());
+            if (i < (relPaths.length - 1)) {
+              handle.warning(EvaluationIO.ONLY_ONE);
+            }
+            handle.success(EvaluationIO.LOAD_SUCCESS
+                + result.getRelativePath() + '\'');
+            return result;
           }
 
           handle.failure("Path '" + relPath + //$NON-NLS-1$

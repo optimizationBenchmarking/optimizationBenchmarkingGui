@@ -9,7 +9,6 @@ import java.io.OutputStreamWriter;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.Handle;
@@ -37,12 +36,12 @@ public final class FileIO {
    *          the handle
    * @return the file's contents
    */
-  public static final Loaded<String>[] load(final String basePath,
+  public static final Loaded<String> load(final String basePath,
       final String[] relPaths, final Handle handle) {
-    final ArrayList<Loaded<String>> res;
     final MemoryTextOutput mto;
     final ITextOutput encoded;
     final Controller controller;
+    final Loaded<String> result;
     Path root, path;
     int i;
 
@@ -63,7 +62,6 @@ public final class FileIO {
       root = controller.resolve(handle, basePath, root);
     }
 
-    res = new ArrayList<>(i);
     mto = new MemoryTextOutput();
     encoded = XMLCharTransformer.getInstance().transform(mto);
 
@@ -72,16 +70,20 @@ public final class FileIO {
       if (path != null) {
         encoded.flush();
         mto.flush();
-        res.add(new Loaded<>(path, root, mto.toString()));
+        result = new Loaded<>(path, root, mto.toString());
+        if (i < (relPaths.length - 1)) {
+          handle.warning(//
+              "You can only edit one file at a time, the other specified paths are ignored."); //$NON-NLS-1$
+        }
+        handle.success(//
+            "Successfully loaded text file " + //$NON-NLS-1$
+                result.getRelativePath() + '.');
+        return result;
       }
       mto.clear();
     }
 
-    i = res.size();
-    if (i <= 0) {
-      return null;
-    }
-    return res.toArray(new Loaded[i]);
+    return null;
   }
 
   /**

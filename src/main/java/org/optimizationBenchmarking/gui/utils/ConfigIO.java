@@ -143,6 +143,14 @@ public final class ConfigIO {
   /** the id of the add-field-row */
   private static final String ADD_FIELD_ROW_ID = "_add_field_row"; //$NON-NLS-1$
 
+  /** only one file at a time, dude */
+  private static final String ONLY_ONE = //
+  "You can only edit one configuration file at a time, the other specified files are ignored.";//$NON-NLS-1$
+
+  /** successfully loaded the configuration file */
+  private static final String LOAD_SUCCESS = //
+  "Successfully loaded configuration file "; //$NON-NLS-1$
+
   /** the end of the java script */
   static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r', 'i',
       'p', 't', '>', };
@@ -175,11 +183,11 @@ public final class ConfigIO {
    *          the handle
    * @return the dumps
    */
-  public static final Loaded<Dump>[] load(final String basePath,
+  public static final Loaded<Dump> load(final String basePath,
       final String[] relPaths, final Handle handle) {
     final Definition definition;
     final Controller controller;
-    final ArrayList<Loaded<Dump>> result;
+    Loaded<Dump> result;
     BasicFileAttributes bfa;
     Path root, path;
     String relPath;
@@ -214,7 +222,6 @@ public final class ConfigIO {
       root = controller.resolve(handle, basePath, root);
     }
 
-    result = new ArrayList<>(relPaths.length);
     for (i = 0; i < relPaths.length; i++) {
       relPath = relPaths[i];
       try {
@@ -232,21 +239,31 @@ public final class ConfigIO {
             try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
               ConfigurationXMLInput.getInstance().use().setLogger(handle)
                   .addPath(path).setDestination(builder).create().call();
-              result.add(new Loaded<>(path, root, definition.dump(builder
+              result = (new Loaded<>(path, root, definition.dump(builder
                   .getResult())));
             }
 
-            continue;
+            if (i < (relPaths.length - 1)) {
+              handle.warning(ConfigIO.ONLY_ONE);
+            }
+            handle.success(ConfigIO.LOAD_SUCCESS
+                + result.getRelativePath() + '.');
+            return result;
           }
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
-            result.add(new Loaded<>(path, root, Dump
-                .emptyDumpForDefinition(definition)));
+            result = new Loaded<>(path, root,
+                Dump.emptyDumpForDefinition(definition));
             if (handle.isLoggable(Level.INFO)) {
               handle.info("Configuration file '" + relPath + //$NON-NLS-1$
                   "' does not exist or is empty, configuration is empty.");//$NON-NLS-1$
             }
-            continue;
+            if (i < (relPaths.length - 1)) {
+              handle.warning(ConfigIO.ONLY_ONE);
+            }
+            handle.success(ConfigIO.LOAD_SUCCESS
+                + result.getRelativePath() + '.');
+            return result;
           }
 
           handle.failure("Path '" + relPath + //$NON-NLS-1$
@@ -258,11 +275,7 @@ public final class ConfigIO {
       }
     }
 
-    i = result.size();
-    if (i <= 0) {
-      return null;
-    }
-    return result.toArray(new Loaded[i]);
+    return null;
   }
 
   /**
