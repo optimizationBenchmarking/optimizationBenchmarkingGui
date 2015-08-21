@@ -229,10 +229,7 @@ public final class EvaluationIO {
       out.append("</div>");//$NON-NLS-1$
     }
 
-    divId = EvaluationIO.__beginModuleHead(out, prefix, id++);
-    out.append("Default Values");//$NON-NLS-1$
-    EvaluationIO.__endModuleHead(out, divId, false);
-    out.append("<p>Here you can edit the default values for any argument not provided above.</p><input type=\"hidden\" name=\"");//$NON-NLS-1$
+    out.append("<h3>Default Values</h3><p>Here you can edit the default values for any argument not provided above.</p><input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);
     out.append("\" value=\"");//$NON-NLS-1$
     formPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
@@ -243,7 +240,6 @@ public final class EvaluationIO {
     ConfigIO._putFormFields(formPrefix, descriptions.getJointParameters()
         .dump(modules.getConfiguration()), out, jsCollector, wrapper,
         encoded);
-    out.append("</div>");//$NON-NLS-1$
   }
 
   /**
