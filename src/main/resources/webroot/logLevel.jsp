@@ -15,7 +15,7 @@ operations.
 </p>
 
 <%
-final String submit   = TextUtils.prepare(request.getParameter("submit"));
+final String submit   = TextUtils.prepare(request.getParameter(ControllerUtils.INPUT_SUBMIT));
 if(submit != null) {
   try(final Handle handle = controller.createJspHandle(pageContext)) {
     if(submit.equalsIgnoreCase("OK")) {
