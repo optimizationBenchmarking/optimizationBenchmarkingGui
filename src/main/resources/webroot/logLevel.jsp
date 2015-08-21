@@ -1,6 +1,7 @@
 <%@include file="/includes/defaultHeader.jsp" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>Log Level</h1>  
 <p>
@@ -46,7 +47,7 @@ Choose log levels:
 <option<% if("INFO".equals(currentLevel))    { %> selected="selected"<% } %>>INFO</option>
 <option<% if("SUCCESS".equals(currentLevel)) { %> selected="selected"<% } %>>SUCCESS</option><br/>
 </select><br/>
-<input type="submit" name="submit" value="OK">
+<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="OK">
 </form>
 
 </p>

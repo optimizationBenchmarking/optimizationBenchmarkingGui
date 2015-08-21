@@ -58,7 +58,7 @@ public final class ConfigIO {
   public static final String SUFFIX_CHOICE_CELL = "-choicetd"; //$NON-NLS-1$
 
   /** the prefix separator */
-  static final char PREFIX_SEPARATOR = '_';
+  private static final char PREFIX_SEPARATOR = '_';
 
   /** the start of the configuration table */
   private static final char[] CONFIG_TABLE_START = { '<', 't', 'a', 'b',
@@ -155,6 +155,9 @@ public final class ConfigIO {
   static final char[] JAVASCRIPT_END = { '<', '/', 's', 'c', 'r', 'i',
       'p', 't', '>', };
 
+  /** the current selection */
+  static final String CURRENT_SELECTION = "<em>Current Selection:</em>&nbsp;"; //$NON-NLS-1$
+
   /** the forbidden constructor */
   private ConfigIO() {
     ErrorUtils.doNotCall();
@@ -202,7 +205,7 @@ public final class ConfigIO {
     i = relPaths.length;
     if (i <= 0) {
       handle.failure(//
-          "Set of paths to load and edit configuration file cannot empty."); //$NON-NLS-1$
+          "Set of paths to load and edit configuration file cannot be empty."); //$NON-NLS-1$
       return null;
     }
 
@@ -356,7 +359,7 @@ public final class ConfigIO {
         enabled = true;
       }
 
-      field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
+      field = ConfigIO._fieldNameFromPrefixAndName(prefix, name);
 
       if (first) {
         first = false;
@@ -561,7 +564,7 @@ public final class ConfigIO {
       out.write(ConfigIO.CONFIG_ROW_SPACER);
       out.write(//
       "<tr class=\"configAddFieldRow\" id=\""); //$NON-NLS-1$
-      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+      out.write(ConfigIO._fieldNameFromPrefixAndName(prefix,
           ConfigIO.ADD_FIELD_ROW_ID));
       out.write(//
       "\"><td class=\"configAddFieldButtonCell\"><input type=\"button\" onclick=\""); //$NON-NLS-1$
@@ -569,7 +572,7 @@ public final class ConfigIO {
       out.write(ConfigIO.__addFieldFuncName(prefix));
       out.write(//
       "()\" value=\"add parameter\"/>&nbsp;:</td><td colspan=\"2\" class=\"configAddFieldButtonCell\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
-      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+      out.write(ConfigIO._fieldNameFromPrefixAndName(prefix,
           ConfigIO.NEW_FIELD_NAME));
       out.write(//
       "\"/></td></tr>");//$NON-NLS-1$
@@ -592,8 +595,8 @@ public final class ConfigIO {
    */
   private static final String __choiceFuncName(final String prefix,
       final String name) {
-    return ('f' + ConfigIO.__fieldNameFromPrefixAndName(prefix,
-        (ConfigIO.CHOICE_FUNCTION_NAME + name)));
+    return ConfigIO._functionNameFromPrefixAndName(prefix,
+        (ConfigIO.CHOICE_FUNCTION_NAME + name));
   }
 
   /**
@@ -604,7 +607,7 @@ public final class ConfigIO {
    * @return the add button function name
    */
   private static final String __addFieldFuncName(final String prefix) {
-    return ('f' + ConfigIO.__fieldNameFromPrefixAndName(prefix,
+    return ('f' + ConfigIO._fieldNameFromPrefixAndName(prefix,
         ConfigIO.ADD_FIELD_FUNCTION_NAME));
   }
 
@@ -619,7 +622,7 @@ public final class ConfigIO {
     if (prefix == null) {
       return ""; //$NON-NLS-1$
     }
-    return (prefix + '_');
+    return (prefix + ConfigIO.PREFIX_SEPARATOR);
   }
 
   /**
@@ -631,12 +634,26 @@ public final class ConfigIO {
    *          the name
    * @return the field name
    */
-  private static final String __fieldNameFromPrefixAndName(
-      final String prefix, final String name) {
+  static final String _fieldNameFromPrefixAndName(final String prefix,
+      final String name) {
     if (prefix == null) {
       return name;
     }
-    return (prefix + '_' + name);
+    return (prefix + ConfigIO.PREFIX_SEPARATOR + name);
+  }
+
+  /**
+   * Get the function name for a given name and prefix
+   *
+   * @param prefix
+   *          the prefix
+   * @param name
+   *          the name
+   * @return the field name
+   */
+  static final String _functionNameFromPrefixAndName(final String prefix,
+      final String name) {
+    return ('f' + ConfigIO._fieldNameFromPrefixAndName(prefix, name));
   }
 
   /**
@@ -663,7 +680,7 @@ public final class ConfigIO {
       return null;
     }
     if (field.startsWith(prefix)) {
-      if (field.charAt(prefixLen) == '_') {
+      if (field.charAt(prefixLen) == ConfigIO.PREFIX_SEPARATOR) {
         return TextUtils.prepare(field.substring(prefixLen + 1));
       }
     }
@@ -703,7 +720,7 @@ public final class ConfigIO {
         out.write("function "); //$NON-NLS-1$
         out.write(ConfigIO.__choiceFuncName(prefix, param.getName()));
         out.write("(){var text=\"\"; switch(document.getElementById('");//$NON-NLS-1$
-        field = ConfigIO.__fieldNameFromPrefixAndName(prefix,
+        field = ConfigIO._fieldNameFromPrefixAndName(prefix,
             param.getName());
         encoded.append(field);
         out.write("').value){");//$NON-NLS-1$
@@ -717,7 +734,9 @@ public final class ConfigIO {
         out.write("}document.getElementById('");//$NON-NLS-1$
         encoded.append(field);
         out.write(ConfigIO.SUFFIX_CHOICE_CELL);
-        out.write("').innerHTML='<em>Current Selection:</em>&nbsp;'+text;}");//$NON-NLS-1$
+        out.write("').innerHTML='");//$NON-NLS-1$
+        out.write(ConfigIO.CURRENT_SELECTION);
+        out.write("'+text;}");//$NON-NLS-1$
       }
     }
 
@@ -725,7 +744,7 @@ public final class ConfigIO {
       out.write("function "); //$NON-NLS-1$
       out.write(ConfigIO.__addFieldFuncName(prefix));
       out.write("(){var name=document.getElementById('");//$NON-NLS-1$
-      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+      out.write(ConfigIO._fieldNameFromPrefixAndName(prefix,
           ConfigIO.NEW_FIELD_NAME));
       out.write("').value;if((name!=null)&&(name.length>0)){var newbody='");//$NON-NLS-1$
 
@@ -760,7 +779,7 @@ public final class ConfigIO {
       encoded.append(field);
       out.write("'+name+'");//$NON-NLS-1$
       out.write("\\')\"/></td></tr>';var rowToInsertBefore=document.getElementById('");//$NON-NLS-1$
-      out.write(ConfigIO.__fieldNameFromPrefixAndName(prefix,
+      out.write(ConfigIO._fieldNameFromPrefixAndName(prefix,
           ConfigIO.ADD_FIELD_ROW_ID));
       out.write("');var dummy=document.createElement('table');dummy.innerHTML=newbody;var insert=dummy.firstChild;if(insert.tagName.toUpperCase()=='TBODY'){insert=insert.firstChild;}rowToInsertBefore.parentNode.insertBefore(insert,rowToInsertBefore);dummy.innerHTML='");//$NON-NLS-1$
       out.write(ConfigIO.CONFIG_ROW_SPACER);
@@ -796,10 +815,10 @@ public final class ConfigIO {
     "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}row=document.getElementById(id+\"");//$NON-NLS-1$
     out.write(ConfigIO.SUFFIX_DESC_ROW);
     out.write(//
-    "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}row=document.getElementById(id+\"");//$NON-NLS-1$
+    "\");if(row!=null){if(value){row.style.display=\"table-row\";}else{row.style.display=\"none\";}}row=document.getElementById(id+\"");//$NON-NLS-1$
     out.write(ConfigIO.SUFFIX_CHOICE_ROW);
     out.write(//
-    "\");if(row!=null){if(value){row.style.background=\"transparent\";}else{row.style.background=\"#eeeeee\";}}}}"); //$NON-NLS-1$
+    "\");if(row!=null){if(value){row.style.display=\"table-row\";}else{row.style.display=\"none\";}}}}"); //$NON-NLS-1$
 
     out.write("window.onload=function(){");//$NON-NLS-1$
     for (final String str : jsCollector) {
@@ -842,7 +861,7 @@ public final class ConfigIO {
     for (final Parameter<?> param : definition) {
       name = param.getName();
 
-      field = ConfigIO.__fieldNameFromPrefixAndName(prefix, name);
+      field = ConfigIO._fieldNameFromPrefixAndName(prefix, name);
       temp = (field + ConfigIO.ENABLER_SUFFIX);
       if (done != null) {
         done.add(field);

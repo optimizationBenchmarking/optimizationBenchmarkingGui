@@ -33,16 +33,19 @@ try(final Handle handle = controller.createJspHandle(pageContext)) {
                   new String[] { request.getParameter(ControllerUtils.PARAMETER_CD_PATH) }, handle);
     } else {      
       if(FileIO.PARAM_SAVE.equalsIgnoreCase(submit)) {
-        EvaluationIO.store(handle, request);
-        module = EvaluationIO.load(null,
-                new String[] { request.getParameter(ControllerUtils.PARAMETER_SELECTION) },
-                handle);
+        descs = EvaluationIO.getDescriptions(handle);
+        if(descs != null) {
+          EvaluationIO.store(handle, descs, request);
+          module = EvaluationIO.load(null,
+                  new String[] { request.getParameter(ControllerUtils.PARAMETER_SELECTION) },
+                  handle);
+        }
       } else {
         handle.unknownSubmit(submit);
       }
     }    
   }  
-  if(module != null) {
+  if((module != null) && (descs == null)) {
     descs = EvaluationIO.getDescriptions(handle);
   }
 }
@@ -50,15 +53,17 @@ if(module != null) {
   jsCollector = new ArrayList<>(); 
 %>
 <h2>File &quot;<%= Encoder.htmlEncode(module.getName()) %>&quot;</h2>
-<form class="invisible" action="/evaluationEdit.jsp" method="post" target="_blank">
+<% final String prefix = "e0"; %>
+<form class="invisible" action="/evaluationEdit.jsp" method="post" id="<%= prefix%>">
 <input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= Encoder.htmlEncode(module.getRelativePath())%>" />
-<% final String prefix = "0"; %>
 <input type="hidden" name="<%= EvaluationIO.PARAMETER_EVALUATION_PREFIX%>" value="<%= prefix%>" />
 <% EvaluationIO.putFormFields(prefix, descs, module.getLoaded(), pageContext.getOut(), jsCollector); %>
+<hr/>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 </p>
+<% EvaluationIO.putAdd(prefix, descs, pageContext.getOut(), jsCollector); %>
 </form>
 <% ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } %>
 <%@include file="/includes/defaultFooter.jsp" %>

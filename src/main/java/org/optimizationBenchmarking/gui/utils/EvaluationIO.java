@@ -31,6 +31,7 @@ import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.AbstractTextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
+import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** Some support for configuration I/O */
 public final class EvaluationIO {
@@ -51,6 +52,15 @@ public final class EvaluationIO {
   /** successfully loaded the configuration file */
   private static final String LOAD_SUCCESS = //
   "Successfully loaded evaluation file "; //$NON-NLS-1$
+
+  /** the add module function name */
+  private static final String MODULE_ADD_FUNCTION_NAME = "addModule"; //$NON-NLS-1$
+  /** the module change function name */
+  private static final String MODULE_CHANGE_FUNCTION_NAME = "moduleChanged"; //$NON-NLS-1$
+  /** the select */
+  private static final String MODULE_ADD_SELECT_ID = "moduleAddSelect"; //$NON-NLS-1$
+  /** the description paragraph */
+  private static final String MODULE_ADD_DESC_ID = "moduleAddDes"; //$NON-NLS-1$
 
   /** the definition separator char */
   private static final char DEF_SEP = ';';
@@ -101,7 +111,7 @@ public final class EvaluationIO {
     i = relPaths.length;
     if (i <= 0) {
       handle.failure(//
-          "Set of paths to load and edit evaluation files cannot empty."); //$NON-NLS-1$
+          "Set of paths to load and edit evaluation files cannot be empty."); //$NON-NLS-1$
       return null;
     }
 
@@ -192,6 +202,7 @@ public final class EvaluationIO {
 
     wrapper = AbstractTextOutput.wrap(out);
     encoded = Encoder.htmlEncode(wrapper);
+
     id = 0;
     for (final ModuleEntry me : modules.getEntries()) {
       md = descriptions.forModule(me.getModule());
@@ -203,8 +214,8 @@ public final class EvaluationIO {
       out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
       out.append(EvaluationIO.PARAMETER_MODULE);
       out.append("\" value=\"");//$NON-NLS-1$
-      formPrefix = (prefix + ConfigIO.PREFIX_SEPARATOR + Integer.toString(
-          (id++), Character.MAX_RADIX));
+      formPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
+          ('c' + Integer.toString((id++), Character.MAX_RADIX)));
       out.append(formPrefix);
       out.append(EvaluationIO.DEF_SEP);
       encoded.append(TextUtils.className(me.getModule().getClass()));
@@ -218,7 +229,8 @@ public final class EvaluationIO {
     out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);
     out.append("\" value=\"");//$NON-NLS-1$
-    formPrefix = (prefix + ConfigIO.PREFIX_SEPARATOR + EvaluationIO.DEFAULTS_ID);
+    formPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
+        EvaluationIO.DEFAULTS_ID);
     out.append(formPrefix);
     out.append(EvaluationIO.DEF_SEP);
     out.append("\"/>");//$NON-NLS-1$
@@ -230,6 +242,8 @@ public final class EvaluationIO {
   /**
    * Load a configuration from a request
    *
+   * @param descriptions
+   *          the descriptions
    * @param request
    *          the request with all the parameters
    * @param prefix
@@ -239,8 +253,8 @@ public final class EvaluationIO {
    * @return the configuration
    */
   private static final EvaluationModules _loadModulesFromRequest(
-      final String prefix, final HttpServletRequest request,
-      final Handle handle) {
+      final String prefix, final ModuleDescriptions descriptions,
+      final HttpServletRequest request, final Handle handle) {
     final String[] strings;
     Definition def;
     String cfgPrefix, str, clazz, id;
@@ -251,7 +265,8 @@ public final class EvaluationIO {
       if (strings != null) {
 
         // get the configuration
-        cfgPrefix = (prefix + ConfigIO.PREFIX_SEPARATOR + EvaluationIO.DEFAULTS_ID);
+        cfgPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
+            EvaluationIO.DEFAULTS_ID);
         findConfig: for (i = strings.length; (--i) >= 0;) {
           str = strings[i];
           j = str.lastIndexOf(EvaluationIO.DEF_SEP);
@@ -269,9 +284,7 @@ public final class EvaluationIO {
             try (final ConfigurationBuilder cb = builder
                 .setConfiguration()) {
               ConfigIO._loadConfigFromRequest(cfgPrefix, request,//
-                  EvaluationModuleDescriptions//
-                      .getDescriptions(handle)//
-                      .getJointParameters(), handle, cb);
+                  descriptions.getJointParameters(), handle, cb);
             }
             break findConfig;
           }
@@ -312,10 +325,13 @@ public final class EvaluationIO {
    *
    * @param handle
    *          the handle
+   * @param descriptions
+   *          the descriptions
    * @param request
    *          the request
    */
   public static final void store(final Handle handle,
+      final ModuleDescriptions descriptions,
       final HttpServletRequest request) {
     final String path, submit;
     final Path realPath;
@@ -334,7 +350,7 @@ public final class EvaluationIO {
 
           try {
             modules = EvaluationIO._loadModulesFromRequest(prefix,
-                request, handle);
+                descriptions, request, handle);
             EvaluationXMLOutput.getInstance().use().setLogger(handle)
                 .setPath(realPath).setSource(modules).create().call();
             handle.success("Successfully stored configuration file '" + //$NON-NLS-1$
@@ -350,5 +366,106 @@ public final class EvaluationIO {
     } else {
       handle.unknownSubmit(submit);
     }
+  }
+
+  /**
+   * Put a button for adding evaluation modules.
+   *
+   * @param descriptions
+   *          the descriptions
+   * @param prefix
+   *          the prefix
+   * @param out
+   *          the the output destination
+   * @param jsCollector
+   *          the javascript list
+   * @throws IOException
+   *           if i/o fails
+   */
+  public static final void putAdd(final String prefix,
+      final ModuleDescriptions descriptions, final JspWriter out,
+      final ArrayList<String> jsCollector) throws IOException {
+    final ITextOutput encoded;
+    final String addFuncName, changeFuncName, selectId, parId, newPrefix;
+
+    encoded = XMLCharTransformer.getInstance().transform(
+        AbstractTextOutput.wrap(out));
+
+    out.write("<p class=\"controllerActions\">");//$NON-NLS-1$
+    out.write("<input type=\"button\" onclick=\""); //$NON-NLS-1$
+    addFuncName = ((ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_ADD_FUNCTION_NAME) + '(') + ')');
+    encoded.append(addFuncName);
+    out.write("\" value=\"save &amp; add module\"/>&nbsp;<select id=\"");//$NON-NLS-1$"
+    selectId = ConfigIO._fieldNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_ADD_SELECT_ID);
+    encoded.append(selectId);
+    out.write("\" onchange=\""); //$NON-NLS-1$
+    changeFuncName = ((ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_CHANGE_FUNCTION_NAME) + '(') + ')');
+    encoded.append(changeFuncName);
+    out.write("\">"); //$NON-NLS-1$
+    for (final ModuleDescription md : descriptions) {
+      out.write("<option>");//$NON-NLS-1$
+      encoded.append(md.getName());
+      out.write("</option>");//$NON-NLS-1$
+    }
+    out.write("</select>");//$NON-NLS-1$
+    out.write("</p><p id=\"");//$NON-NLS-1$
+    parId = ConfigIO._fieldNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_ADD_DESC_ID);
+    encoded.append(parId);
+    out.write("\"/>");//$NON-NLS-1$
+
+    out.write(ConfigIO.JAVASCRIPT_START);
+    out.write("function ");//$NON-NLS-1$
+    encoded.append(addFuncName);
+
+    out.write("{var form=document.getElementById('");//$NON-NLS-1$
+    encoded.append(prefix);
+    out.write("');if(form!=null){var sel=document.getElementById('");//$NON-NLS-1$
+    encoded.append(selectId);
+    out.write("');if(sel!=null){var text=null;");//$NON-NLS-1$
+    out.append("switch(String(sel.value)){");//$NON-NLS-1$
+    newPrefix = (ConfigIO._fieldNameFromPrefixAndName(prefix, "__new__") + //$NON-NLS-1$
+    EvaluationIO.DEF_SEP);
+    for (final ModuleDescription md : descriptions) {
+      out.write("case '");//$NON-NLS-1$
+      encoded.append(md.getName());
+      out.write("':{text='<input type=\"hidden\" name=\"");//$NON-NLS-1$
+      out.append(EvaluationIO.PARAMETER_MODULE);
+      out.append("\" value=\"");//$NON-NLS-1$
+      encoded.append(newPrefix);
+      encoded.append(TextUtils.className(md.getModuleClass()));
+      out.write("\"/>';break;}");//$NON-NLS-1$
+    }
+    //    out.append("default:{return;}}var dummy=document.createElement('form');dummy.innerHTML=text;var insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);dummy.submit.call(");//$NON-NLS-1$
+    // // out.append(FileIO.PARAM_SAVE);
+
+    out.write("default:{return;}}var dummy=document.createElement('form');dummy.innerHTML=text;var insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);dummy.innerHTML='<input type=\"hidden\" name=\"");//$NON-NLS-1$
+    out.write(ControllerUtils.INPUT_SUBMIT);
+    out.write("\" value=\"");//$NON-NLS-1$
+    out.write(FileIO.PARAM_SAVE);
+    out.write("\"/>';insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);form.submit();}}}");//$NON-NLS-1$
+
+    out.write("function ");//$NON-NLS-1$
+    encoded.append(changeFuncName);
+    out.write("{var par=document.getElementById('");//$NON-NLS-1$
+    encoded.append(parId);
+    out.write("');if(par!=null){var sel=document.getElementById('");//$NON-NLS-1$
+    encoded.append(selectId);
+    out.write("');if(sel!=null){switch(String(sel.value)){");//$NON-NLS-1$
+    for (final ModuleDescription md : descriptions) {
+      out.write("case '");//$NON-NLS-1$
+      encoded.append(md.getName());
+      out.write("':{par.innerHTML='");//$NON-NLS-1$
+      out.write(ConfigIO.CURRENT_SELECTION);
+      encoded.append(md.getName());
+      ConfigIO.printText(md.getDescription(), out, encoded);
+      out.write("';break;}");//$NON-NLS-1$
+    }
+    out.write("default:{par.innerHTML='';}}}}}");//$NON-NLS-1$
+    out.write(ConfigIO.JAVASCRIPT_END);
+    jsCollector.add(changeFuncName);
   }
 }

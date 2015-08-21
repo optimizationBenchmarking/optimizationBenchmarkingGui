@@ -55,9 +55,10 @@ if(dumps != null) {
 <h2>File &quot;<%= Encoder.htmlEncode(dumps.getName()) %>&quot;</h2>
 <form class="invisible" action="/configEdit.jsp" method="post">
 <input type="hidden" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= Encoder.htmlEncode(dumps.getRelativePath())%>" />
-<% final String prefix = "0"; %>
+<% final String prefix = "c0"; %>
 <input type="hidden" name="<%= ConfigIO.PARAMETER_PREFIX%>" value="<%= prefix%>" />
 <% ConfigIO.putFormFields(prefix, dumps.getLoaded(), pageContext.getOut(), jsCollector); %>
+<hr/>
 <p class="controllerActions">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">

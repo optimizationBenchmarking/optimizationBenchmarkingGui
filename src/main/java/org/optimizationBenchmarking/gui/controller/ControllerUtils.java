@@ -15,7 +15,7 @@ public final class ControllerUtils {
   private static final String CONTROLLER_BEAN_NAME = "controller"; //$NON-NLS-1$
 
   /** the name of the submit buttons */
-  public static final String INPUT_SUBMIT = "submit";//$NON-NLS-1$
+  public static final String INPUT_SUBMIT = "submitBtn";//$NON-NLS-1$
   /** the name of the current dir parameter */
   public static final String INPUT_CURRENT_DIR = "current";//$NON-NLS-1$
 

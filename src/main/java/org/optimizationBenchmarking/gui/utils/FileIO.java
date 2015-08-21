@@ -52,7 +52,7 @@ public final class FileIO {
 
     i = relPaths.length;
     if (i <= 0) {
-      handle.failure("Set of paths to load and edit cannot empty."); //$NON-NLS-1$
+      handle.failure("Set of paths to load and edit cannot be empty."); //$NON-NLS-1$
       return null;
     }
 

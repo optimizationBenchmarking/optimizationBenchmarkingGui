@@ -237,7 +237,7 @@ final class _JspHandle extends Handle {
         out.write(levelClass);
         if (scroll) {
           out.write("\" id=\""); //$NON-NLS-1$
-          id = Integer.toString(count, Character.MAX_RADIX);
+          id = ('l' + Integer.toString(count, Character.MAX_RADIX));
           out.write(id);
         } else {
           id = null;
