@@ -197,7 +197,9 @@
 			</plugin>
 
 
-			<!-- Use Maven's antrun to merge stylesheets. -->
+			<!-- Use Maven's antrun to merge stylesheets and make them, as well as 
+				the jsps, smaller. This is kind of hacky, but may result in more efficient 
+				serving. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -207,6 +209,8 @@
 						<phase>compile</phase>
 						<configuration>
 							<target>
+
+								<!-- Combine the partial css into single files. -->
 								<concat destfile="target/classes/webroot/stylesheets/screen.css"
 									force="no">
 									<fileset dir="src/main/resources/webroot/stylesheets/screen"
@@ -217,6 +221,64 @@
 									<fileset dir="src/main/resources/webroot/stylesheets/print"
 										includes="*.css" />
 								</concat>
+
+								<!-- make the css smaller -->
+
+								<fileset id="css.fileset" dir="target/classes/webroot/stylesheets/"
+									includes="**/*.css" />
+
+								<replaceregexp match="\s+" replace=" " flags="g"
+									byline="true">
+									<fileset refid="css.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*\r?\n\r?\s*" replace=""
+									flags="g" byline="false">
+									<fileset refid="css.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="/\*.*?\*/" replace="" flags="g"
+									byline="false">
+									<fileset refid="css.fileset" />
+								</replaceregexp>
+
+                <replaceregexp match="\s*\{\s*" replace="{" flags="g"
+                  byline="false">
+                  <fileset refid="css.fileset" />
+                </replaceregexp>
+
+                <replaceregexp match="\s*\}\s*" replace="}" flags="g"
+                  byline="false">
+                  <fileset refid="css.fileset" />
+                </replaceregexp>
+
+                <replaceregexp match="\s*\,\s*" replace="," flags="g"
+                  byline="false">
+                  <fileset refid="css.fileset" />
+                </replaceregexp>
+
+                <replaceregexp match="\s*\;\s*" replace=";" flags="g"
+                  byline="false">
+                  <fileset refid="css.fileset" />
+                </replaceregexp>
+
+                <replaceregexp match="\s*\:\s*" replace=":" flags="g"
+                  byline="false">
+                  <fileset refid="css.fileset" />
+                </replaceregexp>
+
+								<!-- make the jsps smaller -->
+
+								<fileset id="jsp.fileset" dir="target/classes/webroot/"
+									includes="**/*.jsp" />
+
+								<replaceregexp match="\s*\r?\n\r?\s*" flags="g" replace=" ">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s+" flags="g" replace=" ">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
 							</target>
 						</configuration>
 						<goals>

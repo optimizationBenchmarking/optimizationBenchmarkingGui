@@ -197,7 +197,7 @@ public final class EvaluationIO {
       final ArrayList<String> jsCollector) throws IOException {
     final ITextOutput encoded, wrapper;
     ModuleDescription md;
-    String formPrefix;
+    String formPrefix, divId;
     int id;
 
     wrapper = AbstractTextOutput.wrap(out);
@@ -206,8 +206,10 @@ public final class EvaluationIO {
     id = 0;
     for (final ModuleEntry me : modules.getEntries()) {
       md = descriptions.forModule(me.getModule());
-      out.append("<h3>"); //$NON-NLS-1$
+
+      divId = EvaluationIO.__beginModuleHead(out, prefix, id++);
       encoded.append(md.getName());
+      EvaluationIO.__endModuleHead(out, divId, true);
       out.append("</h3><p>");//$NON-NLS-1$
       encoded.append(md.getDescription());
       out.append("</p>");//$NON-NLS-1$
@@ -215,7 +217,8 @@ public final class EvaluationIO {
       out.append(EvaluationIO.PARAMETER_MODULE);
       out.append("\" value=\"");//$NON-NLS-1$
       formPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
-          ('c' + Integer.toString((id++), Character.MAX_RADIX)));
+          ConfigIO._fieldNameFromPrefixAndName("c",//$NON-NLS-1$
+              Integer.toString(id, Character.MAX_RADIX)));
       out.append(formPrefix);
       out.append(EvaluationIO.DEF_SEP);
       encoded.append(TextUtils.className(me.getModule().getClass()));
@@ -223,10 +226,13 @@ public final class EvaluationIO {
       ConfigIO._putFormFields(formPrefix,
           md.getParameters().dump(me.getConfiguration()), out,
           jsCollector, wrapper, encoded);
+      out.append("</div>");//$NON-NLS-1$
     }
 
-    out.append("<h3>Default Values</h3><p>Here you can edit the default values for any argument not provided above.</p><input type=\"hidden\" name=\"");//$NON-NLS-1$
-    out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
+    divId = EvaluationIO.__beginModuleHead(out, prefix, id++);
+    out.append("Default Values");//$NON-NLS-1$
+    EvaluationIO.__endModuleHead(out, divId, false);
+    out.append("<p>Here you can edit the default values for any argument not provided above.</p><input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);
     out.append("\" value=\"");//$NON-NLS-1$
     formPrefix = ConfigIO._fieldNameFromPrefixAndName(prefix,
@@ -237,6 +243,53 @@ public final class EvaluationIO {
     ConfigIO._putFormFields(formPrefix, descriptions.getJointParameters()
         .dump(modules.getConfiguration()), out, jsCollector, wrapper,
         encoded);
+    out.append("</div>");//$NON-NLS-1$
+  }
+
+  /**
+   * begin the module head
+   *
+   * @param out
+   *          the output
+   * @param prefix
+   *          the prefix
+   * @param id
+   *          the id counter
+   * @return the div id
+   * @throws IOException
+   *           if something fails
+   */
+  private static final String __beginModuleHead(final JspWriter out,
+      final String prefix, final int id) throws IOException {
+    final String divId;
+    out.append("<div id=\""); //$NON-NLS-1$
+    divId = ConfigIO._fieldNameFromPrefixAndName(prefix,
+        ConfigIO._fieldNameFromPrefixAndName("d",//$NON-NLS-1$
+            Integer.toString(id, Character.MAX_RADIX)));
+    out.append(divId);
+    out.append("\"><h3>"); //$NON-NLS-1$
+    return divId;
+  }
+
+  /**
+   * make the buttons
+   *
+   * @param out
+   *          the output
+   * @param id
+   *          the div id
+   * @param canDelete
+   *          can we delete this element?
+   * @throws IOException
+   *           if something fails
+   */
+  private static final void __endModuleHead(final JspWriter out,
+      final String id, final boolean canDelete) throws IOException {
+    out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
+    if (canDelete) {
+      out.write("<input type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+    }
+    out.write("</span></h3>");//$NON-NLS-1$
   }
 
   /**
