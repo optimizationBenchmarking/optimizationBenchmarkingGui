@@ -63,7 +63,7 @@ if(module != null) {
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="save">
 <input type="submit" name="<%= ControllerUtils.INPUT_SUBMIT%>" value="download" formtarget="_blank" formmethod="post" formaction="/download">
 </p>
-<% EvaluationIO.putAdd(prefix, descs, pageContext.getOut(), jsCollector); %>
+<% EvaluationIO.finalizeForm(prefix, descs, pageContext.getOut(), jsCollector); %>
 </form>
 <% ConfigIO.putJavaScript(pageContext.getOut(), jsCollector); } %>
 <%@include file="/includes/defaultFooter.jsp" %>

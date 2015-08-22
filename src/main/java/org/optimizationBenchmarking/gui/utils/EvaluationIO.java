@@ -62,6 +62,13 @@ public final class EvaluationIO {
   /** the description paragraph */
   private static final String MODULE_ADD_DESC_ID = "moduleAddDes"; //$NON-NLS-1$
 
+  /** the move a module up */
+  private static final String MODULE_UP_FUNCTION_NAME = "up"; //$NON-NLS-1$
+  /** the move a module down */
+  private static final String MODULE_DOWN_FUNCTION_NAME = "down"; //$NON-NLS-1$
+  /** check whether a module can be moved up or down */
+  private static final String MODULE_CHECK_UP_DOWN_FUNCTION_NAME = "checkUpDown"; //$NON-NLS-1$
+
   /** the definition separator char */
   private static final char DEF_SEP = ';';
 
@@ -209,7 +216,7 @@ public final class EvaluationIO {
 
       divId = EvaluationIO.__beginModuleHead(out, prefix, id++);
       encoded.append(md.getName());
-      EvaluationIO.__endModuleHead(out, divId, true);
+      EvaluationIO.__endModuleHead(out, prefix, divId, jsCollector);
       out.append("</h3><p>");//$NON-NLS-1$
       encoded.append(md.getDescription());
       out.append("</p>");//$NON-NLS-1$
@@ -272,20 +279,44 @@ public final class EvaluationIO {
    *
    * @param out
    *          the output
+   * @param prefix
+   *          the prefix
    * @param id
    *          the div id
-   * @param canDelete
-   *          can we delete this element?
+   * @param jsCollector
+   *          the java script collector
    * @throws IOException
    *           if something fails
    */
   private static final void __endModuleHead(final JspWriter out,
-      final String id, final boolean canDelete) throws IOException {
+      final String prefix, final String id,
+      final ArrayList<String> jsCollector) throws IOException {
+
     out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
-    if (canDelete) {
-      out.write("<input type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
-    }
-    out.write("</span></h3>");//$NON-NLS-1$
+
+    out.write("<input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+    out.write("<input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" id=\"");//$NON-NLS-1$
+    out.write(id);
+    out.write(EvaluationIO.MODULE_UP_FUNCTION_NAME);
+    out.write("\" value=\"move up\" onclick=\"");//$NON-NLS-1$
+    out.write(ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_UP_FUNCTION_NAME));
+    out.write("('");//$NON-NLS-1$
+    out.write(id);
+    out.write("')\"/><input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" vid=\"");//$NON-NLS-1$
+    out.write(id);
+    out.write(EvaluationIO.MODULE_DOWN_FUNCTION_NAME);
+    out.write("\" value=\"move down\" onclick=\"");//$NON-NLS-1$
+    out.write(ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_DOWN_FUNCTION_NAME));
+    out.write("('");//$NON-NLS-1$
+    out.write(id);
+    out.write("')\"/></span></h3>");//$NON-NLS-1$
+
+    jsCollector.add(((((//
+        ConfigIO._functionNameFromPrefixAndName(prefix,//
+            EvaluationIO.MODULE_CHECK_UP_DOWN_FUNCTION_NAME) + //
+        '(') + '\'') + id) + '\'') + ')');
   }
 
   /**
@@ -431,11 +462,11 @@ public final class EvaluationIO {
    * @throws IOException
    *           if i/o fails
    */
-  public static final void putAdd(final String prefix,
+  public static final void finalizeForm(final String prefix,
       final ModuleDescriptions descriptions, final JspWriter out,
       final ArrayList<String> jsCollector) throws IOException {
     final ITextOutput encoded;
-    final String addFuncName, changeFuncName, selectId, parId, newPrefix;
+    final String addFuncName, changeFuncName, selectId, parId, newPrefix, checkFunction;
 
     encoded = XMLCharTransformer.getInstance().transform(
         AbstractTextOutput.wrap(out));
@@ -514,6 +545,36 @@ public final class EvaluationIO {
       out.write("';break;}");//$NON-NLS-1$
     }
     out.write("default:{par.innerHTML='';}}}}}");//$NON-NLS-1$
+
+    checkFunction = ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_CHECK_UP_DOWN_FUNCTION_NAME);
+
+    out.write("function ");//$NON-NLS-1$
+    encoded.append(ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_UP_FUNCTION_NAME));
+    out.write("(id){var div=document.getElementById(id);if(div!=null){var other=div.previousElementSibling;div.parentNode.insertBefore(div,other);");//$NON-NLS-1$
+    out.write(checkFunction);
+    out.write("(id);");//$NON-NLS-1$
+    out.write(checkFunction);
+    out.write("(other.id);}}");//$NON-NLS-1$
+
+    out.write("function ");//$NON-NLS-1$
+    encoded.append(ConfigIO._functionNameFromPrefixAndName(prefix,
+        EvaluationIO.MODULE_DOWN_FUNCTION_NAME));
+    out.write("(id){var div=document.getElementById(id);if(div!=null){var other=div.nextElementSibling;div.parentNode.insertBefore(other,div);");//$NON-NLS-1$
+    out.write(checkFunction);
+    out.write("(id);");//$NON-NLS-1$
+    out.write(checkFunction);
+    out.write("(other.id);}}");//$NON-NLS-1$
+
+    out.write("function ");//$NON-NLS-1$
+    encoded.append(checkFunction);
+    out.write("(id){if(id!=null){var div=document.getElementById(id);if(div!=null){var upDisplay='none';var downDisplay='none';var sib=div.nextElementSibling;if(sib!=null){if(sib.tagName.toUpperCase()=='DIV'){downDisplay='inline';}} sib=div.previousElementSibling;if(sib!=null){if(sib.tagName.toUpperCase()=='DIV'){upDisplay='inline';}} var e=document.getElementById(id+'");//$NON-NLS-1$
+    out.write(EvaluationIO.MODULE_UP_FUNCTION_NAME);
+    out.write("');if(e!=null){e.style.display=upDisplay;}var e=document.getElementById(id+'");//$NON-NLS-1$
+    out.write(EvaluationIO.MODULE_DOWN_FUNCTION_NAME);
+    out.write("');if(e!=null){e.style.display=downDisplay;}}}}");//$NON-NLS-1$
+
     out.write(ConfigIO.JAVASCRIPT_END);
     jsCollector.add(changeFuncName);
   }
