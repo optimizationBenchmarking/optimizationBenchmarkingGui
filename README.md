@@ -2,7 +2,7 @@
 
 [<img alt="Codeship Build Status" src="https://img.shields.io/codeship/edbc8170-2b8e-0133-b2b8-16bcb9ef4133.svg" height="20"/>](https://codeship.com/projects/edbc8170-2b8e-0133-b2b8-16bcb9ef4133/status?branch=master)
 [<img alt="Semaphore Build Status" src="https://semaphoreci.com/api/v1/projects/188615a7-047a-4302-9233-13313b587066/519593/shields_badge.svg" height="20"/>](https://semaphoreci.com/thomasweise/optimizationbenchmarkinggui)
-[<img alt="Snap CI Build Status" src="https://snap-ci.com/optimizationBenchmarking/optimizationBenchmarkingGui/branch/master/build_image" height="20"/>](https://snap-ci.com/optimizationBenchmarking/optimizationBenchmarkingGui/branch/master)
+[<img alt="Snap CI Build Status" src="https://img.shields.io/snap-ci/optimizationBenchmarking/optimizationBenchmarkingGui/master.svg" height="20"/>](https://snap-ci.com/optimizationBenchmarking/optimizationBenchmarkingGui/branch/master)
 
 This is a graphical user interface (GUI) for the [optimizationBenchmarking Tool Suite](http://www.optimizationBenchmarking.org/). Please visit the main [website](http://www.optimizationBenchmarking.org/) for more information about that the tool suite does.
 
