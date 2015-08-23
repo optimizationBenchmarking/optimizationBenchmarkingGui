@@ -1,5 +1,7 @@
 # optimizationBenchmarkingGui
 
+[<img alt="Semaphore Build Status" src="https://semaphoreci.com/api/v1/projects/188615a7-047a-4302-9233-13313b587066/519593/shields_badge.svg" height="20"/>](https://semaphoreci.com/thomasweise/optimizationbenchmarkinggui)
+
 This is a graphical user interface (GUI) for the [optimizationBenchmarking Tool Suite](http://www.optimizationBenchmarking.org/). Please visit the main [website](http://www.optimizationBenchmarking.org/) for more information about that the tool suite does.
 
 ## Use Cases of the GUI
