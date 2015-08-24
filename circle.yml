@@ -8,8 +8,6 @@ machine:
     _JAVA_OPTIONS: -Xms1536m -Xmx1536m
   pre:
     - projectDir=`pwd`
-    - sudo apt-get update -y
-    - sudo apt-get install maven -y
     - cd "/tmp"
     - baseProject="/tmp/optimizationBenchmarking"
     - mkdir "$baseProject"
