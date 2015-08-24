@@ -3,6 +3,7 @@ package test.junit.org.optimizationBenchmarking.gui;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Random;
 
@@ -56,25 +57,37 @@ public class ApplicationTest {
   /** test whether the tool can work without a browser at a random port */
   @Test(timeout = 3600000)
   public void testNoBrowserAndRandomPort() {
-    this.__checkServerAtPort(true, (1000 + new Random().nextInt(50000)));
+    this.__checkServerAtPort(true, ApplicationTest.__getFreePort());
   }
 
   /** test whether the tool can work with a browser at a random port */
   @Test(timeout = 3600000)
   public void testWithBrowserAndRandomPort() {
-    this.__checkServerAtPort(false, (1000 + new Random().nextInt(50000)));
+    this.__checkServerAtPort(false, ApplicationTest.__getFreePort());
   }
 
-  /** test whether the tool can work without a browser at port 8080 */
-  @Test(timeout = 3600000)
-  public void testNoBrowserAndPort8080() {
-    this.__checkServerAtPort(true, 8080);
-  }
+  /**
+   * get a free port.
+   *
+   * @return the port
+   */
+  private static final int __getFreePort() {
+    final Random rand;
+    int port;
 
-  /** test whether the tool can work with a browser at port 8080 */
-  @Test(timeout = 3600000)
-  public void testWithBrowserAndPort8080() {
-    this.__checkServerAtPort(false, 8080);
+    rand = new Random();
+    for (;;) {
+      port = (1000 + rand.nextInt(31000));
+      try {
+        try (ServerSocket sock = new ServerSocket(port)) {
+          //
+        }
+        Thread.sleep(5000);
+        return port;
+      } catch (final Throwable ignore) {
+        //
+      }
+    }
   }
 
   /**
@@ -104,7 +117,7 @@ public class ApplicationTest {
           "/logLevel.jsp" //$NON-NLS-1$
       }) {
         Thread.sleep(5000);
-        try (final InputStream is = new URL("http://localhost:" + port //$NON-NLS-1$
+        try (final InputStream is = new URL("http://127.0.0.1:" + port //$NON-NLS-1$
             + page).openStream()) {
           try (final InputStreamReader ir = new InputStreamReader(is)) {
             try (final BufferedReader br = new BufferedReader(ir)) {
