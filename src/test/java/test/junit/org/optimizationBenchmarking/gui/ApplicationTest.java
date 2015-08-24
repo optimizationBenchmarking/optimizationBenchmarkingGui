@@ -3,6 +3,8 @@ package test.junit.org.optimizationBenchmarking.gui;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Random;
@@ -101,6 +103,8 @@ public class ApplicationTest {
   private final void __checkServerAtPort(final boolean noBrowser,
       final int port) {
     final ApplicationInstanceBuilder builder;
+    String host;
+    InetAddress addr;
     boolean has;
 
     builder = this.getInstance().use();
@@ -116,8 +120,16 @@ public class ApplicationTest {
           "/controller.jsp", //$NON-NLS-1$
           "/logLevel.jsp" //$NON-NLS-1$
       }) {
-        Thread.sleep(5000);
-        try (final InputStream is = new URL("http://127.0.0.1:" + port //$NON-NLS-1$
+        Thread.sleep(2500);
+        host = "localhost";//$NON-NLS-1$
+        addr = InetAddress.getByName(host);
+        if (addr instanceof Inet6Address) {
+          host = ('[' + addr.getHostAddress() + ']');
+        }
+        Thread.sleep(2500);
+
+        try (final InputStream is = new URL(((("http://" + host) + ':') + //$NON-NLS-1$
+            port)
             + page).openStream()) {
           try (final InputStreamReader ir = new InputStreamReader(is)) {
             try (final BufferedReader br = new BufferedReader(ir)) {
