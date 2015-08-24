@@ -5,8 +5,8 @@ baseProject="/tmp/optimizationBenchmarking"
 mkdir "$baseProject"
 cd "$baseProject"
 echo "Current dir: $baseProject"
-wget https://codeload.github.com/optimizationBenchmarking/optimizationBenchmarking/tar.gz/master
-tar -xvf "master"
+wget -nv -O "master.tar.gz" https://codeload.github.com/optimizationBenchmarking/optimizationBenchmarking/tar.gz/master
+tar -xf "master.tar.gz"
 cd "$baseProject/optimizationBenchmarking-master"
 mvn -Dmaven.test.skip=true compile package install
 cd "/tmp"
