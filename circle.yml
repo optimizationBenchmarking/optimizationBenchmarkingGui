@@ -20,7 +20,7 @@ dependencies:
 # terminated unexpectedly.
 test:
   override:   
-    - mvn compile package install:
+    - mvn compile package test install:
         timeout: 10000
         
 # The branches to be ignored
