@@ -7,19 +7,16 @@ machine:
     MAVEN_OPTS: -Xms1536m -Xmx1536m
     _JAVA_OPTIONS: -Xms1536m -Xmx1536m
   pre:
-    - projectDir=`pwd`
     - cd "/tmp"
-    - baseProject="/tmp/optimizationBenchmarking"
-    - mkdir "$baseProject"
-    - cd "$baseProject"
+    - mkdir "/tmp/optimizationBenchmarking"
+    - cd "/tmp/optimizationBenchmarking"
     - wget https://codeload.github.com/optimizationBenchmarking/optimizationBenchmarking/tar.gz/master:
         timeout: 10000
     - tar -xvf "master":
         timeout: 10000
-    - cd "$baseProject/optimizationBenchmarking-master"
+    - cd "/tmp/optimizationBenchmarking/optimizationBenchmarking-master"
     - mvn -Dmaven.test.skip=true compile package install:
         timeout: 10000
-    - cd "$projectDir"
   
 # We first download and build the base project and then
 # the GUI project
