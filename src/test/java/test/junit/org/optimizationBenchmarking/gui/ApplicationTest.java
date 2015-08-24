@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -55,16 +56,190 @@ public class ApplicationTest {
     Assert.assertNotNull(this.getInstance().use());
   }
 
-  /** test whether the tool can work without a browser at a random port */
+  /**
+   * test whether the tool can work without a browser at a random port
+   * accessed via a socket
+   */
   @Test(timeout = 3600000)
-  public void testNoBrowserAndRandomPort() {
-    this.__checkServerAtPort(true, ApplicationTest.__getFreePort());
+  public void testNoBrowserAndRandomPortSocket() {
+    this.__checkServerAtPort(true, ApplicationTest.__getFreePort(), 0);
   }
 
-  /** test whether the tool can work with a browser at a random port */
+  /**
+   * test whether the tool can work with a browser at a random port
+   * accessed via a socket
+   */
   @Test(timeout = 3600000)
-  public void testWithBrowserAndRandomPort() {
-    this.__checkServerAtPort(false, ApplicationTest.__getFreePort());
+  public void testWithBrowserAndRandomPortSocket() {
+    this.__checkServerAtPort(false, ApplicationTest.__getFreePort(), 0);
+  }
+
+  /**
+   * test whether the tool can work without a browser at a random port
+   * accessed via the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndRandomPortGlobalURL() {
+    this.__checkServerAtPort(true, ApplicationTest.__getFreePort(), 1);
+  }
+
+  /**
+   * test whether the tool can work with a browser at a random port
+   * accessed via the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndRandomPortGlobalURL() {
+    this.__checkServerAtPort(false, ApplicationTest.__getFreePort(), 1);
+  }
+
+  /**
+   * test whether the tool can work without a browser at a random port
+   * accessed via the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndRandomPortLocalURL() {
+    this.__checkServerAtPort(true, ApplicationTest.__getFreePort(), 1);
+  }
+
+  /**
+   * test whether the tool can work with a browser at a random port
+   * accessed via the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndRandomPortLocalURL() {
+    this.__checkServerAtPort(false, ApplicationTest.__getFreePort(), 1);
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 8080 accessed
+   * via a socket
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort8080Socket() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(true, 8080, 0);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 8080 accessed
+   * via a socket
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort8080Socket() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(false, 8080, 0);
+    }
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 8080 accessed
+   * via the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort8080GlobalURL() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(true, 8080, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 8080 accessed
+   * via the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort8080GlobalURL() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(false, 8080, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 8080 accessed
+   * via the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort8080LocalURL() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(true, 8080, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 8080 accessed
+   * via the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort8080LocalURL() {
+    if (ApplicationTest.__checkPort(8080)) {
+      this.__checkServerAtPort(false, 8080, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 80 accessed
+   * via a socket
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort80Socket() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(true, 80, 0);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 80 accessed via
+   * a socket
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort80Socket() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(false, 80, 0);
+    }
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 80 accessed
+   * via the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort80GlobalURL() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(true, 80, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 80 accessed via
+   * the server's global url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort80GlobalURL() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(false, 80, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work without a browser at port 80 accessed
+   * via the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testNoBrowserAndPort80LocalURL() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(true, 80, 1);
+    }
+  }
+
+  /**
+   * test whether the tool can work with a browser at port 80 accessed via
+   * the server's local url
+   */
+  @Test(timeout = 3600000)
+  public void testWithBrowserAndPort80LocalURL() {
+    if (ApplicationTest.__checkPort(80)) {
+      this.__checkServerAtPort(false, 80, 1);
+    }
   }
 
   /**
@@ -79,17 +254,31 @@ public class ApplicationTest {
     rand = new Random();
     for (count = 1000; (--count) >= 0;) {
       port = (1000 + rand.nextInt(31000));
-      try {
-        try (ServerSocket sock = new ServerSocket(port)) {
-          //
-        }
-        Thread.sleep(5000);
+      if (ApplicationTest.__checkPort(port)) {
         return port;
-      } catch (final Throwable ignore) {
-        //
       }
     }
     return (-1);
+  }
+
+  /**
+   * check whether a port is free
+   *
+   * @param port
+   *          the port
+   * @return {@code true} if it can be used, {@code false} otherwise
+   */
+  private static final boolean __checkPort(final int port) {
+    try {
+      try (ServerSocket sock = new ServerSocket(port)) {
+        //
+      }
+      Thread.sleep(5000);
+      return true;
+    } catch (final Throwable ignore) {
+      //
+    }
+    return false;
   }
 
   /**
@@ -99,11 +288,13 @@ public class ApplicationTest {
    *          the port
    * @param noBrowser
    *          should we go without browser
+   * @param streamSource
+   *          {@code 0} - socket, {@code 1} - global url, {@code 2} - local
+   *          url
    */
   private final void __checkServerAtPort(final boolean noBrowser,
-      final int port) {
+      final int port, final int streamSource) {
     final ApplicationInstanceBuilder builder;
-    boolean has;
 
     if (port < 0) {
       return;
@@ -123,38 +314,74 @@ public class ApplicationTest {
           "/logLevel.jsp" //$NON-NLS-1$
       }) {
         Thread.sleep(5000);
-        try (Socket sock = new Socket("localhost", port)) {//$NON-NLS-1$
 
-          try (OutputStreamWriter osw = new OutputStreamWriter(
-              sock.getOutputStream())) {
-            osw.write("GET ");//$NON-NLS-1$
-            osw.write(page);
-            osw.write(" HTTP/1.1\r\n\r\n\r\n");//$NON-NLS-1$
-            osw.flush();
-            sock.shutdownOutput();
+        switch (streamSource) {
+          case 0: {
+            try (Socket sock = new Socket("localhost", port)) {//$NON-NLS-1$
 
-            try (final InputStream is = sock.getInputStream()) {
-              try (final InputStreamReader ir = new InputStreamReader(is)) {
-                try (final BufferedReader br = new BufferedReader(ir)) {
-                  has = false;
-                  while (br.readLine() != null) {
-                    has = true;
-                  }
-                  if (!(has)) {
-                    throw new AssertionError("Page '" + page + //$NON-NLS-1$
-                        "' is empty.");//$NON-NLS-1$
-                  }
+              try (OutputStreamWriter osw = new OutputStreamWriter(
+                  sock.getOutputStream())) {
+                osw.write("GET ");//$NON-NLS-1$
+                osw.write(page);
+                osw.write(" HTTP/1.1\r\n\r\n\r\n");//$NON-NLS-1$
+                osw.flush();
+                sock.shutdownOutput();
+
+                try (final InputStream is = sock.getInputStream()) {
+                  ApplicationTest.__checkInputStream(is, page);
                 }
               }
             }
+            break;
+          }
+
+          case 1: {
+            try (final InputStream is = new URL(instance.getGlobalURL()
+                .toString() + page.substring(1)).openStream()) {
+              ApplicationTest.__checkInputStream(is, page);
+            }
+            break;
+          }
+
+          default: {
+            try (final InputStream is = new URL(instance.getLocalURL()
+                .toString() + page.substring(1)).openStream()) {
+              ApplicationTest.__checkInputStream(is, page);
+            }
+            break;
           }
         }
       }
-
     } catch (final Throwable error) {
       throw new AssertionError("Server does not behave as expected.",//$NON-NLS-1$
           error);
     }
   }
 
+  /**
+   * Check an input stream
+   *
+   * @param is
+   *          the stream
+   * @param page
+   *          the page
+   * @throws Throwable
+   *           if something goes wrong
+   */
+  private static final void __checkInputStream(final InputStream is,
+      final String page) throws Throwable {
+    boolean has;
+    try (final InputStreamReader ir = new InputStreamReader(is)) {
+      try (final BufferedReader br = new BufferedReader(ir)) {
+        has = false;
+        while (br.readLine() != null) {
+          has = true;
+        }
+        if (!(has)) {
+          throw new AssertionError("Page '" + page + //$NON-NLS-1$
+              "' is empty.");//$NON-NLS-1$
+        }
+      }
+    }
+  }
 }

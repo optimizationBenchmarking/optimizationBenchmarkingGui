@@ -2,9 +2,6 @@ package org.optimizationBenchmarking.gui.server;
 
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +11,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.error.RethrowMode;
 import org.optimizationBenchmarking.utils.io.paths.TempDir;
-import org.optimizationBenchmarking.utils.net.LocalHost;
+import org.optimizationBenchmarking.utils.net.NetworkUtils;
 import org.optimizationBenchmarking.utils.tools.impl.abstr.ToolJob;
 
 /** An instance of the server. Typically, there will be only one. */
@@ -98,8 +95,8 @@ public final class ServerInstance extends ToolJob implements Closeable {
    */
   public final URL getLocalURL() {
     if (this.m_localURL == null) {
-      this.m_localURL = ServerInstance.getServerBaseURL(
-          LocalHost.LOCAL_HOST, this.getPort());
+      this.m_localURL = NetworkUtils.getServerBaseURL(
+          NetworkUtils.LOCAL_HOST, this.getPort());
       if ((this.m_globalURL != null)
           && (this.m_localURL.equals(this.m_globalURL))) {
         this.m_globalURL = this.m_localURL;
@@ -117,51 +114,14 @@ public final class ServerInstance extends ToolJob implements Closeable {
    */
   public final URL getGlobalURL() {
     if (this.m_globalURL == null) {
-      this.m_globalURL = ServerInstance.getServerBaseURL(
-          LocalHost.getMostLikelyPublicName(), this.getPort());
+      this.m_globalURL = NetworkUtils.getServerBaseURL(
+          NetworkUtils.getMostLikelyPublicName(), this.getPort());
       if ((this.m_localURL != null)
           && (this.m_localURL.equals(this.m_globalURL))) {
         this.m_globalURL = this.m_localURL;
       }
     }
     return this.m_globalURL;
-  }
-
-  /**
-   * Obtain the URL for a given host and port.
-   *
-   * @param host
-   *          the host
-   * @param port
-   *          the port
-   * @return the URL
-   */
-  public static final URL getServerBaseURL(final String host,
-      final int port) {
-    final InetAddress addr;
-    final String useHost;
-
-    try {
-      addr = InetAddress.getByName(host);
-    } catch (final Throwable error) {
-      throw new IllegalArgumentException("Host '" + host + //$NON-NLS-1$
-          "' is invalid."); //$NON-NLS-1$
-    }
-    if (addr instanceof Inet6Address) {
-      useHost = '[' + addr.getHostAddress() + ']';
-    } else {
-      useHost = host;
-    }
-
-    try {
-      return new URL((("http://" + useHost) + ':' + port) + '/'); //$NON-NLS-1$
-    } catch (final MalformedURLException error) {
-      throw new IllegalArgumentException(((((((//
-          "Error while creating URL for host '" + host) //$NON-NLS-1$
-          + " (represented as '") + useHost + //$NON-NLS-1$
-          "') and port ")//$NON-NLS-1$
-          + port) + '\'') + '.'), error);
-    }
   }
 
   /** Wait for the server to join. */

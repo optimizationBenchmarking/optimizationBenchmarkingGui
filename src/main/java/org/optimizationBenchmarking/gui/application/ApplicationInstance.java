@@ -1,6 +1,7 @@
 package org.optimizationBenchmarking.gui.application;
 
 import java.io.Closeable;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,7 +9,7 @@ import org.optimizationBenchmarking.gui.server.ServerInstance;
 import org.optimizationBenchmarking.gui.server.ServerInstanceBuilder;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.error.RethrowMode;
-import org.optimizationBenchmarking.utils.net.LocalHost;
+import org.optimizationBenchmarking.utils.net.NetworkUtils;
 import org.optimizationBenchmarking.utils.tools.impl.abstr.ToolJob;
 import org.optimizationBenchmarking.utils.tools.impl.browser.BrowserJob;
 
@@ -41,6 +42,28 @@ public final class ApplicationInstance extends ToolJob implements
     this.m_startTime = System.currentTimeMillis();
     this.m_server = server;
     this.m_browser = browser;
+  }
+
+  /**
+   * Get the URL to the entry point site for browsers running on the same
+   * machine.
+   *
+   * @return the URL to the entry point site for browsers running on the
+   *         same machine.
+   */
+  public final URL getLocalURL() {
+    return this.m_server.getLocalURL();
+  }
+
+  /**
+   * Get the URL to the entry point site for browsers running on any
+   * machine.
+   *
+   * @return the URL to the entry point site for browsers running on any
+   *         machine.
+   */
+  public final URL getGlobalURL() {
+    return this.m_server.getGlobalURL();
   }
 
   /** Wait for the job to finish. */
@@ -81,8 +104,8 @@ public final class ApplicationInstance extends ToolJob implements
                       (((("The browser process has terminated erroneous. Maybe next time start the GUI with switches '" //$NON-NLS-1$
                       + ApplicationInstanceBuilder.PARAM_DONT_OPEN_BROWSER) + //
                       " and then manually visit '") + //$NON-NLS-1$
-                      ServerInstance.getServerBaseURL(
-                          LocalHost.LOCAL_HOST,
+                      NetworkUtils.getServerBaseURL(
+                          NetworkUtils.LOCAL_HOST,
                           ServerInstanceBuilder.DEFAULT_PORT))//
                       + "' with your web browser."),//$NON-NLS-1$
                       caught);
@@ -101,8 +124,8 @@ public final class ApplicationInstance extends ToolJob implements
                     + "s). This could mean that we could not properly capture the browser process and the browser is actually still open. Now, the GUI server shuts down too, so the GUI in the browser dows not work anymore. If this is the case, please restart the GUI and add the command line switch '")//$NON-NLS-1$
                     + ApplicationInstanceBuilder.PARAM_DONT_OPEN_BROWSER)//
                     + "'. Then, the GUI server remains running even if the browser was seemingly closed. You can then close it when you want and visit the GUI via '")//$NON-NLS-1$
-                    + ServerInstance.getServerBaseURL(
-                        LocalHost.LOCAL_HOST,
+                    + NetworkUtils.getServerBaseURL(
+                        NetworkUtils.LOCAL_HOST,
                         ServerInstanceBuilder.DEFAULT_PORT)) + '\'') + '.');
               }
             }
