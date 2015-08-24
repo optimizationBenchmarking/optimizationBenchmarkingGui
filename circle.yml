@@ -1,20 +1,20 @@
 # We set the environment variable JAVA_OPTS to reduce
 # the memory footprint in order to prevent unexpected
 # test termination.
+# We then download the dependencies and build them
+# first.
 machine:
   environment:
     JAVA_OPTS: -Xms1536m -Xmx1536m
     MAVEN_OPTS: -Xms1536m -Xmx1536m
     _JAVA_OPTIONS: -Xms1536m -Xmx1536m
-  
-# We first download and build the base project and then
-# the GUI project
-# We set a high timeout to prevent the test from being
-# terminated unexpectedly.
-test:
   pre:
     - chmod 777 "buildDependencies.sh"
     - "./buildDependencies.sh"
+  
+# We set a high timeout to prevent the test from being
+# terminated unexpectedly.
+test:
   override:   
     - mvn compile package install:
         timeout: 10000
