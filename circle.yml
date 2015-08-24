@@ -1,16 +1,20 @@
 # We set the environment variable JAVA_OPTS to reduce
 # the memory footprint in order to prevent unexpected
 # test termination.
-# We then download the dependencies and build them
-# first.
 machine:
   environment:
     JAVA_OPTS: -Xms1536m -Xmx1536m
     MAVEN_OPTS: -Xms1536m -Xmx1536m
     _JAVA_OPTIONS: -Xms1536m -Xmx1536m
-  pre:
+    
+# We download the latest version of the main project,
+# build it, and install it.
+dependencies:
+  override:  
     - chmod 777 "buildDependencies.sh"
-    - "./buildDependencies.sh"
+    - "./buildDependencies.sh" 
+    - mvn dependency:resolve
+  
   
 # We set a high timeout to prevent the test from being
 # terminated unexpectedly.
