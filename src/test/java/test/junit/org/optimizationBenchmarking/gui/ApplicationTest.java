@@ -70,14 +70,14 @@ public class ApplicationTest {
   /**
    * get a free port.
    *
-   * @return the port
+   * @return the port, or {@code -1} if none could be found
    */
   private static final int __getFreePort() {
     final Random rand;
-    int port;
+    int port, count;
 
     rand = new Random();
-    for (;;) {
+    for (count = 1000; (--count) >= 0;) {
       port = (1000 + rand.nextInt(31000));
       try {
         try (ServerSocket sock = new ServerSocket(port)) {
@@ -89,6 +89,7 @@ public class ApplicationTest {
         //
       }
     }
+    return (-1);
   }
 
   /**
@@ -103,6 +104,10 @@ public class ApplicationTest {
       final int port) {
     final ApplicationInstanceBuilder builder;
     boolean has;
+
+    if (port < 0) {
+      return;
+    }
 
     builder = this.getInstance().use();
     builder.setDontOpenBrowser(noBrowser);
