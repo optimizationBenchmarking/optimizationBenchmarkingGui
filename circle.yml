@@ -1,0 +1,42 @@
+# We set the environment variable JAVA_OPTS to reduce
+# the memory footprint in order to prevent unexpected
+# test termination.
+machine:
+  environment:
+    JAVA_OPTS: -Xms1536m -Xmx1536m
+    MAVEN_OPTS: -Xms1536m -Xmx1536m
+    _JAVA_OPTIONS: -Xms1536m -Xmx1536m
+  
+# We first download and build the base project and then
+# the GUI project
+# We set a high timeout to prevent the test from being
+# terminated unexpectedly.
+test:
+  pre:
+    - projectDir=`pwd`
+    - echo "Current Directory: $projectDir"
+    - sudo apt-get update -y
+    - sudo apt-get install maven -y
+    - cd "/tmp"
+    - baseProject="/tmp/optimizationBenchmarking"
+    - mkdir "$baseProject"
+    - cd "$baseProject"
+    - echo "Current dir: $baseProject"
+    - wget https://codeload.github.com/optimizationBenchmarking/optimizationBenchmarking/tar.gz/master:
+        timeout: 10000
+    - tar -xvf "master":
+        timeout: 10000
+    - cd "$baseProject/optimizationBenchmarking-master"
+    - mvn -Dmaven.test.skip=true compile package install:
+        timeout: 10000
+    - cd "$projectDir"
+  override:   
+    - mvn compile package install:
+        timeout: 10000
+        
+# The branches to be ignored
+general:
+  branches:
+    ignore:
+      - gh-pages
+      - documentation
