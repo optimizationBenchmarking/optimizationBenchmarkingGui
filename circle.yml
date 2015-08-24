@@ -6,12 +6,6 @@ machine:
     JAVA_OPTS: -Xms1536m -Xmx1536m
     MAVEN_OPTS: -Xms1536m -Xmx1536m
     _JAVA_OPTIONS: -Xms1536m -Xmx1536m
-  
-# We first download and build the base project and then
-# the GUI project
-# We set a high timeout to prevent the test from being
-# terminated unexpectedly.
-test:
   pre:
     - projectDir=`pwd`
     - sudo apt-get update -y
@@ -28,6 +22,12 @@ test:
     - mvn -Dmaven.test.skip=true compile package install:
         timeout: 10000
     - cd "$projectDir"
+  
+# We first download and build the base project and then
+# the GUI project
+# We set a high timeout to prevent the test from being
+# terminated unexpectedly.
+test:
   override:   
     - mvn compile package install:
         timeout: 10000
