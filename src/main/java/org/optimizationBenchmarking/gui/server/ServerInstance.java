@@ -2,6 +2,8 @@ package org.optimizationBenchmarking.gui.server;
 
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -136,12 +138,29 @@ public final class ServerInstance extends ToolJob implements Closeable {
    */
   public static final URL getServerBaseURL(final String host,
       final int port) {
+    final InetAddress addr;
+    final String useHost;
+
     try {
-      return new URL((("http://" + host) + ':' + port) + '/'); //$NON-NLS-1$
+      addr = InetAddress.getByName(host);
+    } catch (final Throwable error) {
+      throw new IllegalArgumentException("Host '" + host + //$NON-NLS-1$
+          "' is invalid."); //$NON-NLS-1$
+    }
+    if (addr instanceof Inet6Address) {
+      useHost = '[' + addr.getHostAddress() + ']';
+    } else {
+      useHost = host;
+    }
+
+    try {
+      return new URL((("http://" + useHost) + ':' + port) + '/'); //$NON-NLS-1$
     } catch (final MalformedURLException error) {
-      throw new RuntimeException((((((//
+      throw new IllegalArgumentException(((((((//
           "Error while creating URL for host '" + host) //$NON-NLS-1$
-          + "' and port '") + port) + '\'') + '.'), error);//$NON-NLS-1$
+          + " (represented as '") + useHost + //$NON-NLS-1$
+          "') and port ")//$NON-NLS-1$
+          + port) + '\'') + '.'), error);
     }
   }
 
