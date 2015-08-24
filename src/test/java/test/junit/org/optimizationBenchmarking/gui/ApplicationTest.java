@@ -3,10 +3,9 @@ package test.junit.org.optimizationBenchmarking.gui;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.Inet6Address;
-import java.net.InetAddress;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
-import java.net.URL;
+import java.net.Socket;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -103,8 +102,6 @@ public class ApplicationTest {
   private final void __checkServerAtPort(final boolean noBrowser,
       final int port) {
     final ApplicationInstanceBuilder builder;
-    String host;
-    InetAddress addr;
     boolean has;
 
     builder = this.getInstance().use();
@@ -120,26 +117,29 @@ public class ApplicationTest {
           "/controller.jsp", //$NON-NLS-1$
           "/logLevel.jsp" //$NON-NLS-1$
       }) {
-        Thread.sleep(2500);
-        host = "localhost";//$NON-NLS-1$
-        addr = InetAddress.getByName(host);
-        if (addr instanceof Inet6Address) {
-          host = ('[' + addr.getHostAddress() + ']');
-        }
-        Thread.sleep(2500);
+        Thread.sleep(5000);
+        try (Socket sock = new Socket("localhost", port)) {//$NON-NLS-1$
 
-        try (final InputStream is = new URL(((("http://" + host) + ':') + //$NON-NLS-1$
-            port)
-            + page).openStream()) {
-          try (final InputStreamReader ir = new InputStreamReader(is)) {
-            try (final BufferedReader br = new BufferedReader(ir)) {
-              has = false;
-              while (br.readLine() != null) {
-                has = true;
-              }
-              if (!(has)) {
-                throw new AssertionError("Page '" + page + //$NON-NLS-1$
-                    "' is empty.");//$NON-NLS-1$
+          try (OutputStreamWriter osw = new OutputStreamWriter(
+              sock.getOutputStream())) {
+            osw.write("GET ");//$NON-NLS-1$
+            osw.write(page);
+            osw.write(" HTTP/1.1\r\n\r\n\r\n");//$NON-NLS-1$
+            osw.flush();
+            sock.shutdownOutput();
+
+            try (final InputStream is = sock.getInputStream()) {
+              try (final InputStreamReader ir = new InputStreamReader(is)) {
+                try (final BufferedReader br = new BufferedReader(ir)) {
+                  has = false;
+                  while (br.readLine() != null) {
+                    has = true;
+                  }
+                  if (!(has)) {
+                    throw new AssertionError("Page '" + page + //$NON-NLS-1$
+                        "' is empty.");//$NON-NLS-1$
+                  }
+                }
               }
             }
           }
