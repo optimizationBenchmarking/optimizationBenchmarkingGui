@@ -14,14 +14,12 @@ machine:
 test:
   pre:
     - projectDir=`pwd`
-    - echo "Current Directory: $projectDir"
     - sudo apt-get update -y
     - sudo apt-get install maven -y
     - cd "/tmp"
     - baseProject="/tmp/optimizationBenchmarking"
     - mkdir "$baseProject"
     - cd "$baseProject"
-    - echo "Current dir: $baseProject"
     - wget https://codeload.github.com/optimizationBenchmarking/optimizationBenchmarking/tar.gz/master:
         timeout: 10000
     - tar -xvf "master":
