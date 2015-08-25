@@ -307,16 +307,589 @@
 									<fileset refid="css.fileset" />
 								</replaceregexp>
 
-								<!-- make the jsps smaller -->
+								<!-- make the jsps smaller based on an extremely crude heuristic -->
 
 								<fileset id="jsp.fileset" dir="target/classes/webroot/"
 									includes="**/*.jsp" />
 
-								<replaceregexp match="\s*\r?\n\r?\s*" flags="g"
+								<replaceregexp match="\s*\r?\n\r?\s*" flags="gi"
 									replace=" ">
 									<fileset refid="jsp.fileset" />
 								</replaceregexp>
-								<replaceregexp match="\s+" flags="g" replace=" ">
+								<replaceregexp match="\s+" flags="gi" replace=" ">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="%>\s+&lt;%" flags="gi"
+									replace="%>&lt;%">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;meta>\s*" flags="gi"
+									replace="&lt;meta>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;meta \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/meta>\s*" flags="gi"
+									replace="&lt;/meta>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;meta \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s*/>\s*" flags="gi"
+									replace="&lt;meta \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;html>\s*" flags="gi"
+									replace="&lt;html>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;html\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;html \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/html>\s*" flags="gi"
+									replace="&lt;/html>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;html\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;html \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;html\s*/>\s*" flags="gi"
+									replace="&lt;html \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;head>\s*" flags="gi"
+									replace="&lt;head>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;head\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;head \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/head>\s*" flags="gi"
+									replace="&lt;/head>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;head\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;head \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;head\s*/>\s*" flags="gi"
+									replace="&lt;head \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;title>\s*" flags="gi"
+									replace="&lt;title>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;title\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;title \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/title>\s*" flags="gi"
+									replace="&lt;/title>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;title\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;title \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;title\s*/>\s*" flags="gi"
+									replace="&lt;title \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;meta>\s*" flags="gi"
+									replace="&lt;meta>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;meta \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/meta>\s*" flags="gi"
+									replace="&lt;/meta>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;meta \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;meta\s*/>\s*" flags="gi"
+									replace="&lt;meta \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;link>\s*" flags="gi"
+									replace="&lt;link>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;link\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;link \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/link>\s*" flags="gi"
+									replace="&lt;/link>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;link\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;link \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;link\s*/>\s*" flags="gi"
+									replace="&lt;link \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;script>\s*" flags="gi"
+									replace="&lt;script>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;script\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;script \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/script>\s*" flags="gi"
+									replace="&lt;/script>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;script\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;script \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;script\s*/>\s*"
+									flags="gi" replace="&lt;script \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;body>\s*" flags="gi"
+									replace="&lt;body>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;body\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;body \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/body>\s*" flags="gi"
+									replace="&lt;/body>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;body\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;body \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;body\s*/>\s*" flags="gi"
+									replace="&lt;body \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;h1>\s*" flags="gi"
+									replace="&lt;h1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h1\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;h1 \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/h1>\s*" flags="gi"
+									replace="&lt;/h1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h1\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;h1 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h1\s*/>\s*" flags="gi"
+									replace="&lt;h1 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;h2>\s*" flags="gi"
+									replace="&lt;h2>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h2\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;h2 \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/h2>\s*" flags="gi"
+									replace="&lt;/h2>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h2\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;h2 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h2\s*/>\s*" flags="gi"
+									replace="&lt;h2 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;h3>\s*" flags="gi"
+									replace="&lt;h3>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h3\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;h3 \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/h3>\s*" flags="gi"
+									replace="&lt;/h3>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h3\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;h3 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h3\s*/>\s*" flags="gi"
+									replace="&lt;h3 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+
+								<replaceregexp match="\s*&lt;h4>\s*" flags="gi"
+									replace="&lt;h4>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h4\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;h4 \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/h4>\s*" flags="gi"
+									replace="&lt;/h4>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h4\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;h4 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h4\s*/>\s*" flags="gi"
+									replace="&lt;h4 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;h5>\s*" flags="gi"
+									replace="&lt;h5>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h5\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;h5 \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/h5>\s*" flags="gi"
+									replace="&lt;/h5>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h5\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;h5 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;h5\s*/>\s*" flags="gi"
+									replace="&lt;h5 \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;p>\s*" flags="gi"
+									replace="&lt;p>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;p\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;p \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/p>\s*" flags="gi"
+									replace="&lt;/p>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;p\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;p \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;p\s*/>\s*" flags="gi"
+									replace="&lt;p \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;ol>\s*" flags="gi"
+									replace="&lt;ol>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ol\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;ol \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/ol>\s*" flags="gi"
+									replace="&lt;/ol>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ol\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;ol \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ol\s*/>\s*" flags="gi"
+									replace="&lt;ol \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;ul>\s*" flags="gi"
+									replace="&lt;ul>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ul\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;ul \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/ul>\s*" flags="gi"
+									replace="&lt;/ul>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ul\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;ul \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;ul\s*/>\s*" flags="gi"
+									replace="&lt;ul \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;li>\s*" flags="gi"
+									replace="&lt;li>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;li\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;li \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/li>\s*" flags="gi"
+									replace="&lt;/li>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;li\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;li \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;li\s*/>\s*" flags="gi"
+									replace="&lt;li \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;section>\s*" flags="gi"
+									replace="&lt;section>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;section\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;section \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/section>\s*" flags="gi"
+									replace="&lt;/section>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;section\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;section \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;section\s*/>\s*"
+									flags="gi" replace="&lt;section \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;header>\s*" flags="gi"
+									replace="&lt;header>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;header\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;header \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/header>\s*" flags="gi"
+									replace="&lt;/header>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;header\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;header \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;header\s*/>\s*"
+									flags="gi" replace="&lt;header \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;aside>\s*" flags="gi"
+									replace="&lt;aside>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;aside\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;aside \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/aside>\s*" flags="gi"
+									replace="&lt;/aside>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;aside\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;aside \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;aside\s*/>\s*" flags="gi"
+									replace="&lt;aside \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;table>\s*" flags="gi"
+									replace="&lt;table>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;table\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;table \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/table>\s*" flags="gi"
+									replace="&lt;/table>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;table\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;table \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;table\s*/>\s*" flags="gi"
+									replace="&lt;table \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;tr>\s*" flags="gi"
+									replace="&lt;tr>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;tr\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;tr \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/tr>\s*" flags="gi"
+									replace="&lt;/tr>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;tr\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;tr \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;tr\s*/>\s*" flags="gi"
+									replace="&lt;tr \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;td>\s*" flags="gi"
+									replace="&lt;td>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;td\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;td \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/td>\s*" flags="gi"
+									replace="&lt;/td>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;td\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;td \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;td\s*/>\s*" flags="gi"
+									replace="&lt;td \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;th>\s*" flags="gi"
+									replace="&lt;th>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;th\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;th \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/th>\s*" flags="gi"
+									replace="&lt;/th>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;th\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;th \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;th\s*/>\s*" flags="gi"
+									replace="&lt;th \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;form>\s*" flags="gi"
+									replace="&lt;form>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;form\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;form \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/form>\s*" flags="gi"
+									replace="&lt;/form>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;form\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;form \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;form\s*/>\s*" flags="gi"
+									replace="&lt;form \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;option>\s*" flags="gi"
+									replace="&lt;option>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;option\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;option \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/option>\s*" flags="gi"
+									replace="&lt;/option>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;option\s+(.*?)\s*/>\s*"
+									flags="gi" replace="&lt;option \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;option\s*/>\s*"
+									flags="gi" replace="&lt;option \1/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="\s*&lt;br\s*/>\s*" flags="gi"
+									replace="&lt;br/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;hr\s*/>\s*" flags="gi"
+									replace="&lt;br/>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+								<replaceregexp match="&lt;select>\s*" flags="gi"
+									replace="&lt;section>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="&lt;select\s+(.*?)\s*>\s*"
+									flags="gi" replace="&lt;select \1>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/select>" flags="gi"
+									replace="&lt;/select>">
 									<fileset refid="jsp.fileset" />
 								</replaceregexp>
 
