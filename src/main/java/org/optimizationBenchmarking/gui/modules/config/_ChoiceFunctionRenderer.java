@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspWriter;
 
+import org.optimizationBenchmarking.gui.utils.EditorModule;
 import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
@@ -49,7 +50,9 @@ final class _ChoiceFunctionRenderer extends FunctionRenderer {
 
     out = page.getOut();
     encoded = page.getEncoded();
-    out.write("(id){var text='Please select an option.';switch(document.getElementById(id).value){");//$NON-NLS-1$
+    out.write("(id){var text='");//$NON-NLS-1$
+    out.write(EditorModule.PLEASE_SELECT_OPTION);
+    out.write("';switch(document.getElementById(id).value){");//$NON-NLS-1$
     for (final DefinitionElement de : this.m_instance.getChoices()) {
       out.write("case '");//$NON-NLS-1$
       encoded.append(de.getName());

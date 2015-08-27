@@ -4,6 +4,7 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.FileIcon" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArraySetView" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
@@ -63,7 +64,7 @@
         <img src="/icons/folder.png" class="folderIcon" alt="Enter folder '<%= elementName%>'." />
       <% break; } %>
       <% default: { %>
-        <img src="/icons/file.png" class="folderIcon" alt="File '<%= elementName%>'." />
+        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="File '<%= elementName%>'." />
       <% break; } 
      } %>
   </td>
@@ -135,7 +136,7 @@ Selected element(s):
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% if(element.getType().isFile()) {  %>
-        <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
       <% } else { %>
         <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
       <% } %>

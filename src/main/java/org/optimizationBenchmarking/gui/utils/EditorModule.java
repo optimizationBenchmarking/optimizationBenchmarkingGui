@@ -33,6 +33,9 @@ public abstract class EditorModule<T> {
   private static final String LOAD_SUCCESS = //
   "Successfully loaded file "; //$NON-NLS-1$
 
+  /** please select an option */
+  public static final String PLEASE_SELECT_OPTION = "Please select an option.";//$NON-NLS-1$
+
   /** create the editor module */
   protected EditorModule() {
     super();
@@ -375,5 +378,25 @@ public abstract class EditorModule<T> {
     } else {
       handle.unknownSubmit(submit);
     }
+  }
+
+  /**
+   * Write the default option selector.
+   * 
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("resource")
+  protected final void defaultSelectionOption(final Page page)
+      throws IOException {
+    final JspWriter out;
+
+    out = page.getOut();
+    out.write(//
+    "<option value=\"\" selected disabled>");//$NON-NLS-1$
+    out.write(PLEASE_SELECT_OPTION);
+    out.write("</option>");//$NON-NLS-1$
   }
 }

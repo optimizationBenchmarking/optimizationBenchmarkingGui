@@ -252,8 +252,7 @@ public final class ConfigIO extends EditorModule<Dump> {
           isChoice = true;
 
           if (!enabled) {
-            out.write(//
-            "<option value=\"\" selected disabled>Please select an option.</option>");//$NON-NLS-1$
+            this.defaultSelectionOption(page);
           }
 
           if (value != null) {
@@ -349,7 +348,7 @@ public final class ConfigIO extends EditorModule<Dump> {
               }
 
               case BOOLEAN: {
-                out.write("<input type=\"checkbox");//$NON-NLS-1$
+                out.write("<input type=\"checkbox\"");//$NON-NLS-1$
                 if (value != null) {
                   writeDef: {
                     try {
@@ -359,11 +358,11 @@ public final class ConfigIO extends EditorModule<Dump> {
                       break writeDef;
                     }
                     if (bool) {
-                      out.write(" checked");//$NON-NLS-1$
+                      out.write("\" checked");//$NON-NLS-1$
                     }
                   }
                 }
-                out.write("\" name=\"");//$NON-NLS-1$
+                out.write(" name=\"");//$NON-NLS-1$
                 encoded.append(field);
                 out.write("\" id=\"");//$NON-NLS-1$
                 encoded.append(field);

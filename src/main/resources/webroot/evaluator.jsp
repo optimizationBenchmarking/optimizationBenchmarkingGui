@@ -5,6 +5,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.FSElement" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.FileIcon" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArrayListView" %>
 <%@ page import="java.util.logging.Level" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
@@ -65,7 +66,7 @@ Take it easy, relax, and let the program do its job.</p>
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% if(element.getType().isFile()) {  %>
-        <img src="/icons/file.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
       <% } else { %>
         <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
       <% } %>
