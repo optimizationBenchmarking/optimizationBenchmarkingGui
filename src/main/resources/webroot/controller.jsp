@@ -99,7 +99,7 @@
 <% } %>
 <tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', false)" value="&#x2610;"/></td></tr>
 </table>
-<p class="controllerActions">
+<div class="controllerActions">
 Selected element(s):
 <select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('main', this)">
 <option><%= ControllerUtils.COMMAND_REMEMBER%></option>
@@ -111,7 +111,7 @@ Selected element(s):
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
 <input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
-</p>
+</div>
 <p id="mainDesc" class="actionDescription" />
 </form>
 

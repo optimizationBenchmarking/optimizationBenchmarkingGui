@@ -1,4 +1,4 @@
-package org.optimizationBenchmarking.gui.utils;
+package org.optimizationBenchmarking.gui.modules;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

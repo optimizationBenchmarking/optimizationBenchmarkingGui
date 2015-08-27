@@ -1,7 +1,7 @@
 <%@include file="/includes/defaultHeader.jsp" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.Evaluation" %>
+<%@ page import="org.optimizationBenchmarking.gui.modules.Evaluation" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.FSElement" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
@@ -103,7 +103,7 @@ Take it easy, relax, and let the program do its job.</p>
 <% } %>
 <tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', false)" value="&#x2610;"/></td></tr>
 </table>
-<p class="controllerActions">
+<div class="controllerActions">
 Selected produced element(s):
 <select id="prodSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('prod', this)">
 <option><%= ControllerUtils.COMMAND_REMEMBER%></option>
@@ -111,7 +111,7 @@ Selected produced element(s):
 <option><%= ControllerUtils.COMMAND_DELETE%></option>
 </select>
 <input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
-</p>
+</div>
 <p id="prodDesc" class="actionDescription" />
 </form>
 

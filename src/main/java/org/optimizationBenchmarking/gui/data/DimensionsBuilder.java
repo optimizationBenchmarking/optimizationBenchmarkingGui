@@ -22,7 +22,7 @@ public final class DimensionsBuilder extends
   private boolean m_needsNew;
 
   /** create */
-  DimensionsBuilder() {
+  public DimensionsBuilder() {
     super();
     this.m_list = new ArrayList<>();
     this.m_needsNew = true;

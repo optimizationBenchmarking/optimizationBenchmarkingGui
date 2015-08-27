@@ -81,7 +81,7 @@ p.breadcrumps {
   font-family: monospace, monospace;
 }
 
-p.controllerActions {
+div.controllerActions {
   margin-top   : 0.7em;
   margin-bottom: 0.35em;
   line-height: 119%;

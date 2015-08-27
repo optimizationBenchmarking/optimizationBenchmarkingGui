@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
-import org.optimizationBenchmarking.gui.utils.FileIO;
+import org.optimizationBenchmarking.gui.modules.Delete;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 
@@ -135,7 +135,7 @@ public final class ControllerUtils {
                   break sub;
                 }
                 case COMMAND_DELETE: {
-                  FileIO.delete(request.getParameterValues(//
+                  Delete.delete(request.getParameterValues(//
                       ControllerUtils.PARAMETER_SELECTION), handle);
                   break sub;
                 }
@@ -160,6 +160,9 @@ public final class ControllerUtils {
       return controller.getState(handle);
     }
   }
+
+  /** save the stuff */
+  public static final String PARAM_SAVE = "save"; //$NON-NLS-1$
 
   /** The forbidden constructor */
   private ControllerUtils() {

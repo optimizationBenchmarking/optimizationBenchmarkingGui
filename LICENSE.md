@@ -248,6 +248,18 @@ The licenses used for some of these elements are given in the folder
       + [http://ctan.org/pkg/cuted](http://ctan.org/pkg/cuted)
       + [http://www.vtex.lt/tex/download/macros/cuted.sty](http://www.vtex.lt/tex/download/macros/cuted.sty)
 
+* CSS Style File "[normalize.css](http://necolas.github.io/normalize.css/)"
+   - License: [MIT License](http://opensource.org/licenses/MIT), (see file "[meta/licenses/mit.txt](http://github.com/optimizationBenchmarking/optimizationBenchmarkingGui/tree/master/meta/licenses/mit.txt)")
+   - Copyright: Copyright (C) by [Nicolas Gallagher](http://nicolasgallagher.com/), co-created with [Jonathan Neal](http://music.thewikies.com/jonneal/).
+   - Author: [Nicolas Gallagher](http://nicolasgallagher.com/), co-created with [Jonathan Neal](http://music.thewikies.com/jonneal/)
+   - File: [normalize.css](http://github.com/optimizationBenchmarking/optimizationBenchmarking/tree/master/src/main/resources/webroot/stylesheets/normalize.css)
+   - Version: [3.0.3](https://github.com/necolas/normalize.css/releases/tag/3.0.3)
+   - Location in Project: [src/main/resources/webroot/stylesheets/](http://github.com/optimizationBenchmarking/optimizationBenchmarkingGui/tree/master/src/main/resources/webroot/stylesheets/)
+   - Status: freely available in the internet
+   - Sources:
+      + [https://github.com/necolas/normalize.css/](https://github.com/necolas/normalize.css/)
+      + [http://necolas.github.io/normalize.css/](http://necolas.github.io/normalize.css/)
+
 
 ### Referenced Libraries
 
