@@ -61,10 +61,10 @@ final class _AddFunctionRenderer extends FunctionRenderer {
 
     out = page.getOut();
 
-    out.write("(prefix,button){var form=button;while((form!=null)&&(form.tagName.toUpperCase()!='FORM')){alert('1 '+form);form=form.parentNode;}alert('2 '+form);if(form!=null){var sel=document.getElementById(");//$NON-NLS-1$
+    out.write("(prefix,button){var form=button;while((form!=null)&&(form.tagName.toUpperCase()!='FORM')){form=form.parentNode;}if(form!=null){var sel=document.getElementById(");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(false, "prefix", //$NON-NLS-1$
         false, EvaluationIO.MODULE_ADD_SELECT_ID, true);
-    out.write(");alert('3 '+form);if(sel!=null){var text=null;");//$NON-NLS-1$
+    out.write(");if(sel!=null){var text=null;");//$NON-NLS-1$
     out.append("switch(sel.value){");//$NON-NLS-1$
 
     newPrefix = page.newPrefix();
@@ -82,7 +82,7 @@ final class _AddFunctionRenderer extends FunctionRenderer {
       out.write("\"/>';break;}");//$NON-NLS-1$
     }
 
-    out.write("default:{return;}}alert('4 '+text);var dummy=document.createElement('form');dummy.innerHTML=text;var insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);dummy.innerHTML='<input type=\"hidden\" name=\"");//$NON-NLS-1$
+    out.write("default:{return;}}var dummy=document.createElement('form');dummy.innerHTML=text;var insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);dummy.innerHTML='<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.write(ControllerUtils.INPUT_SUBMIT);
     out.write("\" value=\"");//$NON-NLS-1$
     out.write(ControllerUtils.PARAM_SAVE);

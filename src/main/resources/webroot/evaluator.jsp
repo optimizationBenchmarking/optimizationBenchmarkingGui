@@ -116,7 +116,7 @@ Selected produced element(s):
 </form>
 
 <script type="text/javascript">
-<%@include file="/includes/controllerJavascript.jsp" %>
+<%@include file="/includes/controllerJavascript.js.jsp" %>
 window.onload = function() {
   onWithSelectionChange("prod", document.getElementById("prodSelection"));
 }

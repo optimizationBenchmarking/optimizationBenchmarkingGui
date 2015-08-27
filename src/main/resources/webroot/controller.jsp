@@ -192,7 +192,7 @@ Selected remembered element(s):
 <% } %>
 
 <script type="text/javascript">
-<%@include file="/includes/controllerJavascript.jsp" %>
+<%@include file="/includes/controllerJavascript.js.jsp" %>
 window.onload = function() {
   onWithSelectionChange("main", document.getElementById("mainSelection"));
   onWithSelectionChange("rem",  document.getElementById("remSelection"));

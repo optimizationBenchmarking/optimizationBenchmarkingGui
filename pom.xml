@@ -266,6 +266,19 @@
 										includes="*.css" />
 								</concat>
 
+								<!-- Only the above two `concat`s are necessary. The ant task below, 
+									on the other hand, are optional and very crude methods to reduce the size 
+									of the generated HTML. For example, I first try to compress the stylesheets 
+									(css). This should be relatively safe. However, then I also go and try to 
+									minify the Java Server Pages (JSPs) and javascript (js, js.jsp) files. I 
+									always use regular expressions, and there are a variety of situations where 
+									those might not work or produce wrong results. For the current state of the 
+									project, they do work, though. Thus, if they stop working at some point, 
+									I will need to modify or remove them. But until that happens, I will keep 
+									them in, because they are only for this very project and I don't need to 
+									care if they would work elsewhere. As long as they work here, the project's 
+									performance will be a slight bit better. -->
+
 								<!-- make the css smaller -->
 
 								<fileset id="css.fileset" dir="target/classes/webroot/stylesheets/"
@@ -895,6 +908,53 @@
 								<replaceregexp match="\s*&lt;/select>" flags="gi"
 									replace="&lt;/select>">
 									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
+
+								<!-- make the javascript smaller -->
+
+								<fileset id="js.fileset" dir="target/classes/webroot/includes/"
+									includes="**/*.js.jsp,**/*.js" />
+								<replaceregexp match="\s*\n\s*" flags="gi"
+									replace="\n">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s+" flags="gi" replace=" ">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\{\s*" flags="gi"
+									replace="{">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\}\s*" flags="gi"
+									replace="}">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\(\s*" flags="gi"
+									replace="(">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\)\s*" flags="gi"
+									replace=")">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\;\s*" flags="gi"
+									replace=";">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*=\s*" flags="gi" replace="=">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*\+\s*" flags="gi" replace="+">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*==\s*" flags="gi"
+									replace="==">
+									<fileset refid="js.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*!=\s*" flags="gi"
+									replace="!=">
+									<fileset refid="js.fileset" />
 								</replaceregexp>
 
 							</target>
