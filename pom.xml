@@ -253,7 +253,11 @@
 								<!-- Combine the partial css into single files. -->
 								<concat destfile="target/classes/webroot/stylesheets/screen.css"
 									force="no">
-									<fileset dir="src/main/resources/webroot/stylesheets/screen"
+									<!-- normalize.css should come first -->
+									<filelist dir="src/main/resources/webroot/stylesheets/screen/base"
+										files="normalize.css,baseLayout.css" />
+									<fileset
+										dir="src/main/resources/webroot/stylesheets/screen/extension"
 										includes="*.css" />
 								</concat>
 								<concat destfile="target/classes/webroot/stylesheets/print.css"
