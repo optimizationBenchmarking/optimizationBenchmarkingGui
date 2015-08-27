@@ -31,6 +31,7 @@ import org.optimizationBenchmarking.utils.parsers.LooseLongParser;
 import org.optimizationBenchmarking.utils.parsers.NumberParser;
 import org.optimizationBenchmarking.utils.parsers.Parser;
 import org.optimizationBenchmarking.utils.reflection.EPrimitiveType;
+import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /**
@@ -168,7 +169,7 @@ public final class ConfigIO extends EditorModule<Dump> {
 
   /** {@inheritDoc} */
   @Override
-  protected final Dump loadFile(Path file, Handle handle)
+  protected final Dump loadFile(final Path file, final Handle handle)
       throws IOException {
     try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
       ConfigurationXMLInput.getInstance().use().setLogger(handle)
@@ -180,8 +181,8 @@ public final class ConfigIO extends EditorModule<Dump> {
   /** {@inheritDoc} */
   @SuppressWarnings("resource")
   @Override
-  public final void formPutEditorFields(String prefix, Dump data, Page page)
-      throws IOException {
+  public final void formPutEditorFields(final String prefix,
+      final Dump data, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
     Parameter<?> param;
@@ -206,11 +207,14 @@ public final class ConfigIO extends EditorModule<Dump> {
       name = param.getName();
 
       value = entry.getValue();
-      if ((value == null) || (value == "")) { //$NON-NLS-1$
+      if (value instanceof String) {
+        value = TextUtils.prepare((String) value);
+      }
+      if (value == null) {
         enabled = false;
         value = param.getDefault();
-        if (value == "") {//$NON-NLS-1$
-          value = null;
+        if (value instanceof String) {
+          value = TextUtils.prepare((String) value);
         }
       } else {
         enabled = true;
@@ -247,8 +251,13 @@ public final class ConfigIO extends EditorModule<Dump> {
           out.write("\">"); //$NON-NLS-1$
           isChoice = true;
 
+          if (!enabled) {
+            out.write(//
+            "<option value=\"\" selected disabled>Please select an option.</option>");//$NON-NLS-1$
+          }
+
           if (value != null) {
-            defstr = String.valueOf(value);
+            defstr = TextUtils.prepare(String.valueOf(value));
           } else {
             defstr = null;
           }
@@ -256,7 +265,7 @@ public final class ConfigIO extends EditorModule<Dump> {
           for (final DefinitionElement cde : ((InstanceParameter<?>) param)
               .getChoices()) {
             cur = cde.getName();
-            if (cur.equalsIgnoreCase(defstr)) {
+            if (enabled && cur.equalsIgnoreCase(defstr)) {
               out.write("<option selected>");//$NON-NLS-1$
             } else {
               out.write("<option>");//$NON-NLS-1$
@@ -447,7 +456,7 @@ public final class ConfigIO extends EditorModule<Dump> {
 
   /**
    * Load a configuration from a request
-   * 
+   *
    * @param builder
    *          the destination builder
    * @param prefix
@@ -460,8 +469,8 @@ public final class ConfigIO extends EditorModule<Dump> {
    *          the handle
    */
   public final void loadConfigurationFromRequest(
-      final ConfigurationBuilder builder, String prefix,
-      final Definition definition, HttpServletRequest request,
+      final ConfigurationBuilder builder, final String prefix,
+      final Definition definition, final HttpServletRequest request,
       final Handle handle) {
     final HashSet<String> done;
     String name, field, enabled, temp, value;
@@ -540,8 +549,8 @@ public final class ConfigIO extends EditorModule<Dump> {
 
   /** {@inheritDoc} */
   @Override
-  protected final void storeToFile(Dump data, Path file, Handle handle)
-      throws IOException {
+  protected final void storeToFile(final Dump data, final Path file,
+      final Handle handle) throws IOException {
     ConfigurationXMLOutput.getInstance().use().setLogger(handle)
         .setPath(file).setSource(data).create().call();
   }

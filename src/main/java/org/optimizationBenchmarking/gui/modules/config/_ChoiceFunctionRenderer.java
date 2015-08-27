@@ -17,7 +17,7 @@ final class _ChoiceFunctionRenderer extends FunctionRenderer {
 
   /**
    * create the choice function renderer
-   * 
+   *
    * @param instance
    *          the instance parameter
    */
@@ -49,7 +49,7 @@ final class _ChoiceFunctionRenderer extends FunctionRenderer {
 
     out = page.getOut();
     encoded = page.getEncoded();
-    out.write("(id){var text=\"\";switch(document.getElementById(id).value){");//$NON-NLS-1$
+    out.write("(id){var text='Please select an option.';switch(document.getElementById(id).value){");//$NON-NLS-1$
     for (final DefinitionElement de : this.m_instance.getChoices()) {
       out.write("case '");//$NON-NLS-1$
       encoded.append(de.getName());
