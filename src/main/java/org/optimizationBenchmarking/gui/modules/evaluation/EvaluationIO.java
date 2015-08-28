@@ -288,4 +288,25 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
         .setPath(file).setSource(data).create().call();
   }
 
+  /**
+   * Put the help for the component buttons. This should add a paragraph of
+   * text, including a call to
+   * {@link #formPutComponentButtonHelp(String, boolean, boolean, Page)}.
+   * It should be called before any form is constructed.
+   *
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if I/O fails
+   */
+  @SuppressWarnings("resource")
+  public final void formPutComponentButtonHelp(final Page page)
+      throws IOException {
+    final JspWriter out;
+
+    out = page.getOut();
+    out.write("<p class=\"buttonHelp\">");//$NON-NLS-1$
+    this.formPutComponentButtonHelp("module", true, true, page); //$NON-NLS-1$
+    out.write("</p>");//$NON-NLS-1$
+  }
 }

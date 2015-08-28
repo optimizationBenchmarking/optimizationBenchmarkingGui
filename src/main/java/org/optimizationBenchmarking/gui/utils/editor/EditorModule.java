@@ -51,6 +51,12 @@ public abstract class EditorModule<T> {
   static final char BUTTON_VISIBILITY_VISIBLE = 0x25cf;
   /** the visible button value for hidden */
   static final char BUTTON_VISIBILITY_HIDDEN = 0x25cb;
+  /** the button value for the up button */
+  private static final char BUTTON_UP_VALUE = 0x21e7;
+  /** the button value for the down button */
+  private static final char BUTTON_DOWN_VALUE = 0x21e9;
+  /** the button value for the delete button */
+  private static final String BUTTON_DELETE_VALUE = "delete";//$NON-NLS-1$
 
   /** please select an option */
   public static final String PLEASE_SELECT_OPTION = "Please select an option.";//$NON-NLS-1$
@@ -420,6 +426,56 @@ public abstract class EditorModule<T> {
   }
 
   /**
+   * Describe the controls
+   *
+   * @param componentType
+   *          the component type
+   * @param canMove
+   *          can we move components?
+   * @param canDelete
+   *          can we delete components?
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if I/o fails
+   */
+  @SuppressWarnings("resource")
+  protected void formPutComponentButtonHelp(final String componentType,
+      final boolean canMove, final boolean canDelete, final Page page)
+      throws IOException {
+    final JspWriter out;
+    final ITextOutput encoded;
+
+    out = page.getOut();
+    encoded = page.getHTMLEncoded();
+
+    out.write('A');
+    out.write(' ');
+    encoded.append(componentType);
+    out.write(" shown/expanded by pressing the <code>");//$NON-NLS-1$
+    encoded.append(EditorModule.BUTTON_VISIBILITY_HIDDEN);
+    out.write("</code> button and minimized by pressing <code>");//$NON-NLS-1$
+    encoded.append(EditorModule.BUTTON_VISIBILITY_VISIBLE);
+    out.write("</code>.");//$NON-NLS-1$
+    if (canMove) {
+      out.write(" The <code>");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_UP_VALUE);
+      out.write("</code> button moves a ");//$NON-NLS-1$
+      encoded.append(componentType);
+      out.write(" up, The <code>");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_DOWN_VALUE);
+      out.write("</code> button moves it down.");//$NON-NLS-1$
+    }
+    if (canDelete) {
+      out.write(" The <code>");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_DELETE_VALUE);
+      out.write("</code> button deletes a ");//$NON-NLS-1$
+      encoded.append(componentType);
+      out.write(". There is no undo!"); //$NON-NLS-1$
+    }
+  }
+
+  /**
    * Put the head of a component
    *
    * @param name
@@ -464,8 +520,8 @@ public abstract class EditorModule<T> {
     out.write(EditorModule.BUTTON_VISIBILITY_SUFFIX);
     out.write("\" class=\"moduleCtrl\" value=\"");//$NON-NLS-1$
     encoded
-    .append(initiallyVisible ? EditorModule.BUTTON_VISIBILITY_VISIBLE
-        : EditorModule.BUTTON_VISIBILITY_HIDDEN);
+        .append(initiallyVisible ? EditorModule.BUTTON_VISIBILITY_VISIBLE
+            : EditorModule.BUTTON_VISIBILITY_HIDDEN);
     out.write("\" onclick=\"");//$NON-NLS-1$
     encoded.append(//
         page.getFunction(_ToggleVisibilityFunctionRenderer.INSTANCE));
@@ -480,14 +536,18 @@ public abstract class EditorModule<T> {
       out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
       encoded.append(componentPrefix);
       out.write(EditorModule.BUTTON_UP_SUFFIX);
-      out.write("\" class=\"moduleCtrl\" value=\"&#x21e7;\" onclick=\"");//$NON-NLS-1$
+      out.write("\" class=\"moduleCtrl\" value=\"");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_UP_VALUE);
+      out.write("\" onclick=\"");//$NON-NLS-1$
       out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
       out.write("('");//$NON-NLS-1$
       encoded.append(componentPrefix);
       out.write("')\"/> <input type=\"button\" id=\"");//$NON-NLS-1$
       encoded.append(componentPrefix);
       out.write(EditorModule.BUTTON_DOWN_SUFFIX);
-      out.write("\" class=\"moduleCtrl\" value=\"&#x21e9;\" onclick=\"");//$NON-NLS-1$
+      out.write("\" class=\"moduleCtrl\" value=\"");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_DOWN_VALUE);
+      out.write("\" onclick=\"");//$NON-NLS-1$
       out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
       out.write("('");//$NON-NLS-1$
       encoded.append(componentPrefix);
@@ -500,8 +560,9 @@ public abstract class EditorModule<T> {
 
     if (canDelete) {
       out.write(' ');
-      out.write(//
-      "<input type=\"button\" value=\"delete\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+      out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
+      out.write(EditorModule.BUTTON_DELETE_VALUE);
+      out.write("\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
     }
 
     out.write("</td></tr></table></h3><div class=\"componentInner\" id=\"");//$NON-NLS-1$

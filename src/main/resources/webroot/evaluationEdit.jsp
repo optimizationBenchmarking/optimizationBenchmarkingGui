@@ -20,14 +20,15 @@ try(final Handle handle = controller.createJspHandle(pageContext)) {
 }
 if(modules != null) {%>
 <h2>File &quot;<%= Encoder.htmlEncode(modules.getName()) %>&quot;</h2>
-<form class="invisible" action="/evaluationEdit.jsp" method="post">
 <%
 try(final Page hpage = new Page(pageContext)) {
+  EvaluationIO.INSTANCE.formPutComponentButtonHelp(hpage); %>
+<form class="invisible" action="/evaluationEdit.jsp" method="post">
+<%
   final String prefix = hpage.newPrefix();
   EvaluationIO.INSTANCE.formPutEditorFields(prefix, modules.getLoaded(), hpage);
   EvaluationIO.INSTANCE.formFinalize(prefix, modules, hpage);
-}
 %>
 </form>
-<% } %>
+<% } } %>
 <%@include file="/includes/defaultFooter.jsp" %>

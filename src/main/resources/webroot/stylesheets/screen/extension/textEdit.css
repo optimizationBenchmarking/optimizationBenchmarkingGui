@@ -12,9 +12,3 @@ textarea.editor {
   margin-right  : 1px;
   padding       : 2px;
 }
-
-form.invisible {
-  background    : transparent;
-  margin        : 0px;
-  padding       : 0px;
-}

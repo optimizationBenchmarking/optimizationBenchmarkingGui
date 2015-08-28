@@ -20,3 +20,8 @@
 </div></header><div id="content-wrapper">
 <div class="inner clearfix">
 <section id="main-content">
+<noscript>
+Your browser doesn't support JavaScript or you have disabled JavaScript.
+However, JavaScript is needed to use this web GUI &ndash; otherwise, several forms will not work properly.
+Therefore, please turn on JavaScript or use a newer browser.
+</noscript>

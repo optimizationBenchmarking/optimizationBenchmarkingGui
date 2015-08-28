@@ -36,3 +36,8 @@ div.componentInner {
 
 p.componentDesc {
 }
+
+p.buttonHelp {
+  margin-top    : 2px;
+  margin-bottom : 0px;
+}
