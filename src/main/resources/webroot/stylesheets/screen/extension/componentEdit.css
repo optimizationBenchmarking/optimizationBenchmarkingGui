@@ -1,7 +1,22 @@
-span.moduleCtrls {
-  margin-left: 1.5em;
-  font-size  : 15px;
-  font-weight: 400;
+td.moduleCtrls {
+  background     : transparent;
+  margin         : 0px;
+  padding        : 0px;
+  border-collapse: collapse;
+  border         : 0px none transparent;
+  margin-left    : 1.5em;
+  font-size      : 15px;
+  font-weight    : 400;
+  text-align     : right;
+}
+
+td.moduleHead {
+  background     : transparent;
+  margin         : 0px;
+  padding        : 0px;
+  border-collapse: collapse;
+  border         : 0px none transparent;
+  text-align     : left;
 }
 
 input.moduleCtrl {
@@ -14,6 +29,9 @@ div.addModuleDesc {
 }
 
 div.componentMain {
+}
+
+div.componentInner {
 }
 
 p.componentDesc {

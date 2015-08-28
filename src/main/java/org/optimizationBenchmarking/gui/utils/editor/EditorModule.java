@@ -37,11 +37,20 @@ public abstract class EditorModule<T> {
   "Successfully loaded file "; //$NON-NLS-1$
 
   /** the main div suffix */
-  static final String MAIN_DIV_SUFFIX = "-div";//$NON-NLS-1$
+  static final String DIV_MAIN_SUFFIX = "-main";//$NON-NLS-1$
+  /** the inner div suffix */
+  static final String DIV_INNER_SUFFIX = "-inner";//$NON-NLS-1$
   /** the up-button suffix */
-  static final String UP_BUTTON_SUFFIX = "-up";//$NON-NLS-1$
+  static final String BUTTON_UP_SUFFIX = "-up";//$NON-NLS-1$
   /** the down-button suffix */
-  static final String DOWN_BUTTON_SUFFIX = "-down";//$NON-NLS-1$
+  static final String BUTTON_DOWN_SUFFIX = "-down";//$NON-NLS-1$
+
+  /** the visibility button suffix */
+  static final String BUTTON_VISIBILITY_SUFFIX = "-vis";//$NON-NLS-1$
+  /** the visible button value for visible */
+  static final char BUTTON_VISIBILITY_VISIBLE = 0x25cf;
+  /** the visible button value for hidden */
+  static final char BUTTON_VISIBILITY_HIDDEN = 0x25cb;
 
   /** please select an option */
   public static final String PLEASE_SELECT_OPTION = "Please select an option.";//$NON-NLS-1$
@@ -240,7 +249,7 @@ public abstract class EditorModule<T> {
     final ITextOutput encoded;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
     out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
     out.write(ControllerUtils.PARAMETER_SELECTION);
     out.write("\" value=\""); //$NON-NLS-1$
@@ -426,68 +435,83 @@ public abstract class EditorModule<T> {
    *          can the component be moved up and down?
    * @param canDelete
    *          can the component be deleted?
+   * @param initiallyVisible
+   *          are the contents of the component initially visible
    * @throws IOException
    *           if i/o fails
    */
   @SuppressWarnings("resource")
   protected void formPutComponentHead(final String name,
       final String description, final String componentPrefix,
-      final boolean canMove, final boolean canDelete, final Page page)
-      throws IOException {
+      final boolean canMove, final boolean canDelete,
+      final boolean initiallyVisible, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    boolean has;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
 
     out.write("<div class=\"componentMain\" id=\""); //$NON-NLS-1$
     out.write(componentPrefix);
-    out.write(EditorModule.MAIN_DIV_SUFFIX);
-    out.append("\"><h3>"); //$NON-NLS-1$
+    out.write(EditorModule.DIV_MAIN_SUFFIX);
+    out.append("\"><table class=\"invisible\"><tr class=\"invisible\"><td class=\"moduleHead\"><h3>"); //$NON-NLS-1$
     encoded.append(name);
-    if (canMove || canDelete) {
-      has = false;
-      out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
-      if (canDelete) {
-        out.write(//
-        "<input type=\"button\" value=\"delete\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
-        has = true;
-      }
-      if (canMove) {
-        if (has) {
-          out.write(' ');
-        }
-        has = true;
-        out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
-        encoded.append(componentPrefix);
-        out.write(EditorModule.UP_BUTTON_SUFFIX);
-        out.write("\" class=\"moduleCtrl\" value=\"&#x21e7;\" onclick=\"");//$NON-NLS-1$
-        out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
-        out.write("('");//$NON-NLS-1$
-        encoded.append(componentPrefix);
-        out.write("')\"/> <input type=\"button\" id=\"");//$NON-NLS-1$
-        encoded.append(componentPrefix);
-        out.write(EditorModule.DOWN_BUTTON_SUFFIX);
-        out.write("\" class=\"moduleCtrl\" value=\"&#x21e9;\" onclick=\"");//$NON-NLS-1$
-        out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
-        out.write("('");//$NON-NLS-1$
-        encoded.append(componentPrefix);
-        out.write("')\"/>");//$NON-NLS-1$
 
-        page.onLoad(page
-            .getFunction(_CheckMoveableFunctionRenderer.INSTANCE)
-            + '('
-            + '\''
-            + Encoder.htmlEncode(componentPrefix)
-            + '\''
-            + ')'
-            + ';');
-      }
-      out.write("</span>");//$NON-NLS-1$
+    out.write("</td><td class=\"moduleCtrls\">");//$NON-NLS-1$
+
+    out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
+    encoded.append(componentPrefix);
+    out.write(EditorModule.BUTTON_VISIBILITY_SUFFIX);
+    out.write("\" class=\"moduleCtrl\" value=\"");//$NON-NLS-1$
+    encoded
+    .append(initiallyVisible ? EditorModule.BUTTON_VISIBILITY_VISIBLE
+        : EditorModule.BUTTON_VISIBILITY_HIDDEN);
+    out.write("\" onclick=\"");//$NON-NLS-1$
+    encoded.append(//
+        page.getFunction(_ToggleVisibilityFunctionRenderer.INSTANCE));
+    out.write('(');
+    out.write('\'');
+    encoded.append(componentPrefix);
+    out.write("')\"/>");//$NON-NLS-1$
+
+    if (canMove) {
+      out.write(' ');
+
+      out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
+      encoded.append(componentPrefix);
+      out.write(EditorModule.BUTTON_UP_SUFFIX);
+      out.write("\" class=\"moduleCtrl\" value=\"&#x21e7;\" onclick=\"");//$NON-NLS-1$
+      out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
+      out.write("('");//$NON-NLS-1$
+      encoded.append(componentPrefix);
+      out.write("')\"/> <input type=\"button\" id=\"");//$NON-NLS-1$
+      encoded.append(componentPrefix);
+      out.write(EditorModule.BUTTON_DOWN_SUFFIX);
+      out.write("\" class=\"moduleCtrl\" value=\"&#x21e9;\" onclick=\"");//$NON-NLS-1$
+      out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
+      out.write("('");//$NON-NLS-1$
+      encoded.append(componentPrefix);
+      out.write("')\"/>");//$NON-NLS-1$
+
+      page.onLoad(page.getFunction(//
+          _CheckMoveableFunctionRenderer.INSTANCE) + '(' + '\''
+          + Encoder.htmlEncode(componentPrefix) + '\'' + ')' + ';');
     }
-    out.write("</h3>");//$NON-NLS-1$
 
+    if (canDelete) {
+      out.write(' ');
+      out.write(//
+      "<input type=\"button\" value=\"delete\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+    }
+
+    out.write("</td></tr></table></h3><div class=\"componentInner\" id=\"");//$NON-NLS-1$
+    encoded.append(componentPrefix);
+    out.write(EditorModule.DIV_INNER_SUFFIX);
+    out.write('"');
+    if (!initiallyVisible) {
+      out.write(" style=\"display:none\"");//$NON-NLS-1$
+    }
+    out.write('>');
     if (description != null) {
       out.write("<p class=\"componentDesc\"");//$NON-NLS-1$
       page.printLines(description, true, true);
@@ -518,7 +542,7 @@ public abstract class EditorModule<T> {
     final JspWriter out;
 
     out = page.getOut();
-    out.write("</div>"); //$NON-NLS-1$
+    out.write("</div></div>"); //$NON-NLS-1$
   }
 
 }

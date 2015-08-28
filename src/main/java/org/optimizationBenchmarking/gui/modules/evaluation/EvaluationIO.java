@@ -106,7 +106,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     String modulePrefix, name;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
     descriptions = this.__getDescriptions(null);
 
     for (final ModuleEntry me : data.getEntries()) {
@@ -115,7 +115,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
           page.newPrefix());
       name = md.getName();
       this.formPutComponentHead(name, md.getDescription(), modulePrefix,
-          true, true, page);
+          true, true, false, page);
 
       out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
       out.append(EvaluationIO.PARAMETER_MODULE);
@@ -137,7 +137,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     this.formPutComponentHead(
         name,//
         "Here you can edit the default values for any argument not provided above.",//$NON-NLS-1$
-        modulePrefix, false, false, page);
+        modulePrefix, false, false, false, page);
 
     out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);
@@ -165,7 +165,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     final String changeFuncName, selectId;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
 
     out.write("<hr/><div><input type=\"button\" onclick=\""); //$NON-NLS-1$
     descriptions = this.__getDescriptions(null);

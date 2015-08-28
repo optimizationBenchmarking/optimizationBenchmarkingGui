@@ -29,7 +29,7 @@ final class _ModuleUpFunctionRenderer extends FunctionRenderer {
 
     out = page.getOut();
     out.write("(prefix){var div=document.getElementById(prefix+'");//$NON-NLS-1$
-    out.write(EditorModule.MAIN_DIV_SUFFIX);
+    out.write(EditorModule.DIV_MAIN_SUFFIX);
     out.write("');if(div!=null){var other=div.previousElementSibling;div.parentNode.insertBefore(div,other);");//$NON-NLS-1$
     checkFunction = page
         .getFunction(_CheckMoveableFunctionRenderer.INSTANCE);
@@ -37,7 +37,7 @@ final class _ModuleUpFunctionRenderer extends FunctionRenderer {
     out.write("(prefix);");//$NON-NLS-1$
     out.write(checkFunction);
     out.write("(other.id.substring(0,other.id.length-");//$NON-NLS-1$
-    out.print(EditorModule.MAIN_DIV_SUFFIX.length());
+    out.print(EditorModule.DIV_MAIN_SUFFIX.length());
     out.write("));}}");//$NON-NLS-1$
   }
 }

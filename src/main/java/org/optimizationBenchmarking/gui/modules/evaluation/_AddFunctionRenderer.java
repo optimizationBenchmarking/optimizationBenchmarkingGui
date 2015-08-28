@@ -68,7 +68,7 @@ final class _AddFunctionRenderer extends FunctionRenderer {
     out.append("switch(sel.value){");//$NON-NLS-1$
 
     newPrefix = page.newPrefix();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
     for (final ModuleDescription md : this.m_descriptions) {
       out.write("case '");//$NON-NLS-1$
       encoded.append(md.getName());

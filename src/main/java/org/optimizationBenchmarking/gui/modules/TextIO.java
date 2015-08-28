@@ -88,7 +88,7 @@ public final class TextIO extends EditorModule<String> {
     final ITextOutput encoded;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
     out.write("<textarea class=\"editor\" rows=\"25\" cols=\"70\" name=\"");//$NON-NLS-1$
     encoded.append(//
         Page.fieldNameFromPrefixAndName(prefix, TextIO.FIELD_CONTENTS));

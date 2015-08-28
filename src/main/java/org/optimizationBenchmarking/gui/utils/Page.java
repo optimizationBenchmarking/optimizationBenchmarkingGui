@@ -13,6 +13,7 @@ import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.AbstractTextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.tokenizers.LineIterator;
+import org.optimizationBenchmarking.utils.text.transformations.JavaCharTransformer;
 import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransformer;
 
 /** A collector for java script functions which can flush them at the end */
@@ -57,8 +58,13 @@ public final class Page implements Closeable {
   /** the invocations to be done one page load */
   private LinkedHashSet<String> m_onLoad;
 
-  /** the encoded text output */
-  private ITextOutput m_encoded;
+  /** the wrapped encoded text output */
+  private ITextOutput m_wrapped;
+
+  /** the html encoded text output */
+  private ITextOutput m_htmlEncoded;
+  /** the javascript encoded text output */
+  private ITextOutput m_jsEncoded;
 
   /**
    * Create the page
@@ -69,8 +75,9 @@ public final class Page implements Closeable {
   public Page(final JspWriter out) {
     super();
     this.m_out = out;
-    this.m_encoded = XMLCharTransformer.getInstance().transform(
-        AbstractTextOutput.wrap(out));
+    this.m_wrapped = AbstractTextOutput.wrap(out);
+    this.m_htmlEncoded = XMLCharTransformer.getInstance().transform(
+        this.m_wrapped);
   }
 
   /**
@@ -122,7 +129,7 @@ public final class Page implements Closeable {
           this.m_out.write(Page.INDENT);
         }
       }
-      this.m_encoded.append(line);
+      this.m_htmlEncoded.append(line);
     }
   }
 
@@ -146,12 +153,25 @@ public final class Page implements Closeable {
   }
 
   /**
-   * Get the encoded page writer
+   * Get the html encoded page writer
    *
-   * @return the encoded page writer
+   * @return the html encoded page writer
    */
-  public final ITextOutput getEncoded() {
-    return this.m_encoded;
+  public final ITextOutput getHTMLEncoded() {
+    return this.m_htmlEncoded;
+  }
+
+  /**
+   * Get the javascript encoded page writer
+   *
+   * @return the javascript encoded page writer
+   */
+  public final ITextOutput getJSEncoded() {
+    if (this.m_jsEncoded == null) {
+      this.m_jsEncoded = JavaCharTransformer.getInstance().transform(
+          this.m_wrapped);
+    }
+    return this.m_jsEncoded;
   }
 
   /**
@@ -264,7 +284,9 @@ public final class Page implements Closeable {
       }
     } finally {
       this.m_out = null;
-      this.m_encoded = null;
+      this.m_wrapped = null;
+      this.m_htmlEncoded = null;
+      this.m_jsEncoded = null;
       this.m_onLoad = null;
       this.m_functions = null;
     }
@@ -360,7 +382,7 @@ public final class Page implements Closeable {
     final ITextOutput encoded;
 
     out = this.m_out;
-    encoded = this.m_encoded;
+    encoded = this.m_htmlEncoded;
     if (prefix != null) {
       if (prefixIsString && nameIsString) {
         if (!inString) {

@@ -49,7 +49,7 @@ final class _ChoiceFunctionRenderer extends FunctionRenderer {
     final ITextOutput encoded;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
     out.write("(id){var text='");//$NON-NLS-1$
     out.write(EditorModule.PLEASE_SELECT_OPTION);
     out.write("';switch(document.getElementById(id).value){");//$NON-NLS-1$

@@ -55,7 +55,7 @@ final class _ChangeFunctionRenderer extends FunctionRenderer {
     final ITextOutput encoded;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
 
     out.write("(prefix){var par=document.getElementById(");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(false, "prefix", false,//$NON-NLS-1$

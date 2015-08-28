@@ -197,7 +197,7 @@ public final class ConfigIO extends EditorModule<Dump> {
     double dbl;
 
     out = page.getOut();
-    encoded = page.getEncoded();
+    encoded = page.getHTMLEncoded();
 
     out.write(ConfigIO.CONFIG_TABLE_START);
     first = true;
