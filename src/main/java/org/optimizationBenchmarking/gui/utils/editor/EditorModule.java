@@ -428,8 +428,6 @@ public abstract class EditorModule<T> {
   /**
    * Describe the controls
    *
-   * @param componentType
-   *          the component type
    * @param canMove
    *          can we move components?
    * @param canDelete
@@ -440,14 +438,16 @@ public abstract class EditorModule<T> {
    *           if I/o fails
    */
   @SuppressWarnings("resource")
-  protected void formPutComponentButtonHelp(final String componentType,
-      final boolean canMove, final boolean canDelete, final Page page)
-      throws IOException {
+  protected void formPutComponentButtonHelp(final boolean canMove,
+      final boolean canDelete, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
+    final String componentType;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
+
+    componentType = this.getComponentTypeName();
 
     out.write('A');
     out.write(' ');
@@ -473,6 +473,37 @@ public abstract class EditorModule<T> {
       encoded.append(componentType);
       out.write(". There is no undo!"); //$NON-NLS-1$
     }
+  }
+
+  /**
+   * Get the name of the component type
+   *
+   * @return the name of the component type
+   */
+  protected String getComponentTypeName() {
+    return "component";//$NON-NLS-1$
+  }
+
+  /**
+   * Put the help for the component buttons. This should add a paragraph of
+   * text, including a call to
+   * {@link #formPutComponentButtonHelp(boolean, boolean, Page)}. It should
+   * be called before any form is constructed.
+   *
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if I/O fails
+   */
+  @SuppressWarnings("resource")
+  public void formPutComponentButtonHelp(final Page page)
+      throws IOException {
+    final JspWriter out;
+
+    out = page.getOut();
+    out.write("<p class=\"buttonHelp\">");//$NON-NLS-1$
+    this.formPutComponentButtonHelp(true, true, page);
+    out.write("</p>");//$NON-NLS-1$
   }
 
   /**
@@ -605,5 +636,4 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     out.write("</div></div>"); //$NON-NLS-1$
   }
-
 }
