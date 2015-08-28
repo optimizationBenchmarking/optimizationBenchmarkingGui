@@ -23,7 +23,7 @@ public final class Loaded<T> extends FileDesc {
    * @param loaded
    *          the loaded element
    */
-  Loaded(final Path path, final Path root, final T loaded) {
+  public Loaded(final Path path, final Path root, final T loaded) {
     super(path, root);
     if (loaded == null) {
       throw new IllegalArgumentException("Loaded value cannot be null."); //$NON-NLS-1$

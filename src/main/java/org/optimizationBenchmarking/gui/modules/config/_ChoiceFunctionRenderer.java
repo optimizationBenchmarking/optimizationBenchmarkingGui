@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.optimizationBenchmarking.gui.utils.EditorModule;
 import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
+import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
 import org.optimizationBenchmarking.utils.config.InstanceParameter;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;

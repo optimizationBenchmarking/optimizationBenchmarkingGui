@@ -35,6 +35,12 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%>": {
+          form.method = "get";
+          form.action = "/dimensionsEdit.jsp";
+          form.target = "_self";      
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
           form.method = "get";
           form.action = "/configEdit.jsp";
@@ -71,15 +77,19 @@ function onWithSelectionChange(prefix, selection) {
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
-          text = "Edit the (first) selected file as text file. This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
+          text = "Edit the selected file as text file. This assumes that you know what you are doing, as syntax and content of the file will not be verified but treated as plain text.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%>": {
+          text = "Edit the selected file as dimensions file. A dimensions file specifies which measurements are taken during experiments. You could, for instance, count the number of objective function evaluations, measure the objective values, and/or measure the runtime. You define this in the dimensions file.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
-          text = "Edit the (first) selected file as configuration file. A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
+          text = "Edit the selected file as configuration file. A configuration file tells the evaluator where to find the input data, where to put the output documents, which format to use for the output documents, and where it can find the list of &quot;things to do&quot;. The files must be XML files following the configuration schema.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%>": {
-          text = "Edit the (first) selected file as configuration file. An evaluation file tells the evaluation what to do with the experiment data, i.e., what stuff you want in your output report.";
+          text = "Edit the selected file as configuration file. An evaluation file tells the evaluation what to do with the experiment data, i.e., what stuff you want in your output report.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%>": {

@@ -17,10 +17,10 @@ import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io.EvaluationXMLOutput;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
-import org.optimizationBenchmarking.gui.utils.EditorModule;
 import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
+import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.config.ConfigurationBuilder;
 import org.optimizationBenchmarking.utils.config.Definition;
 import org.optimizationBenchmarking.utils.config.DefinitionXMLInput;
@@ -103,7 +103,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     final ITextOutput encoded;
     final ModuleDescriptions descriptions;
     ModuleDescription md;
-    String modulePrefix;
+    String modulePrefix, name;
 
     out = page.getOut();
     encoded = page.getEncoded();
@@ -113,39 +113,10 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
       md = descriptions.forModule(me.getModule());
       modulePrefix = Page.fieldNameFromPrefixAndName(prefix,
           page.newPrefix());
+      name = md.getName();
+      this.formPutComponentHead(name, md.getDescription(), modulePrefix,
+          true, true, page);
 
-      out.write("<div id=\""); //$NON-NLS-1$
-      out.write(modulePrefix);
-      out.write(EvaluationIO.MAIN_DIV_SUFFIX);
-      out.append("\"><h3>"); //$NON-NLS-1$
-
-      encoded.append(md.getName());
-
-      out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
-      out.write(//
-      "<input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
-      out.write("<input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" id=\"");//$NON-NLS-1$
-      encoded.append(modulePrefix);
-      out.write(EvaluationIO.UP_BUTTON_SUFFIX);
-      out.write("\" value=\"move up\" onclick=\"");//$NON-NLS-1$
-      out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
-      out.write("('");//$NON-NLS-1$
-      encoded.append(modulePrefix);
-      out.write("')\"/><input style=\"margin-left:0.4em;margin-right:0.4em\" type=\"button\" id=\"");//$NON-NLS-1$
-      encoded.append(modulePrefix);
-      out.write(EvaluationIO.DOWN_BUTTON_SUFFIX);
-      out.write("\" value=\"move down\" onclick=\"");//$NON-NLS-1$
-      out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
-      out.write("('");//$NON-NLS-1$
-      encoded.append(modulePrefix);
-      out.write("')\"/></span></h3>");//$NON-NLS-1$
-
-      page.onLoad(page.getFunction(_CheckFunctionRenderer.INSTANCE) + '('
-          + '\'' + Encoder.htmlEncode(modulePrefix) + '\'' + ')' + ';');
-
-      out.append("</h3><p>");//$NON-NLS-1$
-      encoded.append(md.getDescription());
-      out.append("</p>");//$NON-NLS-1$
       out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
       out.append(EvaluationIO.PARAMETER_MODULE);
       out.append("\" value=\"");//$NON-NLS-1$
@@ -157,12 +128,18 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
       ConfigIO.INSTANCE.formPutEditorFields(modulePrefix, //
           md.getParameters().dump(me.getConfiguration()), page);
 
-      out.append("</div>");//$NON-NLS-1$
+      this.formPutComponentFoot(name, modulePrefix, true, true, page);
     }
 
     modulePrefix = Page.fieldNameFromPrefixAndName(prefix,
         page.newPrefix());
-    out.append("<h3>Default Values</h3><p>Here you can edit the default values for any argument not provided above.</p><input type=\"hidden\" name=\"");//$NON-NLS-1$
+    name = "Default Values";//$NON-NLS-1$
+    this.formPutComponentHead(
+        name,//
+        "Here you can edit the default values for any argument not provided above.",//$NON-NLS-1$
+        modulePrefix, false, false, page);
+
+    out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);
     out.append("\" value=\"");//$NON-NLS-1$
     encoded.append(modulePrefix);
@@ -173,6 +150,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
         modulePrefix, //
         descriptions.getJointParameters().dump(data.getConfiguration()),
         page);
+    this.formPutComponentFoot(name, modulePrefix, false, false, page);
   }
 
   /** {@inheritDoc} */
@@ -309,4 +287,5 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     EvaluationXMLOutput.getInstance().use().setLogger(handle)
         .setPath(file).setSource(data).create().call();
   }
+
 }

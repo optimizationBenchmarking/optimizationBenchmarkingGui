@@ -22,7 +22,11 @@ public final class FileIcon {
     if (ending != null) {
       ending = TextUtils.toLowerCase(ending);
       switch (ending) {
-        case "pdf": {return ending;} //$NON-NLS-1$
+        case "pdf": //$NON-NLS-1$
+        case "tex": //$NON-NLS-1$
+        case "xml": {//$NON-NLS-1$
+          return ending;
+        }
       }
     }
 

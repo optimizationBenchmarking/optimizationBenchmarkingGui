@@ -1,4 +1,4 @@
-package org.optimizationBenchmarking.gui.utils;
+package org.optimizationBenchmarking.gui.utils.editor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +14,9 @@ import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
+import org.optimizationBenchmarking.gui.utils.Encoder;
+import org.optimizationBenchmarking.gui.utils.Loaded;
+import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
@@ -32,6 +35,13 @@ public abstract class EditorModule<T> {
   /** successfully loaded the configuration file */
   private static final String LOAD_SUCCESS = //
   "Successfully loaded file "; //$NON-NLS-1$
+
+  /** the main div suffix */
+  static final String MAIN_DIV_SUFFIX = "-div";//$NON-NLS-1$
+  /** the up-button suffix */
+  static final String UP_BUTTON_SUFFIX = "-up";//$NON-NLS-1$
+  /** the down-button suffix */
+  static final String DOWN_BUTTON_SUFFIX = "-down";//$NON-NLS-1$
 
   /** please select an option */
   public static final String PLEASE_SELECT_OPTION = "Please select an option.";//$NON-NLS-1$
@@ -382,7 +392,7 @@ public abstract class EditorModule<T> {
 
   /**
    * Write the default option selector.
-   * 
+   *
    * @param page
    *          the page
    * @throws IOException
@@ -396,7 +406,119 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     out.write(//
     "<option value=\"\" selected disabled>");//$NON-NLS-1$
-    out.write(PLEASE_SELECT_OPTION);
+    out.write(EditorModule.PLEASE_SELECT_OPTION);
     out.write("</option>");//$NON-NLS-1$
   }
+
+  /**
+   * Put the head of a component
+   *
+   * @param name
+   *          the name of the component
+   * @param description
+   *          the component's description, or {@code null} if none is
+   *          defined
+   * @param page
+   *          the page to write to
+   * @param componentPrefix
+   *          the component prefix
+   * @param canMove
+   *          can the component be moved up and down?
+   * @param canDelete
+   *          can the component be deleted?
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("resource")
+  protected void formPutComponentHead(final String name,
+      final String description, final String componentPrefix,
+      final boolean canMove, final boolean canDelete, final Page page)
+      throws IOException {
+    final JspWriter out;
+    final ITextOutput encoded;
+    boolean has;
+
+    out = page.getOut();
+    encoded = page.getEncoded();
+
+    out.write("<div class=\"componentMain\" id=\""); //$NON-NLS-1$
+    out.write(componentPrefix);
+    out.write(EditorModule.MAIN_DIV_SUFFIX);
+    out.append("\"><h3>"); //$NON-NLS-1$
+    encoded.append(name);
+    if (canMove || canDelete) {
+      has = false;
+      out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
+      if (canDelete) {
+        out.write(//
+        "<input type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+        has = true;
+      }
+      if (canMove) {
+        if (has) {
+          out.write(' ');
+        }
+        has = true;
+        out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
+        encoded.append(componentPrefix);
+        out.write(EditorModule.UP_BUTTON_SUFFIX);
+        out.write("\" value=\"move up\" onclick=\"");//$NON-NLS-1$
+        out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
+        out.write("('");//$NON-NLS-1$
+        encoded.append(componentPrefix);
+        out.write("')\"/> <input type=\"button\" id=\"");//$NON-NLS-1$
+        encoded.append(componentPrefix);
+        out.write(EditorModule.DOWN_BUTTON_SUFFIX);
+        out.write("\" value=\"move down\" onclick=\"");//$NON-NLS-1$
+        out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
+        out.write("('");//$NON-NLS-1$
+        encoded.append(componentPrefix);
+        out.write("')\"/>");//$NON-NLS-1$
+
+        page.onLoad(page
+            .getFunction(_CheckMoveableFunctionRenderer.INSTANCE)
+            + '('
+            + '\''
+            + Encoder.htmlEncode(componentPrefix)
+            + '\''
+            + ')'
+            + ';');
+      }
+      out.write("</span>");//$NON-NLS-1$
+    }
+    out.write("</h3>");//$NON-NLS-1$
+
+    if (description != null) {
+      out.write("<p class=\"componentDesc\"");//$NON-NLS-1$
+      page.printLines(description, true, true);
+      out.write("</p>");//$NON-NLS-1$
+    }
+  }
+
+  /**
+   * Put the foot of a component
+   *
+   * @param name
+   *          the name of the component
+   * @param page
+   *          the page to write to
+   * @param componentPrefix
+   *          the component prefix
+   * @param canMove
+   *          can the component be moved up and down?
+   * @param canDelete
+   *          can the component be deleted?
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("resource")
+  protected void formPutComponentFoot(final String name,
+      final String componentPrefix, final boolean canMove,
+      final boolean canDelete, final Page page) throws IOException {
+    final JspWriter out;
+
+    out = page.getOut();
+    out.write("</div>"); //$NON-NLS-1$
+  }
+
 }
