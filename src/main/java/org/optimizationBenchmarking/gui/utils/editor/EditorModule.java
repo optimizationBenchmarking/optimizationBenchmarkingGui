@@ -451,7 +451,7 @@ public abstract class EditorModule<T> {
       out.write("<span class=\"moduleCtrls\">");//$NON-NLS-1$
       if (canDelete) {
         out.write(//
-        "<input type=\"button\" value=\"delete\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+        "<input type=\"button\" value=\"delete\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
         has = true;
       }
       if (canMove) {
@@ -462,14 +462,14 @@ public abstract class EditorModule<T> {
         out.write("<input type=\"button\" id=\"");//$NON-NLS-1$
         encoded.append(componentPrefix);
         out.write(EditorModule.UP_BUTTON_SUFFIX);
-        out.write("\" value=\"move up\" onclick=\"");//$NON-NLS-1$
+        out.write("\" class=\"moduleCtrl\" value=\"&#x21e7;\" onclick=\"");//$NON-NLS-1$
         out.write(page.getFunction(_ModuleUpFunctionRenderer.INSTANCE));
         out.write("('");//$NON-NLS-1$
         encoded.append(componentPrefix);
         out.write("')\"/> <input type=\"button\" id=\"");//$NON-NLS-1$
         encoded.append(componentPrefix);
         out.write(EditorModule.DOWN_BUTTON_SUFFIX);
-        out.write("\" value=\"move down\" onclick=\"");//$NON-NLS-1$
+        out.write("\" class=\"moduleCtrl\" value=\"&#x21e9;\" onclick=\"");//$NON-NLS-1$
         out.write(page.getFunction(_ModuleDownFunctionRenderer.INSTANCE));
         out.write("('");//$NON-NLS-1$
         encoded.append(componentPrefix);

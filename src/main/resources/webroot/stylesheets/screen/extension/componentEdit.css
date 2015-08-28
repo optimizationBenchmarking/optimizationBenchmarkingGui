@@ -4,6 +4,11 @@ span.moduleCtrls {
   font-weight: 400;
 }
 
+input.moduleCtrl {
+  max-height     : 1.666em;
+  height         : 1.666em;
+}
+
 div.addModuleDesc {
   margin-top     : 4px;
 }
