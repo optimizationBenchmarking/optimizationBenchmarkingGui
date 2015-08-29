@@ -100,7 +100,7 @@ public abstract class EditorModule<T> {
   /** the choice row suffix */
   public static final String TABLE_CHOICE_ROW_SUFFIX = "-choice"; //$NON-NLS-1$
   /** the choice row suffix */
-  public static final String TABLE_CHOICE_CELL_SUFFIX = "-choicetd"; //$NON-NLS-1$
+  public static final String TABLE_CHOICE_CELL_SUFFIX = "-choiced"; //$NON-NLS-1$
 
   /** the start of the configuration table row */
   static final char[] CONFIG_ROW_START_1 = { '<', 't', 'r', ' ', 'c', 'l',
@@ -544,7 +544,8 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutSelection(final String id,
-      final String value, final ArrayListView<DefinitionElement> choices,
+      final String value,
+      final ArrayListView<? extends DefinitionElement> choices,
       final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
@@ -559,7 +560,7 @@ public abstract class EditorModule<T> {
     out.write("\" id=\"");//$NON-NLS-1$
     encoded.append(id);
 
-    js = (((((page.getFunction(new ChoiceUpdateFunctionRenderer(choices)) + '(') + '\'') + //
+    js = (((((page.getFunction(new _ChoiceUpdateFunctionRenderer(choices)) + '(') + '\'') + //
     Encoder.htmlEncode(id)) + '\'') + ')');
     page.onLoad(js);
     out.write("\" onchange=\"");//$NON-NLS-1$
@@ -599,7 +600,8 @@ public abstract class EditorModule<T> {
    *           if i/o fails
    */
   protected final void formPutSelection(final String id,
-      final Object value, final ArrayListView<DefinitionElement> choices,
+      final Object value,
+      final ArrayListView<? extends DefinitionElement> choices,
       final Page page) throws IOException {
     final String valStr;
     if (value != null) {
@@ -1076,9 +1078,8 @@ public abstract class EditorModule<T> {
         initiallyVisible ? EditorModule.BUTTON_VISIBILITY_VISIBLE
             : EditorModule.BUTTON_VISIBILITY_HIDDEN);
     out.write("\" onclick=\"");//$NON-NLS-1$
-    encoded
-        .append(//
-        page.getFunction(_ComponentToggleVisibilityFunctionRenderer.INSTANCE));
+    encoded.append(page.getFunction(//
+        _ComponentToggleVisibilityFunctionRenderer.INSTANCE));
     out.write('(');
     out.write('\'');
     encoded.append(componentPrefix);
@@ -1128,7 +1129,7 @@ public abstract class EditorModule<T> {
     }
     out.write('>');
     if (description != null) {
-      out.write("<p class=\"componentDesc\"");//$NON-NLS-1$
+      out.write("<p class=\"componentDesc\">");//$NON-NLS-1$
       page.printLines(description, true, true);
       out.write("</p>");//$NON-NLS-1$
     }

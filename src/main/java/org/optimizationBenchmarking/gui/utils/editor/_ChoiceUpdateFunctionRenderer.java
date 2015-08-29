@@ -11,9 +11,9 @@ import org.optimizationBenchmarking.utils.config.DefinitionElement;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /** The choice function renderer */
-public class ChoiceUpdateFunctionRenderer extends FunctionRenderer {
+final class _ChoiceUpdateFunctionRenderer extends FunctionRenderer {
   /** the choices */
-  private final ArrayListView<DefinitionElement> m_choices;
+  private final ArrayListView<? extends DefinitionElement> m_choices;
 
   /**
    * create the choice function renderer
@@ -21,8 +21,8 @@ public class ChoiceUpdateFunctionRenderer extends FunctionRenderer {
    * @param choices
    *          the list of choices
    */
-  public ChoiceUpdateFunctionRenderer(
-      final ArrayListView<DefinitionElement> choices) {
+  _ChoiceUpdateFunctionRenderer(
+      final ArrayListView<? extends DefinitionElement> choices) {
     super();
     this.m_choices = choices;
   }
@@ -37,8 +37,8 @@ public class ChoiceUpdateFunctionRenderer extends FunctionRenderer {
   @Override
   public final boolean equals(final Object o) {
     return ((o == this) || //
-    ((o instanceof ChoiceUpdateFunctionRenderer) && //
-    (this.m_choices.equals(((ChoiceUpdateFunctionRenderer) o).m_choices))));
+    ((o instanceof _ChoiceUpdateFunctionRenderer) && //
+    (this.m_choices.equals(((_ChoiceUpdateFunctionRenderer) o).m_choices))));
   }
 
   /** {@inheritDoc} */

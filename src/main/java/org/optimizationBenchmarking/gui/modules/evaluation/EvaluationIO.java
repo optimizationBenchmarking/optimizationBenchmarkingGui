@@ -17,7 +17,6 @@ import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io.EvaluationXMLOutput;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
-import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
@@ -162,7 +161,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     final ITextOutput encoded;
     final JspWriter out;
     final ModuleDescriptions descriptions;
-    final String changeFuncName, selectId;
+    final String selectId;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
@@ -175,34 +174,15 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     out.write('\'');
     encoded.append(prefix);
     out.write("', this)"); //$NON-NLS-1$
+    out.write("\" value=\"save &amp; add module\"/>&nbsp;");//$NON-NLS-1$"
 
-    out.write("\" value=\"save &amp; add module\"/>&nbsp;<select id=\"");//$NON-NLS-1$"
     selectId = Page.fieldNameFromPrefixAndName(prefix,
         EvaluationIO.MODULE_ADD_SELECT_ID);
-    encoded.append(selectId);
-    out.write("\" onchange=\""); //$NON-NLS-1$
-    changeFuncName = page.getFunction(_ChangeFunctionRenderer
-        ._getInstance(descriptions));
-    out.write(changeFuncName);
-    out.write('(');
-    out.write('\'');
-    encoded.append(prefix);
-    out.write('\'');
-    out.write(')');
-
-    page.onLoad(changeFuncName + '(' + '\'' + Encoder.htmlEncode(prefix)
-        + '\'' + ')');
-
-    out.write("\">"); //$NON-NLS-1$
-    for (final ModuleDescription md : descriptions) {
-      out.write("<option>");//$NON-NLS-1$
-      encoded.append(md.getName());
-      out.write("</option>");//$NON-NLS-1$
-    }
-    out.write("</select>");//$NON-NLS-1$
+    this.formPutSelection(selectId, descriptions.get(0).getName(),
+        descriptions, page);
     out.write("</div><div class=\"addModuleDesc\" id=\"");//$NON-NLS-1$
-    encoded.append(Page.fieldNameFromPrefixAndName(prefix,
-        EvaluationIO.MODULE_ADD_DESC_ID));
+    encoded.append(selectId);
+    out.write(EditorModule.TABLE_CHOICE_CELL_SUFFIX);
     out.write("\"></div><hr/><div>");//$NON-NLS-1$
 
     super.formPutButtons(prefix, data, page);
