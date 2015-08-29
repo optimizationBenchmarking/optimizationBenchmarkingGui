@@ -1,27 +1,40 @@
-td.moduleCtrls {
+tr.moduleHead {
   background     : transparent;
   margin         : 0px;
   padding        : 0px;
+  border-collapse: collapse;
+  border         : 0px none transparent;
+  vertical-align : middle;
+}
+
+td.moduleCtrls {
+  background     : transparent;
+  margin         : 0px;
+  padding        : 24px 0px 8px;
   border-collapse: collapse;
   border         : 0px none transparent;
   margin-left    : 1.5em;
   font-size      : 15px;
   font-weight    : 400;
   text-align     : right;
+  vertical-align : middle;
 }
 
 td.moduleHead {
   background     : transparent;
   margin         : 0px;
-  padding        : 0px;
+  padding        : 24px 0px 8px;
   border-collapse: collapse;
   border         : 0px none transparent;
   text-align     : left;
+  vertical-align : middle;
 }
 
 input.moduleCtrl {
   max-height     : 1.666em;
   height         : 1.666em;
+  margin         : 0px;
+  padding        : 0px;
 }
 
 div.addModuleDesc {
@@ -40,4 +53,76 @@ p.componentDesc {
 p.buttonHelp {
   margin-top    : 2px;
   margin-bottom : 0px;
+}
+
+th.configName {
+  text-align : left;
+  font-weight: bold;
+  border     : 0px none transparent;
+}
+
+td.configField {
+  text-align: left;
+  border    : 0px none transparent;
+}
+
+td.configEnabled {
+  text-align: center;
+  border    : 0px none transparent;
+}
+
+td.configDesc {
+  text-align : left;
+  border     : 0px none transparent;
+  padding-top: 1px;
+}
+
+tr.configFieldRow {
+  border    : 0px none transparent;
+}
+
+tr.configSpacer {
+  height        : 11px;
+  max-height    : 11px;
+  min-height    : 11px;
+  font-size     : 11px;
+  background    : transparent;
+  border        : 0px none transparent;
+}
+
+td.configSpacer {
+  height        : 11px;
+  max-height    : 11px;
+  min-height    : 11px;
+  font-size     : 11px;
+  background    : transparent;
+  border        : 0px none transparent;
+}
+
+tr.configDescRow {
+  border        : 0px none transparent;
+}
+
+tr.configChoiceRow {
+  border        : 0px none transparent;
+}
+
+tr.configAddFieldRow {
+  border        : 0px none transparent;
+}
+
+td.configAddFieldButtonCell {
+  text-align : right;
+  border     : 0px none transparent;
+}
+
+td.configAddNameCell {
+  text-align : left;
+  border     : 0px none transparent;
+}
+
+td.configChoice {
+  text-align : left;
+  border     : 0px none transparent;
+  padding-top: 1px;
 }

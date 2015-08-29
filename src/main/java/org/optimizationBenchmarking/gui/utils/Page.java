@@ -382,7 +382,7 @@ public final class Page implements Closeable {
     final ITextOutput encoded;
 
     out = this.m_out;
-    encoded = this.m_htmlEncoded;
+    encoded = this.getJSEncoded();
     if (prefix != null) {
       if (prefixIsString && nameIsString) {
         if (!inString) {

@@ -9,13 +9,14 @@ import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /** The check function for the visibility button. */
-final class _ToggleVisibilityFunctionRenderer extends FunctionRenderer {
+final class _ComponentToggleVisibilityFunctionRenderer extends
+FunctionRenderer {
 
   /** the shared instance */
-  static final _ToggleVisibilityFunctionRenderer INSTANCE = new _ToggleVisibilityFunctionRenderer();
+  static final _ComponentToggleVisibilityFunctionRenderer INSTANCE = new _ComponentToggleVisibilityFunctionRenderer();
 
   /** create the choice function renderer */
-  private _ToggleVisibilityFunctionRenderer() {
+  private _ComponentToggleVisibilityFunctionRenderer() {
     super();
   }
 

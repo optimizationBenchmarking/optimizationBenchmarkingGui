@@ -8,15 +8,15 @@ import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
 
 /** The module up function renderer */
-final class _ModuleUpFunctionRenderer extends FunctionRenderer {
+final class _ComponentUpFunctionRenderer extends FunctionRenderer {
 
   /** the shared instance */
-  static final _ModuleUpFunctionRenderer INSTANCE = new _ModuleUpFunctionRenderer();
+  static final _ComponentUpFunctionRenderer INSTANCE = new _ComponentUpFunctionRenderer();
 
   /**
    * create the choice function renderer
    */
-  private _ModuleUpFunctionRenderer() {
+  private _ComponentUpFunctionRenderer() {
     super();
   }
 

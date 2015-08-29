@@ -6,9 +6,9 @@ import javax.servlet.jsp.JspWriter;
 
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.ModuleDescription;
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.ModuleDescriptions;
-import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
 import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
+import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /** The change is invoked when the selected module for addition changes */
@@ -68,7 +68,7 @@ final class _ChangeFunctionRenderer extends FunctionRenderer {
       out.write("case '");//$NON-NLS-1$
       encoded.append(md.getName());
       out.write("':{par.innerHTML='");//$NON-NLS-1$
-      out.write(ConfigIO.CURRENT_SELECTION);
+      out.write(EditorModule.CURRENT_SELECTION);
       page.printLines(md.getDescription(), true, true);
       out.write("';break;}");//$NON-NLS-1$
     }

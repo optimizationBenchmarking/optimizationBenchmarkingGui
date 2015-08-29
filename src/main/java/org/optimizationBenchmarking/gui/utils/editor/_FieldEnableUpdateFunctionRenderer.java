@@ -1,4 +1,4 @@
-package org.optimizationBenchmarking.gui.modules.config;
+package org.optimizationBenchmarking.gui.utils.editor;
 
 import java.io.IOException;
 
@@ -8,15 +8,15 @@ import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
 
 /** The toggle field function renderer */
-final class _ToggleFunctionRenderer extends FunctionRenderer {
+final class _FieldEnableUpdateFunctionRenderer extends FunctionRenderer {
 
   /** the shared instance */
-  static final _ToggleFunctionRenderer INSTANCE = new _ToggleFunctionRenderer();
+  static final _FieldEnableUpdateFunctionRenderer INSTANCE = new _FieldEnableUpdateFunctionRenderer();
 
   /**
    * create the choice function renderer
    */
-  private _ToggleFunctionRenderer() {
+  private _FieldEnableUpdateFunctionRenderer() {
     super();
   }
 
@@ -29,16 +29,16 @@ final class _ToggleFunctionRenderer extends FunctionRenderer {
     out = page.getOut();
     out.write(//
     "(id){var box=document.getElementById(id+'");//$NON-NLS-1$
-    out.write(ConfigIO.ENABLER_SUFFIX);
+    out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
     out.write(//
     "');if(box!=null){var value=box.checked;var control=document.getElementById(id);if(control!=null){control.disabled=!value;}var row=document.getElementById(id+'");//$NON-NLS-1$
-    out.write(ConfigIO.SUFFIX_FIELD_ROW);
+    out.write(EditorModule.TABLE_FIELD_ROW_SUFFIX);
     out.write(//
     "');if(row!=null){if(value){row.style.background='transparent';}else{row.style.background='#eeeeee';}}row=document.getElementById(id+'");//$NON-NLS-1$
-    out.write(ConfigIO.SUFFIX_DESC_ROW);
+    out.write(EditorModule.TABLE_DESC_ROW_SUFFIX);
     out.write(//
     "');if(row!=null){if(value){row.style.display='table-row';}else{row.style.display='none';}}row=document.getElementById(id+'");//$NON-NLS-1$
-    out.write(ConfigIO.SUFFIX_CHOICE_ROW);
+    out.write(EditorModule.TABLE_CHOICE_ROW_SUFFIX);
     out.write(//
     "');if(row!=null){if(value){row.style.display='table-row';}else{row.style.display='none';}}}}"); //$NON-NLS-1$
   }
