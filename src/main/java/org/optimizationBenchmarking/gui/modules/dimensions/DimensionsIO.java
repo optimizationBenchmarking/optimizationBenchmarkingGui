@@ -22,6 +22,20 @@ import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
+import org.optimizationBenchmarking.utils.parsers.AnyNumberParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseByteParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseDoubleParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseFloatParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseIntParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseLongParser;
+import org.optimizationBenchmarking.utils.parsers.BoundedLooseShortParser;
+import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
+import org.optimizationBenchmarking.utils.parsers.LooseByteParser;
+import org.optimizationBenchmarking.utils.parsers.LooseDoubleParser;
+import org.optimizationBenchmarking.utils.parsers.LooseFloatParser;
+import org.optimizationBenchmarking.utils.parsers.LooseIntParser;
+import org.optimizationBenchmarking.utils.parsers.LooseLongParser;
+import org.optimizationBenchmarking.utils.parsers.LooseShortParser;
 import org.optimizationBenchmarking.utils.parsers.NumberParser;
 import org.optimizationBenchmarking.utils.reflection.EPrimitiveType;
 import org.optimizationBenchmarking.utils.reflection.PrimitiveTypeParser;
@@ -202,7 +216,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       final IDimensionSet data, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    String dimPrefix, dimTitle, dimName;
+    String dimId, dimPrefix, dimTitle, dimName;
     String id;
     EPrimitiveType type;
     double dbound;
@@ -212,6 +226,8 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
+    dimId = Page.fieldNameFromPrefixAndName(prefix,
+        DimensionsIO.DIMENSION_SET);
     for (final IDimension dim : data.getData()) {
       dimPrefix = Page.fieldNameFromPrefixAndName(prefix,//
           page.newPrefix());
@@ -219,11 +235,11 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       dimName = dim.getName();
       dimTitle = ("Dimension " + dimName);//$NON-NLS-1$
 
-      this.formPutComponentHead(dimName, null, dimPrefix, true, true,
+      this.formPutComponentHead(dimTitle, null, dimPrefix, true, true,
           true, page);
 
       out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
-      out.write(DimensionsIO.DIMENSION_SET);
+      out.write(dimId);
       out.write("\" value=\"");//$NON-NLS-1$
       out.write(dimPrefix);
       out.write("\"/>");//$NON-NLS-1$
@@ -354,8 +370,156 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   @Override
   protected final IDimensionSet loadFromRequest(final String prefix,
       final HttpServletRequest request, final Handle handle) {
-    // TODO Auto-generated method stub
-    return null;
+    final DimensionsBuilder builder;
+    final String[] strings;
+    String id, value;
+    EPrimitiveType type;
+    Number lower, upper;
+
+    builder = new DimensionsBuilder();
+
+    strings = request
+        .getParameterValues(//
+        Page.fieldNameFromPrefixAndName(prefix, DimensionsIO.DIMENSION_SET));
+
+    if (strings != null) {
+      for (final String dprefix : strings) {
+        builder.dimensionBegin(true);
+
+        builder.dimensionSetName(request.getParameter(//
+            Page.fieldNameFromPrefixAndName(dprefix,
+                DimensionsIO.DIMENSION_NAME)));
+        builder.dimensionSetDescription(request.getParameter(//
+            Page.fieldNameFromPrefixAndName(dprefix,
+                DimensionsIO.DIMENSION_DESC)));
+        builder.dimensionSetType(//
+            DimensionTypeParser.INSTANCE.parseString(request.getParameter(//
+                Page.fieldNameFromPrefixAndName(dprefix,
+                    DimensionsIO.DIMENSION_TYPE))));
+        builder.dimensionSetDirection(//
+            DimensionDirectionParser.INSTANCE.parseString(request
+                .getParameter(//
+                Page.fieldNameFromPrefixAndName(dprefix,
+                    DimensionsIO.DIMENSION_DIRECTION))));
+
+        type = PrimitiveTypeParser.INSTANCE.parseString(request
+            .getParameter(//
+                Page.fieldNameFromPrefixAndName(dprefix,
+                    DimensionsIO.DIMENSION_DATA_TYPE)));
+
+        lower = upper = null;
+        try {
+          id = Page.fieldNameFromPrefixAndName(dprefix,
+              DimensionsIO.DIMENSION_MIN);
+          value = request.getParameter(id
+              + EditorModule.BUTTON_ENABLE_SUFFIX);
+          if (value != null) {
+            if (LooseBooleanParser.INSTANCE.parseBoolean(value)) {
+              lower = AnyNumberParser.INSTANCE.parseString(//
+                  request.getParameter(id));
+            }
+          }
+        } catch (final Throwable error) {
+          handle
+              .failure(//
+                  "Error while trying to parse the lower bound of the dimension.", //$NON-NLS-1$
+                  error);
+          return null;
+        }
+
+        try {
+          id = Page.fieldNameFromPrefixAndName(dprefix,
+              DimensionsIO.DIMENSION_MAX);
+          value = request.getParameter(id
+              + EditorModule.BUTTON_ENABLE_SUFFIX);
+          if (value != null) {
+            if (LooseBooleanParser.INSTANCE.parseBoolean(value)) {
+              upper = AnyNumberParser.INSTANCE.parseString(//
+                  request.getParameter(id));
+            }
+          }
+        } catch (final Throwable error) {
+          handle
+              .failure(//
+                  "Error while trying to parse the upper bound of the dimension.", //$NON-NLS-1$
+                  error);
+          return null;
+        }
+
+        switch (type) {
+          case BYTE: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseByteParser(//
+                    ((lower != null) ? lower.byteValue() : Byte.MIN_VALUE),//
+                    ((upper != null) ? upper.byteValue() : Byte.MAX_VALUE))//
+                    : LooseByteParser.INSTANCE);
+            break;
+          }
+          case SHORT: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseShortParser(//
+                    ((lower != null) ? lower.shortValue()
+                        : Short.MIN_VALUE),//
+                    ((upper != null) ? upper.shortValue()
+                        : Short.MAX_VALUE))//
+                    : LooseShortParser.INSTANCE);
+            break;
+          }
+          case INT: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseIntParser(//
+                    ((lower != null) ? lower.intValue()
+                        : Integer.MIN_VALUE),//
+                    ((upper != null) ? upper.intValue()
+                        : Integer.MAX_VALUE))//
+                    : LooseIntParser.INSTANCE);
+            break;
+          }
+          case LONG: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseLongParser(//
+                    ((lower != null) ? lower.longValue() : Long.MIN_VALUE),//
+                    ((upper != null) ? upper.longValue() : Long.MAX_VALUE))//
+                    : LooseLongParser.INSTANCE);
+            break;
+          }
+          case FLOAT: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseFloatParser(//
+                    ((lower != null) ? lower.floatValue()
+                        : Float.NEGATIVE_INFINITY),//
+                    ((upper != null) ? upper.floatValue()
+                        : Float.POSITIVE_INFINITY))//
+                    : LooseFloatParser.INSTANCE);
+            break;
+          }
+          case DOUBLE: {
+            builder.dimensionSetParser(//
+                ((lower != null) || (upper != null)) ? //
+                new BoundedLooseDoubleParser(//
+                    ((lower != null) ? lower.floatValue()
+                        : Double.NEGATIVE_INFINITY),//
+                    ((upper != null) ? upper.floatValue()
+                        : Double.POSITIVE_INFINITY))//
+                    : LooseDoubleParser.INSTANCE);
+            break;
+          }
+          default: {
+            handle.failure("Cannot understand primitive type " + type); //$NON-NLS-1$
+            return null;
+          }
+        }
+
+        builder.dimensionEnd();
+      }
+    }
+
+    return builder.getDimensionSet();
   }
 
   /** {@inheritDoc} */
