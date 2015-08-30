@@ -34,7 +34,7 @@ final class _FieldEnableUpdateFunctionRenderer extends FunctionRenderer {
     "');if(box!=null){var value=box.checked;var control=document.getElementById(id);if(control!=null){control.disabled=!value;}var row=document.getElementById(id+'");//$NON-NLS-1$
     out.write(EditorModule.TABLE_FIELD_ROW_SUFFIX);
     out.write(//
-    "');if(row!=null){if(value){row.style.background='transparent';}else{row.style.background='#eeeeee';}}row=document.getElementById(id+'");//$NON-NLS-1$
+    "');if(row!=null){if(value){row.style.background='transparent';}else{row.style.background='#bbbbbb';}}row=document.getElementById(id+'");//$NON-NLS-1$
     out.write(EditorModule.TABLE_DESC_ROW_SUFFIX);
     out.write(//
     "');if(row!=null){if(value){row.style.display='table-row';}else{row.style.display='none';}}row=document.getElementById(id+'");//$NON-NLS-1$

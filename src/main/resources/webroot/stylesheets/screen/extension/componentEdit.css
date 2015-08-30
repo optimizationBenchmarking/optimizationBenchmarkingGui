@@ -56,19 +56,21 @@ p.buttonHelp {
 }
 
 th.configName {
-  text-align : left;
-  font-weight: bold;
-  border     : 0px none transparent;
+  text-align    : left;
+  font-weight   : bold;
+  border        : 0px none transparent;
+  padding-right : 0.2em;
 }
 
 td.configField {
-  text-align: left;
-  border    : 0px none transparent;
+  padding-left  : 0.2em;
+  text-align    : left;
+  border        : 0px none transparent;
 }
 
 td.configEnabled {
-  text-align: center;
-  border    : 0px none transparent;
+  text-align    : center;
+  border        : 0px none transparent;
 }
 
 td.configDesc {

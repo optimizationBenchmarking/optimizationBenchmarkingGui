@@ -27,7 +27,7 @@ if(dimensions != null) { %>
 <h2>File &quot;<%= Encoder.htmlEncode(dimensions.getName()) %>&quot;</h2>
 <% 
 try(final Page hpage = new Page(pageContext)) {
-  DimensionsIO.INSTANCE.formPutComponentButtonHelp(hpage); %>
+  DimensionsIO.INSTANCE.formPutComponentButtonHelp(hpage);
 %>
 <form class="invisible" action="/dimensionsEdit.jsp" method="post">
 <%

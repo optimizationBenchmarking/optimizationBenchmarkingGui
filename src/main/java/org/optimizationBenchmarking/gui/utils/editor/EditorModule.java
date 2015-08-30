@@ -22,7 +22,6 @@ import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
 import org.optimizationBenchmarking.utils.parsers.LooseCharParser;
 import org.optimizationBenchmarking.utils.parsers.LooseDoubleParser;
 import org.optimizationBenchmarking.utils.parsers.LooseLongParser;
-import org.optimizationBenchmarking.utils.parsers.LooseStringParser;
 import org.optimizationBenchmarking.utils.parsers.NumberParser;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
@@ -87,7 +86,7 @@ public abstract class EditorModule<T> {
   /** a string field starter */
   static final char[] STRING_FIELD = { '<', 'i', 'n', 'p', 'u', 't', ' ',
       't', 'y', 'p', 'e', '=', '"', 't', 'e', 'x', 't', '"', ' ', 's',
-      'i', 'z', 'e', '=', '"', '6', '0', '"', };
+      'i', 'z', 'e', '=', '"', '6', '0', };
 
   /** the enabler suffix */
   public static final String BUTTON_ENABLE_SUFFIX = "-enabled"; //$NON-NLS-1$
@@ -115,8 +114,8 @@ public abstract class EditorModule<T> {
       't', 'd', ' ', 'c', 'l', 'a', 's', 's', '=', '"', 'c', 'o', 'n',
       'f', 'i', 'g', 'F', 'i', 'e', 'l', 'd', '"', };
   /** the start of the configuration field */
-  static final char[] CONFIG_NAME_COLSPAN = { ' ', 'c', 'o', 'l', 's',
-      'p', 'a', 'n', '=', '"', '2', '"' };
+  private static final char[] CONFIG_NAME_COLSPAN = { ' ', 'c', 'o', 'l',
+      's', 'p', 'a', 'n', '=', '"', '2', '"', '>' };
 
   /** the end of the configuration field */
   static final char[] CONFIG_FIELD_END = { '<', '/', 't', 'd', '>', '<',
@@ -658,15 +657,21 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<input type=\"number\" min=\"");//$NON-NLS-1$
-    encoded.append(min);
-    out.write("\" max=\"");//$NON-NLS-1$
-    encoded.append(max);
+    out.write("<input type=\"number\" placeholder=\"Please enter number.");//$NON-NLS-1$
+    if (min > Long.MIN_VALUE) {
+      out.write("\" min=\"");//$NON-NLS-1$
+      encoded.append(min);
+    }
+    if (max < Long.MAX_VALUE) {
+      out.write("\" max=\"");//$NON-NLS-1$
+      encoded.append(max);
+    }
 
     if (value != null) {
       out.write("\" value=\"");//$NON-NLS-1$
       encoded.append(value.longValue());
     }
+    out.write("\" step=\"1");//$NON-NLS-1$
     EditorModule.__closeField(out, encoded, id);
   }
 
@@ -694,13 +699,17 @@ public abstract class EditorModule<T> {
       final Page page) throws IOException {
     Number lng;
 
-    try {
-      if (numpar != null) {
-        lng = numpar.parseObject(value);
-      } else {
-        lng = LooseLongParser.INSTANCE.parseObject(value);
+    if (value != null) {
+      try {
+        if (numpar != null) {
+          lng = numpar.parseObject(value);
+        } else {
+          lng = LooseLongParser.INSTANCE.parseObject(value);
+        }
+      } catch (final Throwable error) {
+        lng = null;
       }
-    } catch (final Throwable error) {
+    } else {
       lng = null;
     }
 
@@ -734,7 +743,7 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<input type=\"number");//$NON-NLS-1$
+    out.write("<input type=\"number\" placeholder=\"Please enter number.");//$NON-NLS-1$
     if (min > Double.NEGATIVE_INFINITY) {
       out.write("\" min=\"");//$NON-NLS-1$
       encoded.append(min);
@@ -779,13 +788,17 @@ public abstract class EditorModule<T> {
       final Page page) throws IOException {
     Number dbl;
 
-    try {
-      if (numpar != null) {
-        dbl = numpar.parseObject(value);
-      } else {
-        dbl = LooseDoubleParser.INSTANCE.parseObject(value);
+    if (value != null) {
+      try {
+        if (numpar != null) {
+          dbl = numpar.parseObject(value);
+        } else {
+          dbl = LooseDoubleParser.INSTANCE.parseObject(value);
+        }
+      } catch (final Throwable error) {
+        dbl = null;
       }
-    } catch (final Throwable error) {
+    } else {
       dbl = null;
     }
 
@@ -835,11 +848,16 @@ public abstract class EditorModule<T> {
       final Page page) throws IOException {
     Boolean bool;
 
-    try {
-      bool = LooseBooleanParser.INSTANCE.parseObject(value);
-    } catch (final Throwable error) {
+    if (value != null) {
+      try {
+        bool = LooseBooleanParser.INSTANCE.parseObject(value);
+      } catch (final Throwable error) {
+        bool = null;
+      }
+    } else {
       bool = null;
     }
+
     this.formPutBoolean(id, bool, page);
   }
 
@@ -888,11 +906,16 @@ public abstract class EditorModule<T> {
       final Page page) throws IOException {
     Character chr;
 
-    try {
-      chr = LooseCharParser.INSTANCE.parseObject(value);
-    } catch (final Throwable error) {
+    if (value != null) {
+      try {
+        chr = LooseCharParser.INSTANCE.parseObject(value);
+      } catch (final Throwable error) {
+        chr = null;
+      }
+    } else {
       chr = null;
     }
+
     this.formPutChar(id, chr, page);
   }
 
@@ -941,12 +964,83 @@ public abstract class EditorModule<T> {
       final Page page) throws IOException {
     String chr;
 
-    try {
-      chr = LooseStringParser.INSTANCE.parseObject(value);
-    } catch (final Throwable error) {
+    if (value != null) {
+      try {
+        chr = String.valueOf(value);
+      } catch (final Throwable error) {
+        chr = null;
+      }
+    } else {
       chr = null;
     }
+
     this.formPutString(id, chr, page);
+  }
+
+  /**
+   * Put a text field
+   *
+   * @param id
+   *          the id of the field
+   * @param value
+   *          the current value, or {@code null} if none is provided
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("resource")
+  protected final void formPutText(final String id, final String value,
+      final Page page) throws IOException {
+    final JspWriter out;
+    final ITextOutput encoded;
+
+    out = page.getOut();
+    encoded = page.getHTMLEncoded();
+
+    out.write("<textarea class=\"editor\" rows=\"4\" cols=\"60\" name=\"");//$NON-NLS-1$
+    encoded.append(id);
+    out.write("\" id=\"");//$NON-NLS-1$
+    encoded.append(id);
+    out.write("\" wrap=\"off\"");//$NON-NLS-1$
+
+    if (value != null) {
+      out.write('>');
+      page.printLines(value, false, false);
+      out.write("</textarea>"); //$NON-NLS-1$
+    } else {
+      out.write('/');
+      out.write('>');
+    }
+  }
+
+  /**
+   * Put a text field
+   *
+   * @param id
+   *          the id of the field
+   * @param value
+   *          the current value, or {@code null} if none is provided
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if i/o fails
+   */
+  protected final void formPutText(final String id, final Object value,
+      final Page page) throws IOException {
+    String chr;
+
+    if (value != null) {
+      try {
+        chr = String.valueOf(value);
+      } catch (final Throwable error) {
+        chr = null;
+      }
+    } else {
+      chr = null;
+    }
+
+    this.formPutText(id, chr, page);
   }
 
   /**
@@ -1196,7 +1290,7 @@ public abstract class EditorModule<T> {
     encoded.append(prefix);
     out.write("')\" value=\"");//$NON-NLS-1$
     encoded.append(name);
-    out.write("\"/></td><td colspan=\"2\" class=\"configAddFieldButtonCell\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
+    out.write("\"/>&nbsp;</td><td colspan=\"2\" class=\"configAddNameCell\">&nbsp;<input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
     encoded.append(//
         Page.fieldNameFromPrefixAndName(prefix,
             EditorModule.NEW_FIELD_NAME));

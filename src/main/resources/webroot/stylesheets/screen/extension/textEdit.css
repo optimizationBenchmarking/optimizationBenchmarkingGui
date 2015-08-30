@@ -3,8 +3,8 @@ textarea.editor {
   overflow-y    : scroll;
   font-family   : monospace, monospace;
   background    : transparent;
-  border        : 0px;
-  border-style  : none;
+  border-width  : 1px;
+  border-style  : solid;
   resize        : none;
   margin-top    : 0.3em;
   margin-bottom : 0.3em;
