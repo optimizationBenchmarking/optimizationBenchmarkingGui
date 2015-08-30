@@ -14,7 +14,7 @@ final class _ComponentDownFunctionRenderer extends FunctionRenderer {
   static final _ComponentDownFunctionRenderer INSTANCE = new _ComponentDownFunctionRenderer();
 
   /**
-   * create the choice function renderer
+   * create the move component down function renderer
    */
   private _ComponentDownFunctionRenderer() {
     super();

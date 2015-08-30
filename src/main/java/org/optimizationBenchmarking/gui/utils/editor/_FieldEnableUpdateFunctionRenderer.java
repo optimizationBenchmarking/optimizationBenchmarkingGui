@@ -14,7 +14,7 @@ final class _FieldEnableUpdateFunctionRenderer extends FunctionRenderer {
   static final _FieldEnableUpdateFunctionRenderer INSTANCE = new _FieldEnableUpdateFunctionRenderer();
 
   /**
-   * create the choice function renderer
+   * create the field enable update function renderer
    */
   private _FieldEnableUpdateFunctionRenderer() {
     super();

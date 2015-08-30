@@ -113,8 +113,8 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
       modulePrefix = Page.fieldNameFromPrefixAndName(prefix,
           page.newPrefix());
       name = md.getName();
-      this.formPutComponentHead(name, md.getDescription(), modulePrefix,
-          true, true, false, page);
+      this.formPutComponentHead(name, md.getDescription(), prefix,
+          modulePrefix, true, true, true, false, page);
 
       out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
       out.append(EvaluationIO.PARAMETER_MODULE);
@@ -136,7 +136,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     this.formPutComponentHead(
         name,//
         "Here you can edit the default values for any argument not provided above.",//$NON-NLS-1$
-        modulePrefix, false, false, false, page);
+        prefix, modulePrefix, false, false, false, false, page);
 
     out.append("<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.append(EvaluationIO.PARAMETER_MODULE);

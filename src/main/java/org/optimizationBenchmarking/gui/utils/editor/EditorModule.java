@@ -63,6 +63,8 @@ public abstract class EditorModule<T> {
   private static final char BUTTON_DOWN_VALUE = 0x21e9;
   /** the button value for the delete button */
   private static final String BUTTON_DELETE_VALUE = "delete";//$NON-NLS-1$
+  /** the button value for the copy button */
+  private static final String BUTTON_COPY_VALUE = "copy";//$NON-NLS-1$
 
   /** please select an option */
   public static final String PLEASE_SELECT_OPTION = "Please select an option.";//$NON-NLS-1$
@@ -1132,14 +1134,18 @@ public abstract class EditorModule<T> {
    * @param description
    *          the component's description, or {@code null} if none is
    *          defined
-   * @param page
-   *          the page to write to
+   * @param globalPrefix
+   *          the overall prefix of the parent form
    * @param componentPrefix
    *          the component prefix
+   * @param page
+   *          the page to write to
    * @param canMove
    *          can the component be moved up and down?
    * @param canDelete
    *          can the component be deleted?
+   * @param canCopy
+   *          can we copy the given element?
    * @param initiallyVisible
    *          are the contents of the component initially visible
    * @throws IOException
@@ -1147,8 +1153,9 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected void formPutComponentHead(final String name,
-      final String description, final String componentPrefix,
-      final boolean canMove, final boolean canDelete,
+      final String description, final String globalPrefix,
+      final String componentPrefix, final boolean canMove,
+      final boolean canDelete, final boolean canCopy,
       final boolean initiallyVisible, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
@@ -1207,11 +1214,26 @@ public abstract class EditorModule<T> {
           + Encoder.htmlEncode(componentPrefix) + '\'' + ')' + ';');
     }
 
-    if (canDelete) {
+    if (canCopy) {
       out.write(' ');
       out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
       out.write(EditorModule.BUTTON_DELETE_VALUE);
       out.write("\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+    }
+    if (canDelete) {
+      out.write(' ');
+      out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
+      out.write(EditorModule.BUTTON_COPY_VALUE);
+      out.write("\" class=\"moduleCtrl\" onclick=\"");//$NON-NLS-1$
+      out.write(page.getFunction(_ComponentCopyFunctionRenderer.INSTANCE));
+      out.write('(');
+      out.write('\'');
+      encoded.append(globalPrefix);
+      out.write('\'');
+      out.write(',');
+      out.write('\'');
+      encoded.append(componentPrefix);
+      out.write("')\"/>");//$NON-NLS-1$
     }
 
     out.write("</td></tr></table></h3><div class=\"componentInner\" id=\"");//$NON-NLS-1$

@@ -66,6 +66,9 @@ public final class Page implements Closeable {
   /** the javascript encoded text output */
   private ITextOutput m_jsEncoded;
 
+  /** the name of the unique id variable */
+  private String m_uniqueId;
+
   /**
    * Create the page
    *
@@ -231,6 +234,69 @@ public final class Page implements Closeable {
   }
 
   /**
+   * generate a javascript expression which will return a unique id
+   *
+   * @param inString
+   *          are we inside a string?
+   * @param prefix
+   *          the prefix to pre-pend, or {@code null} if none needed
+   * @param prefixIsString
+   *          is the prefix a string?
+   * @throws IOException
+   *           if i/o fails
+   */
+  public final void jsCreateUniqueId(final boolean inString,
+      final String prefix, final boolean prefixIsString)
+      throws IOException {
+    final JspWriter out;
+    boolean curInString;
+
+    if (this.m_uniqueId == null) {
+      this.m_uniqueId = this.newPrefix();
+    }
+
+    out = this.m_out;
+
+    curInString = inString;
+    if (prefix != null) {
+      if (prefixIsString) {
+        if (!curInString) {
+          out.append('+');
+          out.append('\'');
+          curInString = true;
+        }
+        this.getJSEncoded().append(prefix);
+      } else {
+        if (curInString) {
+          out.append('\'');
+          out.append('+');
+          curInString = false;
+        }
+        out.append(prefix);
+      }
+
+      if (!curInString) {
+        out.append('+');
+        out.write('\'');
+        curInString = true;
+      }
+      out.append(Page.PREFIX_SEPARATOR);
+    }
+
+    if (!curInString) {
+      out.write('\'');
+    }
+    out.write(this.m_uniqueId);
+    out.write("'+(_internal_");//$NON-NLS-1$
+    out.write(this.m_uniqueId);
+    out.write("_counter++)"); //$NON-NLS-1$
+    if (inString) {
+      out.write('+');
+      out.write('\'');
+    }
+  }
+
+  /**
    * flush the loaded stuff
    *
    * @throws IOException
@@ -274,13 +340,23 @@ public final class Page implements Closeable {
   /** {@inheritDoc} */
   @Override
   public final void close() throws IOException {
+    final JspWriter out;
+
+    out = this.m_out;
     try {
-      if ((this.m_out != null)
-          && ((this.m_functions != null) || (this.m_onLoad != null))) {
-        this.m_out.write(Page.JAVASCRIPT_START);
+      if ((out != null)//
+          && ((this.m_functions != null) || //
+              (this.m_onLoad != null) || //
+          (this.m_uniqueId != null))) {
+        out.write(Page.JAVASCRIPT_START);
         this.__flushFunctions();
+        if (this.m_uniqueId != null) {
+          out.write("var _internal_"); //$NON-NLS-1$
+          out.write(this.m_uniqueId);
+          out.write("_counter=0;"); //$NON-NLS-1$
+        }
         this.__flushOnLoad();
-        this.m_out.write(Page.JAVASCRIPT_END);
+        out.write(Page.JAVASCRIPT_END);
       }
     } finally {
       this.m_out = null;

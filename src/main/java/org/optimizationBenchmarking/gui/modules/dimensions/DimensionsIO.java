@@ -235,8 +235,8 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       dimName = dim.getName();
       dimTitle = ("Dimension " + dimName);//$NON-NLS-1$
 
-      this.formPutComponentHead(dimTitle, null, dimPrefix, true, true,
-          true, page);
+      this.formPutComponentHead(dimTitle, null, prefix, dimPrefix, true,
+          true, true, true, page);
 
       out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
       out.write(dimId);
@@ -404,8 +404,8 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
         type = PrimitiveTypeParser.INSTANCE.parseString(request
             .getParameter(//
-                Page.fieldNameFromPrefixAndName(dprefix,
-                    DimensionsIO.DIMENSION_DATA_TYPE)));
+            Page.fieldNameFromPrefixAndName(dprefix,
+                DimensionsIO.DIMENSION_DATA_TYPE)));
 
         lower = upper = null;
         try {

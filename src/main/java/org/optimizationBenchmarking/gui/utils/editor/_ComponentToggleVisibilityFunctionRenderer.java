@@ -15,7 +15,7 @@ FunctionRenderer {
   /** the shared instance */
   static final _ComponentToggleVisibilityFunctionRenderer INSTANCE = new _ComponentToggleVisibilityFunctionRenderer();
 
-  /** create the choice function renderer */
+  /** create the toggle visibility function renderer */
   private _ComponentToggleVisibilityFunctionRenderer() {
     super();
   }

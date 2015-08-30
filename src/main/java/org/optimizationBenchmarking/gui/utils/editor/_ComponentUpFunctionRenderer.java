@@ -14,7 +14,7 @@ final class _ComponentUpFunctionRenderer extends FunctionRenderer {
   static final _ComponentUpFunctionRenderer INSTANCE = new _ComponentUpFunctionRenderer();
 
   /**
-   * create the choice function renderer
+   * create the move component up function renderer
    */
   private _ComponentUpFunctionRenderer() {
     super();
