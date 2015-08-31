@@ -29,7 +29,7 @@ final class _ComponentCopyFunctionRenderer extends FunctionRenderer {
     out = page.getOut();
     out.write("(globalPrefix,innerPrefix){div=document.getElementById(innerPrefix+'");//$NON-NLS-1$
     out.write(EditorModule.DIV_MAIN_SUFFIX);
-    out.write("');if(div!=null){temp=document.createElement('div');temp.appendChild(div.cloneNode(true));temp.innerHTML=temp.innerHTML.replace(new RegExp(innerPrefix,'g'),");//$NON-NLS-1$
+    out.write("');if(div!=null){temp=document.createElement('div');var copy=div.cloneNode(true);copy.style.display='block';temp.appendChild(copy);temp.innerHTML=temp.innerHTML.replace(new RegExp(innerPrefix,'g'),");//$NON-NLS-1$
     page.jsCreateUniqueId(false, "globalPrefix", false);//$NON-NLS-1$
     out.write(");div.parentNode.insertBefore(temp.firstChild,div);}}");//$NON-NLS-1$
   }

@@ -344,16 +344,14 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           dbound = parser.getLowerBoundDouble();
           enabled = ((dbound > Double.NEGATIVE_INFINITY) && (dbound == dbound));
           this.formPutFloat(lowerId, enabled ? Double.valueOf(dbound)
-              : null,//
-              Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, page);
+              : null, page);
           break;
         }
         default: {
           lbound = parser.getLowerBoundLong();
           enabled = (lbound > Long.MIN_VALUE);
           this.formPutInteger(lowerId, //
-              enabled ? Long.valueOf(lbound) : null,//
-              Long.MIN_VALUE, Long.MAX_VALUE, page);
+              enabled ? Long.valueOf(lbound) : null, page);
         }
       }
 
@@ -371,16 +369,14 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           dbound = parser.getUpperBoundDouble();
           enabled = ((dbound < Double.POSITIVE_INFINITY) && (dbound == dbound));
           this.formPutFloat(upperId, enabled ? Double.valueOf(dbound)
-              : null,//
-              Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, page);
+              : null, page);
           break;
         }
         default: {
           lbound = parser.getUpperBoundLong();
           enabled = (lbound < Long.MAX_VALUE);
           this.formPutInteger(upperId, //
-              enabled ? Long.valueOf(lbound) : null,//
-              Long.MIN_VALUE, Long.MAX_VALUE, page);
+              enabled ? Long.valueOf(lbound) : null, page);
         }
       }
       this.formTableFieldRowEndDescRowBegin(upperId, true, enabled, page);

@@ -126,18 +126,14 @@ public final class ConfigIO extends EditorModule<Dump> {
             case INT:
             case LONG: {
               numpar = ((NumberParser<?>) parser);
-              this.formPutInteger(field, valueObject, numpar,
-                  numpar.getLowerBoundLong(), numpar.getUpperBoundLong(),
-                  page);
+              this.formPutInteger(field, valueObject, numpar, page);
               break printParam;
             }
 
             case FLOAT:
             case DOUBLE: {
               numpar = ((NumberParser<?>) parser);
-              this.formPutFloat(field, valueObject, numpar,
-                  numpar.getLowerBoundDouble(),
-                  numpar.getUpperBoundDouble(), page);
+              this.formPutFloat(field, valueObject, numpar, page);
               break printParam;
             }
 

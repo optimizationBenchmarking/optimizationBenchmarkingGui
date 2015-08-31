@@ -24,7 +24,9 @@ import org.optimizationBenchmarking.utils.parsers.LooseCharParser;
 import org.optimizationBenchmarking.utils.parsers.LooseDoubleParser;
 import org.optimizationBenchmarking.utils.parsers.LooseLongParser;
 import org.optimizationBenchmarking.utils.parsers.NumberParser;
+import org.optimizationBenchmarking.utils.text.ETextCase;
 import org.optimizationBenchmarking.utils.text.TextUtils;
+import org.optimizationBenchmarking.utils.text.numbers.SimpleNumberAppender;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /**
@@ -103,6 +105,11 @@ public abstract class EditorModule<T> {
   public static final String TABLE_CHOICE_ROW_SUFFIX = "-choice"; //$NON-NLS-1$
   /** the choice row suffix */
   public static final String TABLE_CHOICE_CELL_SUFFIX = "-choiced"; //$NON-NLS-1$
+
+  /** the pattern for floating point input */
+  public static final String PATTERN_FLOAT = "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$"; //$NON-NLS-1$
+  /** the pattern for integer point input */
+  public static final String PATTERN_INT = "[0-9]+"; //$NON-NLS-1$
 
   /** the start of the configuration table row */
   static final char[] CONFIG_ROW_START_1 = { '<', 't', 'r', ' ', 'c', 'l',
@@ -642,10 +649,6 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
-   * @param min
-   *          the minimum value
-   * @param max
-   *          the maximum value
    * @param page
    *          the page
    * @throws IOException
@@ -653,28 +656,19 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutInteger(final String id, final Number value,
-      final long min, final long max, final Page page) throws IOException {
+      final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<input type=\"number\" placeholder=\"Please enter number.");//$NON-NLS-1$
-    if (min > Long.MIN_VALUE) {
-      out.write("\" min=\"");//$NON-NLS-1$
-      encoded.append(min);
-    }
-    if (max < Long.MAX_VALUE) {
-      out.write("\" max=\"");//$NON-NLS-1$
-      encoded.append(max);
-    }
-
+    out.write("<input type=\"number\" placeholder=\"Please enter number.\" pattern=\"");//$NON-NLS-1$
+    out.write(EditorModule.PATTERN_FLOAT);
     if (value != null) {
       out.write("\" value=\"");//$NON-NLS-1$
       encoded.append(value.longValue());
     }
-    out.write("\" step=\"1");//$NON-NLS-1$
     EditorModule.__closeField(out, encoded, id);
   }
 
@@ -688,18 +682,13 @@ public abstract class EditorModule<T> {
    * @param numpar
    *          the parser to parse the object with, or {@code null} for
    *          default
-   * @param min
-   *          the minimum value
-   * @param max
-   *          the maximum value
    * @param page
    *          the page
    * @throws IOException
    *           if i/o fails
    */
   protected final void formPutInteger(final String id, final Object value,
-      final NumberParser<?> numpar, final long min, final long max,
-      final Page page) throws IOException {
+      final NumberParser<?> numpar, final Page page) throws IOException {
     Number lng;
 
     if (value != null) {
@@ -716,7 +705,7 @@ public abstract class EditorModule<T> {
       lng = null;
     }
 
-    this.formPutInteger(id, lng, min, max, page);
+    this.formPutInteger(id, lng, page);
   }
 
   /**
@@ -726,10 +715,6 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
-   * @param min
-   *          the minimum value
-   * @param max
-   *          the maximum value
    * @param page
    *          the page
    * @throws IOException
@@ -737,8 +722,7 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutFloat(final String id, final Number value,
-      final double min, final double max, final Page page)
-      throws IOException {
+      final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
     final double d;
@@ -746,25 +730,16 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<input type=\"number\" placeholder=\"Please enter number.");//$NON-NLS-1$
-    if (min > Double.NEGATIVE_INFINITY) {
-      out.write("\" min=\"");//$NON-NLS-1$
-      encoded.append(min);
-    }
-    if (max < Double.NEGATIVE_INFINITY) {
-      out.write("\" max=\"");//$NON-NLS-1$
-      encoded.append(max);
-    }
-
+    out.write("<input type=\"text\" placeholder=\"Please enter number.\" pattern=\"");//$NON-NLS-1$
+    out.write(EditorModule.PATTERN_FLOAT);
     if (value != null) {
       d = value.doubleValue();
       if (d == d) {
         out.write("\" value=\"");//$NON-NLS-1$
-        encoded.append(value.doubleValue());
+        SimpleNumberAppender.INSTANCE.appendTo(value.doubleValue(),
+            ETextCase.IN_SENTENCE, encoded);
       }
     }
-
-    out.write("\" step=\"any");//$NON-NLS-1$
     EditorModule.__closeField(out, encoded, id);
   }
 
@@ -777,18 +752,13 @@ public abstract class EditorModule<T> {
    *          the current value, or {@code null} if none is provided
    * @param numpar
    *          the parser to parse the object with, or {@code null} for
-   * @param min
-   *          the minimum value
-   * @param max
-   *          the maximum value
    * @param page
    *          the page
    * @throws IOException
    *           if i/o fails
    */
   protected final void formPutFloat(final String id, final Object value,
-      final NumberParser<?> numpar, final double min, final double max,
-      final Page page) throws IOException {
+      final NumberParser<?> numpar, final Page page) throws IOException {
     Number dbl;
 
     if (value != null) {
@@ -805,7 +775,7 @@ public abstract class EditorModule<T> {
       dbl = null;
     }
 
-    this.formPutFloat(id, dbl, min, max, page);
+    this.formPutFloat(id, dbl, page);
   }
 
   /**
