@@ -14,6 +14,7 @@ import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Encoder;
+import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
@@ -814,6 +815,9 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
+   * @param onChange
+   *          a function to be invoked when the field value changes, or
+   *          {@code null} if none is needed
    * @param page
    *          the page
    * @throws IOException
@@ -821,15 +825,24 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutBoolean(final String id,
-      final Boolean value, final Page page) throws IOException {
+      final Boolean value, final FunctionRenderer onChange, final Page page)
+      throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
+    final String js;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
     out.write("<input type=\"checkbox\"");//$NON-NLS-1$
     if ((value != null) && (value.booleanValue())) {
       out.write("\" checked");//$NON-NLS-1$
+    }
+    if (onChange != null) {
+      js = (page.getFunction(onChange) + '(' + '\''
+          + Encoder.htmlEncode(id) + '\'' + ')' + ';');
+      out.write("\" onchage=\""); //$NON-NLS-1$
+      out.write(js);
+      page.onLoad(js);
     }
     EditorModule.__closeField(out, encoded, id);
   }
@@ -841,13 +854,16 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
+   * @param onChange
+   *          a function to be invoked when the field value changes, or
+   *          {@code null} if none is needed
    * @param page
    *          the page
    * @throws IOException
    *           if i/o fails
    */
   protected final void formPutBoolean(final String id, final Object value,
-      final Page page) throws IOException {
+      final FunctionRenderer onChange, final Page page) throws IOException {
     Boolean bool;
 
     if (value != null) {
@@ -860,7 +876,7 @@ public abstract class EditorModule<T> {
       bool = null;
     }
 
-    this.formPutBoolean(id, bool, page);
+    this.formPutBoolean(id, bool, onChange, page);
   }
 
   /**

@@ -57,16 +57,25 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   /** the dimension's description */
   private static final String DIMENSION_DESC = "description";//$NON-NLS-1$
   /** the dimension's type */
-  private static final String DIMENSION_TYPE = "dimension type";//$NON-NLS-1$
+  private static final String DIMENSION_TYPE_NAME = "dimension type";//$NON-NLS-1$
+  /** the dimension's type */
+  private static final String DIMENSION_TYPE_ID = "dimensionType";//$NON-NLS-1$
   /** the dimension's direction */
   private static final String DIMENSION_DIRECTION = "direction";//$NON-NLS-1$
+
   /** the dimension's data */
-  private static final String DIMENSION_DATA_TYPE = "data type";//$NON-NLS-1$
+  private static final String DIMENSION_DATA_TYPE_NAME = "data type";//$NON-NLS-1$
+  /** the dimension's data */
+  private static final String DIMENSION_DATA_TYPE_ID = "dataType";//$NON-NLS-1$
 
   /** the lower bound of the dimension */
-  private static final String DIMENSION_MIN = "lower bound";//$NON-NLS-1$
+  private static final String DIMENSION_MIN_NAME = "lower bound";//$NON-NLS-1$
+  /** the lower bound of the dimension */
+  static final String DIMENSION_MIN_ID = "lowerBound";//$NON-NLS-1$
   /** the upper bound of the dimension */
-  private static final String DIMENSION_MAX = "upper bound";//$NON-NLS-1$
+  private static final String DIMENSION_MAX_NAME = "upper bound";//$NON-NLS-1$
+  /** the upper bound of the dimension */
+  static final String DIMENSION_MAX_ID = "upperBound";//$NON-NLS-1$
 
   /** the dimension types */
   private static final ArrayListView<DefinitionElement> DIMENSION_TYPES;
@@ -268,9 +277,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
       this.formTableSpacer(page);
       id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_TYPE);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_TYPE, false,
-          page);
+          DimensionsIO.DIMENSION_TYPE_ID);
+      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_TYPE_NAME,
+          false, page);
       this.formPutSelection(id,//
           DimensionTypeParser.getHumanReadable(dim.getDimensionType()),//
           DimensionsIO.DIMENSION_TYPES, page);
@@ -295,9 +304,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       type = dim.getDataType();
       this.formTableSpacer(page);
       id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_DATA_TYPE);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_DATA_TYPE,
-          false, page);
+          DimensionsIO.DIMENSION_DATA_TYPE_ID);
+      this.formTableFieldRowBegin(id,
+          DimensionsIO.DIMENSION_DATA_TYPE_NAME, false, page);
       this.formPutSelection(id,//
           PrimitiveTypeParser.getHumanReadable(type),//
           DimensionsIO.DIMENSION_DATA_TYPES, page);
@@ -308,9 +317,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
       this.formTableSpacer(page);
       id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_MIN);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MIN, true,
-          page);
+          DimensionsIO.DIMENSION_MIN_ID);
+      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MIN_NAME,
+          true, page);
       parser = dim.getParser();
       switch (type) {
         case FLOAT:
@@ -335,9 +344,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
       this.formTableSpacer(page);
       id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_MAX);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MAX, true,
-          page);
+          DimensionsIO.DIMENSION_MAX_ID);
+      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MAX_NAME,
+          true, page);
       parser = dim.getParser();
       switch (type) {
         case FLOAT:
@@ -395,7 +404,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
         builder.dimensionSetType(//
             DimensionTypeParser.INSTANCE.parseString(request.getParameter(//
                 Page.fieldNameFromPrefixAndName(dprefix,
-                    DimensionsIO.DIMENSION_TYPE))));
+                    DimensionsIO.DIMENSION_TYPE_ID))));
         builder.dimensionSetDirection(//
             DimensionDirectionParser.INSTANCE.parseString(request
                 .getParameter(//
@@ -405,12 +414,12 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
         type = PrimitiveTypeParser.INSTANCE.parseString(request
             .getParameter(//
             Page.fieldNameFromPrefixAndName(dprefix,
-                DimensionsIO.DIMENSION_DATA_TYPE)));
+                DimensionsIO.DIMENSION_DATA_TYPE_ID)));
 
         lower = upper = null;
         try {
           id = Page.fieldNameFromPrefixAndName(dprefix,
-              DimensionsIO.DIMENSION_MIN);
+              DimensionsIO.DIMENSION_MIN_ID);
           value = request.getParameter(id
               + EditorModule.BUTTON_ENABLE_SUFFIX);
           if (value != null) {
@@ -429,7 +438,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
         try {
           id = Page.fieldNameFromPrefixAndName(dprefix,
-              DimensionsIO.DIMENSION_MAX);
+              DimensionsIO.DIMENSION_MAX_ID);
           value = request.getParameter(id
               + EditorModule.BUTTON_ENABLE_SUFFIX);
           if (value != null) {
@@ -535,5 +544,4 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   protected final String getComponentTypeName() {
     return "dimension";//$NON-NLS-1$
   }
-
 }

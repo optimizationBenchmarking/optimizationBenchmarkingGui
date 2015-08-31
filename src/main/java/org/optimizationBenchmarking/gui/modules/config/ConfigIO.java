@@ -147,7 +147,7 @@ public final class ConfigIO extends EditorModule<Dump> {
             }
 
             case BOOLEAN: {
-              this.formPutBoolean(field, valueObject, page);
+              this.formPutBoolean(field, valueObject, null, page);
               break printParam;
             }
             default: {
