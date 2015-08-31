@@ -225,7 +225,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       final IDimensionSet data, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    String dimId, dimPrefix, dimTitle, dimName;
+    String dimId, dimPrefix, dimTitle, dimName, typeId, lowerId, upperId;
     String id;
     EPrimitiveType type;
     double dbound;
@@ -303,71 +303,89 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
       type = dim.getDataType();
       this.formTableSpacer(page);
-      id = Page.fieldNameFromPrefixAndName(dimPrefix,
+      typeId = Page.fieldNameFromPrefixAndName(dimPrefix,
           DimensionsIO.DIMENSION_DATA_TYPE_ID);
-      this.formTableFieldRowBegin(id,
+      lowerId = Page.fieldNameFromPrefixAndName(dimPrefix,
+          DimensionsIO.DIMENSION_MIN_ID);
+      upperId = Page.fieldNameFromPrefixAndName(dimPrefix,
+          DimensionsIO.DIMENSION_MAX_ID);
+
+      this.formTableFieldRowBegin(typeId,
           DimensionsIO.DIMENSION_DATA_TYPE_NAME, false, page);
-      this.formPutSelection(id,//
+      this.formPutSelection(typeId,//
           PrimitiveTypeParser.getHumanReadable(type),//
           DimensionsIO.DIMENSION_DATA_TYPES, page);
-      this.formTableFieldRowEndDescRowBegin(id, false, true, page);
-      encoded.append(//
-          "The data type to be used to store the dimension's values."); //$NON-NLS-1$
-      this.formTableDescRowEnd(id, true, page);
+      out.write(" <input type=\"button\" onclick=\""); //$NON-NLS-1$
+      out.write(page.getFunction(_AutoRefineFunctionRenderer.INSTANCE));
+      out.write('(');
+      out.write('\'');
+      encoded.append(typeId);
+      out.write('\'');
+      out.write(',');
+      out.write('\'');
+      encoded.append(lowerId);
+      out.write('\'');
+      out.write(',');
+      out.write('\'');
+      encoded.append(upperId);
+      out.write("')\" value=\"auto-refine\"/>");//$NON-NLS-1$
+      this.formTableFieldRowEndDescRowBegin(typeId, false, true, page);
+      out.write(//
+      "The data type to be used to store the dimension's values. If your type is an integer, press <code>auto-refine</code> to pick the smallest integer data type fitting to the specified bounds."); //$NON-NLS-1$
+      this.formTableDescRowEnd(typeId, true, page);
 
       this.formTableSpacer(page);
-      id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_MIN_ID);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MIN_NAME,
-          true, page);
+      this.formTableFieldRowBegin(lowerId,
+          DimensionsIO.DIMENSION_MIN_NAME, true, page);
       parser = dim.getParser();
       switch (type) {
         case FLOAT:
         case DOUBLE: {
           dbound = parser.getLowerBoundDouble();
           enabled = ((dbound > Double.NEGATIVE_INFINITY) && (dbound == dbound));
-          this.formPutFloat(id, enabled ? Double.valueOf(dbound) : null,//
+          this.formPutFloat(lowerId, enabled ? Double.valueOf(dbound)
+              : null,//
               Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, page);
           break;
         }
         default: {
           lbound = parser.getLowerBoundLong();
           enabled = (lbound > Long.MIN_VALUE);
-          this.formPutInteger(id, //
+          this.formPutInteger(lowerId, //
               enabled ? Long.valueOf(lbound) : null,//
               Long.MIN_VALUE, Long.MAX_VALUE, page);
         }
       }
-      this.formTableFieldRowEndDescRowBegin(id, true, enabled, page);
+
+      this.formTableFieldRowEndDescRowBegin(lowerId, true, enabled, page);
       encoded.append("The lower bound of this dimension values."); //$NON-NLS-1$
-      this.formTableDescRowEnd(id, false, page);
+      this.formTableDescRowEnd(lowerId, false, page);
 
       this.formTableSpacer(page);
-      id = Page.fieldNameFromPrefixAndName(dimPrefix,
-          DimensionsIO.DIMENSION_MAX_ID);
-      this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_MAX_NAME,
-          true, page);
+      this.formTableFieldRowBegin(upperId,
+          DimensionsIO.DIMENSION_MAX_NAME, true, page);
       parser = dim.getParser();
       switch (type) {
         case FLOAT:
         case DOUBLE: {
           dbound = parser.getUpperBoundDouble();
           enabled = ((dbound < Double.POSITIVE_INFINITY) && (dbound == dbound));
-          this.formPutFloat(id, enabled ? Double.valueOf(dbound) : null,//
+          this.formPutFloat(upperId, enabled ? Double.valueOf(dbound)
+              : null,//
               Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, page);
           break;
         }
         default: {
           lbound = parser.getUpperBoundLong();
           enabled = (lbound < Long.MAX_VALUE);
-          this.formPutInteger(id, //
+          this.formPutInteger(upperId, //
               enabled ? Long.valueOf(lbound) : null,//
               Long.MIN_VALUE, Long.MAX_VALUE, page);
         }
       }
-      this.formTableFieldRowEndDescRowBegin(id, true, enabled, page);
+      this.formTableFieldRowEndDescRowBegin(upperId, true, enabled, page);
       encoded.append("The upper bound of this dimension values."); //$NON-NLS-1$
-      this.formTableDescRowEnd(id, false, page);
+      this.formTableDescRowEnd(upperId, false, page);
 
       this.formTableEnd(page);
 
