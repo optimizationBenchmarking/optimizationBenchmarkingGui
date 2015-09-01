@@ -1122,6 +1122,49 @@ public abstract class EditorModule<T> {
   }
 
   /**
+   * Add a button which can copy a blueprint component.
+   * 
+   * @param globalPrefix
+   *          the global prefix
+   * @param componentPrefix
+   *          the local component's prefix
+   * @param text
+   *          the button's text
+   * @param clazz
+   *          the button's css class, or {@code null} if none is needed
+   * @param page
+   *          the page to write to
+   * @throws IOException
+   *           if I/O fails
+   */
+  @SuppressWarnings("resource")
+  protected final void formPutCopyButton(final String globalPrefix,
+      final String componentPrefix, final String text, final String clazz,
+      final Page page) throws IOException {
+    final JspWriter out;
+    final ITextOutput encoded;
+
+    out = page.getOut();
+    encoded = page.getHTMLEncoded();
+    out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
+    encoded.append(text);
+    if (clazz != null) {
+      out.write("\" class=\"");//$NON-NLS-1$
+      encoded.append(clazz);
+    }
+    out.write("\" onclick=\"");//$NON-NLS-1$
+    out.write(page.getFunction(_ComponentCopyFunctionRenderer.INSTANCE));
+    out.write('(');
+    out.write('\'');
+    encoded.append(globalPrefix);
+    out.write('\'');
+    out.write(',');
+    out.write('\'');
+    encoded.append(componentPrefix);
+    out.write("')\"/>");//$NON-NLS-1$    
+  }
+
+  /**
    * Put the head of a component
    *
    * @param name
@@ -1141,8 +1184,12 @@ public abstract class EditorModule<T> {
    *          can the component be deleted?
    * @param canCopy
    *          can we copy the given element?
-   * @param initiallyVisible
-   *          are the contents of the component initially visible
+   * @param initiallyMaximized
+   *          are the contents of the component initially maximized (
+   *          {@code false} to just print the component's headline)
+   * @param isHidden
+   *          should the component be hidden completely? (makes sense for
+   *          blueprints for copying)
    * @throws IOException
    *           if i/o fails
    */
@@ -1151,7 +1198,8 @@ public abstract class EditorModule<T> {
       final String description, final String globalPrefix,
       final String componentPrefix, final boolean canMove,
       final boolean canDelete, final boolean canCopy,
-      final boolean initiallyVisible, final Page page) throws IOException {
+      final boolean initiallyMaximized, final boolean isHidden,
+      final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
 
@@ -1161,6 +1209,9 @@ public abstract class EditorModule<T> {
     out.write("<div class=\"componentMain\" id=\""); //$NON-NLS-1$
     out.write(componentPrefix);
     out.write(EditorModule.DIV_MAIN_SUFFIX);
+    if (isHidden) {
+      out.write("\" style=\"display:none");//$NON-NLS-1$
+    }
     out.append("\"><table class=\"invisible\"><tr class=\"moduleHead\"><td class=\"moduleHead\"><h3 style=\"margin-top:0px;margin-bottom:0px\">"); //$NON-NLS-1$
     encoded.append(name);
 
@@ -1171,7 +1222,7 @@ public abstract class EditorModule<T> {
     out.write(EditorModule.BUTTON_VISIBILITY_SUFFIX);
     out.write("\" class=\"moduleCtrl\" value=\"");//$NON-NLS-1$
     encoded.append(//
-        initiallyVisible ? EditorModule.BUTTON_VISIBILITY_VISIBLE
+        initiallyMaximized ? EditorModule.BUTTON_VISIBILITY_VISIBLE
             : EditorModule.BUTTON_VISIBILITY_HIDDEN);
     out.write("\" onclick=\"");//$NON-NLS-1$
     encoded.append(page.getFunction(//
@@ -1209,33 +1260,23 @@ public abstract class EditorModule<T> {
           + Encoder.htmlEncode(componentPrefix) + '\'' + ')' + ';');
     }
 
-    if (canCopy) {
+    if (canDelete) {
       out.write(' ');
       out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
       out.write(EditorModule.BUTTON_DELETE_VALUE);
       out.write("\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
     }
-    if (canDelete) {
+    if (canCopy) {
       out.write(' ');
-      out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
-      out.write(EditorModule.BUTTON_COPY_VALUE);
-      out.write("\" class=\"moduleCtrl\" onclick=\"");//$NON-NLS-1$
-      out.write(page.getFunction(_ComponentCopyFunctionRenderer.INSTANCE));
-      out.write('(');
-      out.write('\'');
-      encoded.append(globalPrefix);
-      out.write('\'');
-      out.write(',');
-      out.write('\'');
-      encoded.append(componentPrefix);
-      out.write("')\"/>");//$NON-NLS-1$
+      this.formPutCopyButton(globalPrefix, componentPrefix,
+          EditorModule.BUTTON_COPY_VALUE, "moduleCtrl", page);//$NON-NLS-1$
     }
 
     out.write("</td></tr></table></h3><div class=\"componentInner\" id=\"");//$NON-NLS-1$
     encoded.append(componentPrefix);
     out.write(EditorModule.DIV_INNER_SUFFIX);
     out.write('"');
-    if (!initiallyVisible) {
+    if (!initiallyMaximized) {
       out.write(" style=\"display:none\"");//$NON-NLS-1$
     }
     out.write('>');

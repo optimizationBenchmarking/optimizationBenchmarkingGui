@@ -18,8 +18,10 @@ import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.data.DimensionInput;
 import org.optimizationBenchmarking.gui.data.DimensionsBuilder;
 import org.optimizationBenchmarking.gui.utils.Encoder;
+import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
+import org.optimizationBenchmarking.utils.collections.iterators.IterablePlusOne;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
@@ -77,6 +79,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   private static final String DIMENSION_MAX_NAME = "upper bound";//$NON-NLS-1$
   /** the upper bound of the dimension */
   static final String DIMENSION_MAX_ID = "upperBound";//$NON-NLS-1$
+
+  /** the dimension blueprint */
+  private static final String BLUEPRINT_ID = "_blueprint_";//$NON-NLS-1$
 
   /** the dimension types */
   private static final ArrayListView<DefinitionElement> DIMENSION_TYPES;
@@ -237,15 +242,21 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
     encoded = page.getHTMLEncoded();
     dimId = Page.fieldNameFromPrefixAndName(prefix,
         DimensionsIO.DIMENSION_SET);
-    for (final IDimension dim : data.getData()) {
-      dimPrefix = Page.fieldNameFromPrefixAndName(prefix,//
-          page.newPrefix());
+    for (final IDimension dim : new IterablePlusOne<>(data.getData(), null)) {
 
-      dimName = dim.getName();
+      if (dim != null) {
+        dimPrefix = Page.fieldNameFromPrefixAndName(prefix,//
+            page.newPrefix());
+        dimName = dim.getName();
+      } else {
+        dimPrefix = Page.fieldNameFromPrefixAndName(prefix,
+            DimensionsIO.BLUEPRINT_ID);
+        dimName = "New Dimension";//$NON-NLS-1$
+      }
       dimTitle = ("Dimension " + dimName);//$NON-NLS-1$
 
       this.formPutComponentHead(dimTitle, null, prefix, dimPrefix, true,
-          true, true, true, page);
+          true, true, true, (dim == null), page);
 
       out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
       out.write(dimId);
@@ -270,7 +281,10 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           DimensionsIO.DIMENSION_DESC);
       this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_DESC, false,
           page);
-      this.formPutText(id, dim.getDescription(), page);
+      this.formPutText(id, //
+          ((dim != null) ? dim.getDescription()
+              : "Enter description here."),//$NON-NLS-1$
+          page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append("A description of the dimension."); //$NON-NLS-1$
       this.formTableDescRowEnd(id, false, page);
@@ -280,8 +294,11 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           DimensionsIO.DIMENSION_TYPE_ID);
       this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_TYPE_NAME,
           false, page);
-      this.formPutSelection(id,//
-          DimensionTypeParser.getHumanReadable(dim.getDimensionType()),//
+      this.formPutSelection(
+          id,//
+          DimensionTypeParser.getHumanReadable(//
+              (dim != null) ? dim.getDimensionType()
+                  : EDimensionType.ITERATION_FE),//
           DimensionsIO.DIMENSION_TYPES, null, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append(//
@@ -293,15 +310,18 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           DimensionsIO.DIMENSION_DIRECTION);
       this.formTableFieldRowBegin(id, DimensionsIO.DIMENSION_DIRECTION,
           false, page);
-      this.formPutSelection(id,//
-          DimensionDirectionParser.getHumanReadable(dim.getDirection()),//
+      this.formPutSelection(
+          id,//
+          DimensionDirectionParser.getHumanReadable(//
+              (dim != null) ? dim.getDirection()
+                  : EDimensionDirection.INCREASING),//
           DimensionsIO.DIMENSION_DIRECTIONS, null, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append(//
           "The direction of this dimension, i.e., if values are increasing or decreasing as the measured process is progressing."); //$NON-NLS-1$
       this.formTableDescRowEnd(id, true, page);
 
-      type = dim.getDataType();
+      type = ((dim != null) ? dim.getDataType() : EPrimitiveType.LONG);
       this.formTableSpacer(page);
       typeId = Page.fieldNameFromPrefixAndName(dimPrefix,
           DimensionsIO.DIMENSION_DATA_TYPE_ID);
@@ -335,7 +355,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       this.formTableSpacer(page);
       this.formTableFieldRowBegin(lowerId,
           DimensionsIO.DIMENSION_MIN_NAME, true, page);
-      parser = dim.getParser();
+      parser = ((dim != null) ? dim.getParser() : LooseLongParser.INSTANCE);
       switch (type) {
         case FLOAT:
         case DOUBLE: {
@@ -360,7 +380,6 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       this.formTableSpacer(page);
       this.formTableFieldRowBegin(upperId,
           DimensionsIO.DIMENSION_MAX_NAME, true, page);
-      parser = dim.getParser();
       switch (type) {
         case FLOAT:
         case DOUBLE: {
@@ -389,6 +408,20 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
   /** {@inheritDoc} */
   @Override
+  protected final void formPutButtons(final String prefix,
+      final Loaded<IDimensionSet> data, final Page page)
+      throws IOException {
+    this.formPutCopyButton(
+        prefix,
+        Page.fieldNameFromPrefixAndName(prefix, DimensionsIO.BLUEPRINT_ID),
+        "add dimension", //$NON-NLS-1$
+        null, page);
+    page.getOut().append("&nbsp;");//$NON-NLS-1$
+    super.formPutButtons(prefix, data, page);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   protected final IDimensionSet loadFromRequest(final String prefix,
       final HttpServletRequest request, final Handle handle) {
     final DimensionsBuilder builder;
@@ -405,6 +438,11 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
 
     if (strings != null) {
       for (final String dprefix : strings) {
+        if (DimensionsIO.BLUEPRINT_ID.equalsIgnoreCase(//
+            Page.nameFromPrefixAndFieldName(prefix, dprefix))) {
+          continue;
+        }
+
         builder.dimensionBegin(true);
 
         builder.dimensionSetName(request.getParameter(//
