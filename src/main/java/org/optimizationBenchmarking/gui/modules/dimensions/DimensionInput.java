@@ -1,5 +1,6 @@
-package org.optimizationBenchmarking.gui.data;
+package org.optimizationBenchmarking.gui.modules.dimensions;
 
+import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIInputToolBase;
 
 /**
@@ -9,7 +10,7 @@ import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIInputToolBase
  * structures}.
  */
 public final class DimensionInput extends
-    EDIInputToolBase<DimensionsBuilder> {
+    EDIInputToolBase<PartialExperimentSetBuilder> {
 
   /** create */
   DimensionInput() {

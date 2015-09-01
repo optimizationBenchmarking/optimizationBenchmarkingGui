@@ -9,14 +9,13 @@ import javax.servlet.jsp.JspWriter;
 import org.optimizationBenchmarking.experimentation.data.impl.DimensionDirectionParser;
 import org.optimizationBenchmarking.experimentation.data.impl.DimensionTypeParser;
 import org.optimizationBenchmarking.experimentation.data.impl.abstr.BasicDimensionSet;
+import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
 import org.optimizationBenchmarking.experimentation.data.spec.EDimensionDirection;
 import org.optimizationBenchmarking.experimentation.data.spec.EDimensionType;
 import org.optimizationBenchmarking.experimentation.data.spec.IDimension;
 import org.optimizationBenchmarking.experimentation.data.spec.IDimensionSet;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
 import org.optimizationBenchmarking.gui.controller.Handle;
-import org.optimizationBenchmarking.gui.data.DimensionInput;
-import org.optimizationBenchmarking.gui.data.DimensionsBuilder;
 import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
@@ -217,8 +216,8 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   @Override
   protected final IDimensionSet loadFile(final Path file,
       final Handle handle) throws IOException {
-    final DimensionsBuilder builder;
-    builder = new DimensionsBuilder();
+    final PartialExperimentSetBuilder builder;
+    builder = new PartialExperimentSetBuilder();
     DimensionInput.getInstance().use().setLogger(handle).addPath(file)
         .setDestination(builder).create().call();
     return builder.getDimensionSet();
@@ -424,13 +423,13 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   @Override
   protected final IDimensionSet loadFromRequest(final String prefix,
       final HttpServletRequest request, final Handle handle) {
-    final DimensionsBuilder builder;
+    final PartialExperimentSetBuilder builder;
     final String[] strings;
     String id, value;
     EPrimitiveType type;
     Number lower, upper;
 
-    builder = new DimensionsBuilder();
+    builder = new PartialExperimentSetBuilder();
 
     strings = request
         .getParameterValues(//
