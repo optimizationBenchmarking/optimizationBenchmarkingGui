@@ -179,7 +179,7 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
     selectId = Page.fieldNameFromPrefixAndName(prefix,
         EvaluationIO.MODULE_ADD_SELECT_ID);
     this.formPutSelection(selectId, descriptions.get(0).getName(),
-        descriptions, page);
+        descriptions, null, page);
     out.write("</div><div class=\"addModuleDesc\" id=\"");//$NON-NLS-1$
     encoded.append(selectId);
     out.write(EditorModule.TABLE_CHOICE_CELL_SUFFIX);

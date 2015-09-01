@@ -111,7 +111,7 @@ public final class ConfigIO extends EditorModule<Dump> {
       printParam: {
         if (param instanceof InstanceParameter) {
           this.formPutSelection(field, valueObject,
-              ((InstanceParameter) param).getChoices(), page);
+              ((InstanceParameter) param).getChoices(), null, page);
           hasChoices = true;
           break printParam;
         }

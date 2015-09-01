@@ -17,6 +17,7 @@ import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.data.DimensionInput;
 import org.optimizationBenchmarking.gui.data.DimensionsBuilder;
+import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
@@ -225,8 +226,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       final IDimensionSet data, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    String dimId, dimPrefix, dimTitle, dimName, typeId, lowerId, upperId;
-    String id;
+    String dimId, dimPrefix, dimTitle, dimName, typeId, lowerId, upperId, id, funcParams;
     EPrimitiveType type;
     double dbound;
     long lbound;
@@ -282,7 +282,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           false, page);
       this.formPutSelection(id,//
           DimensionTypeParser.getHumanReadable(dim.getDimensionType()),//
-          DimensionsIO.DIMENSION_TYPES, page);
+          DimensionsIO.DIMENSION_TYPES, null, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append(//
           "The semantical type of the dimension, i.e., whether it represents a time or solution quality measure."); //$NON-NLS-1$
@@ -295,7 +295,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
           false, page);
       this.formPutSelection(id,//
           DimensionDirectionParser.getHumanReadable(dim.getDirection()),//
-          DimensionsIO.DIMENSION_DIRECTIONS, page);
+          DimensionsIO.DIMENSION_DIRECTIONS, null, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append(//
           "The direction of this dimension, i.e., if values are increasing or decreasing as the measured process is progressing."); //$NON-NLS-1$
@@ -310,25 +310,23 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       upperId = Page.fieldNameFromPrefixAndName(dimPrefix,
           DimensionsIO.DIMENSION_MAX_ID);
 
+      funcParams = ('(' + ('\'' + Encoder.htmlEncode(typeId)) + '\'' + ','
+          + '\'' + Encoder.htmlEncode(lowerId) + '\'' + ',' + '\''
+          + Encoder.htmlEncode(upperId) + '\'' + ')');
+
       this.formTableFieldRowBegin(typeId,
           DimensionsIO.DIMENSION_DATA_TYPE_NAME, false, page);
-      this.formPutSelection(typeId,//
+      this.formPutSelection(
+          typeId,//
           PrimitiveTypeParser.getHumanReadable(type),//
-          DimensionsIO.DIMENSION_DATA_TYPES, page);
+          DimensionsIO.DIMENSION_DATA_TYPES,
+          (page.getFunction(_TypeChangeFunctionRenderer.INSTANCE) + funcParams),
+          page);
+
       out.write(" <input type=\"button\" onclick=\""); //$NON-NLS-1$
       out.write(page.getFunction(_AutoRefineFunctionRenderer.INSTANCE));
-      out.write('(');
-      out.write('\'');
-      encoded.append(typeId);
-      out.write('\'');
-      out.write(',');
-      out.write('\'');
-      encoded.append(lowerId);
-      out.write('\'');
-      out.write(',');
-      out.write('\'');
-      encoded.append(upperId);
-      out.write("')\" value=\"auto-refine\"/>");//$NON-NLS-1$
+      out.write(funcParams);
+      out.write("\" value=\"auto-refine\"/>");//$NON-NLS-1$
       this.formTableFieldRowEndDescRowBegin(typeId, false, true, page);
       out.write(//
       "The data type to be used to store the dimension's values. If your type is an integer, press <code>auto-refine</code> to pick the smallest integer data type fitting to the specified bounds."); //$NON-NLS-1$

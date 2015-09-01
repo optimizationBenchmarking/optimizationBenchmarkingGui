@@ -14,7 +14,6 @@ import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Encoder;
-import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
@@ -109,7 +108,7 @@ public abstract class EditorModule<T> {
   /** the pattern for floating point input */
   public static final String PATTERN_FLOAT = "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$"; //$NON-NLS-1$
   /** the pattern for integer point input */
-  public static final String PATTERN_INT = "[0-9]+"; //$NON-NLS-1$
+  public static final String PATTERN_INT = "^[-+]?[0-9]+$"; //$NON-NLS-1$
 
   /** the start of the configuration table row */
   static final char[] CONFIG_ROW_START_1 = { '<', 't', 'r', ' ', 'c', 'l',
@@ -546,6 +545,9 @@ public abstract class EditorModule<T> {
    *          the current value, or {@code null} if none is provided
    * @param choices
    *          the values to choose from
+   * @param onChange
+   *          javascript code to be invoked when the field changes (and the
+   *          page has been loaded), or {@code null} if none is needed
    * @param page
    *          the page
    * @throws IOException
@@ -555,7 +557,7 @@ public abstract class EditorModule<T> {
   protected final void formPutSelection(final String id,
       final String value,
       final ArrayListView<? extends DefinitionElement> choices,
-      final Page page) throws IOException {
+      final String onChange, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
     final String js;
@@ -574,6 +576,11 @@ public abstract class EditorModule<T> {
     page.onLoad(js);
     out.write("\" onchange=\"");//$NON-NLS-1$
     out.write(js);
+    if (onChange != null) {
+      out.write(';');
+      out.write(onChange);
+      page.onLoad(onChange);
+    }
     out.write("\">"); //$NON-NLS-1$
 
     if (value == null) {
@@ -603,6 +610,9 @@ public abstract class EditorModule<T> {
    *          the current value, or {@code null} if none is provided
    * @param choices
    *          the values to choose from
+   * @param onChange
+   *          javascript code to be invoked when the field changes (and the
+   *          page has been loaded), or {@code null} if none is needed
    * @param page
    *          the page
    * @throws IOException
@@ -611,14 +621,14 @@ public abstract class EditorModule<T> {
   protected final void formPutSelection(final String id,
       final Object value,
       final ArrayListView<? extends DefinitionElement> choices,
-      final Page page) throws IOException {
+      final String onChange, final Page page) throws IOException {
     final String valStr;
     if (value != null) {
       valStr = TextUtils.prepare(String.valueOf(value));
     } else {
       valStr = null;
     }
-    this.formPutSelection(id, valStr, choices, page);
+    this.formPutSelection(id, valStr, choices, onChange, page);
   }
 
   /**
@@ -663,7 +673,7 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<input type=\"number\" placeholder=\"Please enter number.\" pattern=\"");//$NON-NLS-1$
+    out.write("<input type=\"text\" placeholder=\"Please enter number.\" pattern=\"");//$NON-NLS-1$
     out.write(EditorModule.PATTERN_FLOAT);
     if (value != null) {
       out.write("\" value=\"");//$NON-NLS-1$
@@ -786,8 +796,9 @@ public abstract class EditorModule<T> {
    * @param value
    *          the current value, or {@code null} if none is provided
    * @param onChange
-   *          a function to be invoked when the field value changes, or
-   *          {@code null} if none is needed
+   *          javascript code to be invoked when the field value changes
+   *          (and the page has been loaded), or {@code null} if none is
+   *          needed
    * @param page
    *          the page
    * @throws IOException
@@ -795,11 +806,10 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutBoolean(final String id,
-      final Boolean value, final FunctionRenderer onChange, final Page page)
+      final Boolean value, final String onChange, final Page page)
       throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    final String js;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
@@ -808,11 +818,9 @@ public abstract class EditorModule<T> {
       out.write("\" checked");//$NON-NLS-1$
     }
     if (onChange != null) {
-      js = (page.getFunction(onChange) + '(' + '\''
-          + Encoder.htmlEncode(id) + '\'' + ')' + ';');
       out.write("\" onchage=\""); //$NON-NLS-1$
-      out.write(js);
-      page.onLoad(js);
+      out.write(onChange);
+      page.onLoad(onChange);
     }
     EditorModule.__closeField(out, encoded, id);
   }
@@ -825,15 +833,16 @@ public abstract class EditorModule<T> {
    * @param value
    *          the current value, or {@code null} if none is provided
    * @param onChange
-   *          a function to be invoked when the field value changes, or
-   *          {@code null} if none is needed
+   *          javascript code to be invoked when the field value changes
+   *          (and the page has been loaded), or {@code null} if none is
+   *          needed
    * @param page
    *          the page
    * @throws IOException
    *           if i/o fails
    */
   protected final void formPutBoolean(final String id, final Object value,
-      final FunctionRenderer onChange, final Page page) throws IOException {
+      final String onChange, final Page page) throws IOException {
     Boolean bool;
 
     if (value != null) {

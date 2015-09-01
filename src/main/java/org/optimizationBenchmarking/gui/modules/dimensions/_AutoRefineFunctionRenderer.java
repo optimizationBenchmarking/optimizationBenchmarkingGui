@@ -8,7 +8,7 @@ import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 
-/** The dimension integer-ness function renderer */
+/** The dimension integer type refine function renderer */
 final class _AutoRefineFunctionRenderer extends FunctionRenderer {
 
   /** the globally shared instance */
