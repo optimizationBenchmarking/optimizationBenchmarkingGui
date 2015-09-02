@@ -128,3 +128,30 @@ td.configChoice {
   border     : 0px none transparent;
   padding-top: 1px;
 }
+
+
+
+
+textarea.ctrl {  
+  overflow-x    : auto;
+  overflow-y    : scroll;
+  font-family   : monospace, monospace;
+  background    : transparent;
+  border-width  : 1px;
+  border-style  : solid;
+  resize        : none;
+  padding       : 2px;
+  white-space   : nowrap;
+}
+
+textarea.ctrlW {  
+  overflow-x    : auto;
+  overflow-y    : scroll;
+  font-family   : monospace, monospace;
+  background    : transparent;
+  border-width  : 1px;
+  border-style  : solid;
+  resize        : none;
+  padding       : 2px;
+  white-space   : normal;
+}

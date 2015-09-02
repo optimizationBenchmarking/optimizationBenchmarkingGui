@@ -41,6 +41,12 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%>": {
+          form.method = "get";
+          form.action = "/instancesEdit.jsp";
+          form.target = "_self";      
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
           form.method = "get";
           form.action = "/configEdit.jsp";
@@ -82,6 +88,10 @@ function onWithSelectionChange(prefix, selection) {
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%>": {
           text = "Edit the selected file as dimensions file. A dimensions file specifies which measurements are taken during experiments. You could, for instance, count the number of objective function evaluations, measure the objective values, and/or measure the runtime. You define this in the dimensions file.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%>": {
+          text = "Edit the selected file as instances file. An instances file specifies the names and features of benchmark problem instances .";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {

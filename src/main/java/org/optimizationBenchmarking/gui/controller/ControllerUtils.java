@@ -51,6 +51,8 @@ public final class ControllerUtils {
   public static final String COMMAND_EDIT_AS_TEXT = "edit as plain text";//$NON-NLS-1$
   /** edit a dimensions file */
   public static final String COMMAND_EDIT_AS_DIMENSIONS = "edit as dimensions file";//$NON-NLS-1$
+  /** edit an instances file */
+  public static final String COMMAND_EDIT_AS_INSTANCES = "edit as instances file";//$NON-NLS-1$
   /** edit a config file */
   public static final String COMMAND_EDIT_AS_CONFIG = "edit as config file";//$NON-NLS-1$
   /** edit a evaluation file */

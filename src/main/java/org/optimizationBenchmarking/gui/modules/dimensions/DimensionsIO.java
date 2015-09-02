@@ -15,6 +15,7 @@ import org.optimizationBenchmarking.experimentation.data.spec.EDimensionType;
 import org.optimizationBenchmarking.experimentation.data.spec.IDimension;
 import org.optimizationBenchmarking.experimentation.data.spec.IDimensionSet;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
+import org.optimizationBenchmarking.experimentation.io.impl.edi.FlatEDIInput;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.Loaded;
@@ -218,7 +219,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       final Handle handle) throws IOException {
     final PartialExperimentSetBuilder builder;
     builder = new PartialExperimentSetBuilder();
-    DimensionInput.getInstance().use().setLogger(handle).addPath(file)
+    FlatEDIInput.getInstance().use().setLogger(handle).addPath(file)
         .setDestination(builder).create().call();
     return builder.getDimensionSet();
   }
@@ -255,7 +256,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       dimTitle = ("Dimension " + dimName);//$NON-NLS-1$
 
       this.formPutComponentHead(dimTitle, null, prefix, dimPrefix, true,
-          true, true, true, (dim == null), page);
+          true, true, (dim == null), (dim == null), page);
 
       out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
       out.write(dimId);
@@ -283,7 +284,7 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
       this.formPutText(id, //
           ((dim != null) ? dim.getDescription()
               : "Enter description here."),//$NON-NLS-1$
-          page);
+          true, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
       encoded.append("A description of the dimension."); //$NON-NLS-1$
       this.formTableDescRowEnd(id, false, page);

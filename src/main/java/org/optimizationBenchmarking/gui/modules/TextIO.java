@@ -70,7 +70,7 @@ public final class TextIO extends EditorModule<String> {
     try (final OutputStream os = PathUtils.openOutputStream(file)) {
       try (final OutputStreamWriter osw = new OutputStreamWriter(os)) {
         try (final BufferedWriter bw = new BufferedWriter(osw)) {
-          for (final String str : new LineIterator(data)) {
+          for (final String str : new LineIterator(data, false, false)) {
             bw.write(str);
             bw.newLine();
           }
@@ -92,7 +92,7 @@ public final class TextIO extends EditorModule<String> {
     out.write("<textarea class=\"editor\" rows=\"25\" cols=\"70\" name=\"");//$NON-NLS-1$
     encoded.append(//
         Page.fieldNameFromPrefixAndName(prefix, TextIO.FIELD_CONTENTS));
-    out.write("\" wrap=\"off\" autofocus>");//$NON-NLS-1$
+    out.write("\" autofocus>");//$NON-NLS-1$
     page.printLines(data, false, false);
     out.write("</textarea>"); //$NON-NLS-1$
   }

@@ -981,6 +981,8 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
+   * @param autowrap
+   *          should text be wrapped?
    * @param page
    *          the page
    * @throws IOException
@@ -988,27 +990,27 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutText(final String id, final String value,
-      final Page page) throws IOException {
+      final boolean autowrap, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<textarea class=\"editor\" rows=\"4\" cols=\"60\" name=\"");//$NON-NLS-1$
+    out.write("<textarea rows=\"4\" cols=\"60\" name=\"");//$NON-NLS-1$
     encoded.append(id);
     out.write("\" id=\"");//$NON-NLS-1$
     encoded.append(id);
-    out.write("\" wrap=\"off\"");//$NON-NLS-1$
-
-    if (value != null) {
-      out.write('>');
-      page.printLines(value, false, false);
-      out.write("</textarea>"); //$NON-NLS-1$
+    if (autowrap) {
+      out.write("\" class=\"ctrlw\"");//$NON-NLS-1$
     } else {
-      out.write('/');
-      out.write('>');
+      out.write("\" class=\"ctrl\"");//$NON-NLS-1$
     }
+    out.write('>');
+    if (value != null) {
+      page.printLines(value, false, false);
+    }
+    out.write("</textarea>"); //$NON-NLS-1$
   }
 
   /**
@@ -1018,13 +1020,15 @@ public abstract class EditorModule<T> {
    *          the id of the field
    * @param value
    *          the current value, or {@code null} if none is provided
+   * @param autowrap
+   *          should text be wrapped?
    * @param page
    *          the page
    * @throws IOException
    *           if i/o fails
    */
   protected final void formPutText(final String id, final Object value,
-      final Page page) throws IOException {
+      final boolean autowrap, final Page page) throws IOException {
     String chr;
 
     if (value != null) {
@@ -1037,7 +1041,7 @@ public abstract class EditorModule<T> {
       chr = null;
     }
 
-    this.formPutText(id, chr, page);
+    this.formPutText(id, chr, autowrap, page);
   }
 
   /**

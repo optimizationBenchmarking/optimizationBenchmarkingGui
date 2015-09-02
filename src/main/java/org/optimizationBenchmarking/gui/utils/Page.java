@@ -98,7 +98,8 @@ public final class Page implements Closeable {
    */
   public final void printLines(final String multiLines,
       final boolean indent, final boolean useBR) throws IOException {
-    this.printLines(new LineIterator(multiLines), indent, useBR);
+    this.printLines(new LineIterator(multiLines, indent, false), indent,
+        useBR);
   }
 
   /**
