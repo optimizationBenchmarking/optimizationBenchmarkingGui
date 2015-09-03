@@ -30,7 +30,11 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
     out.write("(prefix){var name=document.getElementById(");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(false, "prefix", false, //$NON-NLS-1$
         EditorModule.NEW_FIELD_NAME, true);
-    out.write(").value;if((name!=null)&&(name.length>0)){var newbody='");//$NON-NLS-1$
+    out.write(").value;if((name!=null)&&(name.length>0)){var value=document.getElementById(");//$NON-NLS-1$
+    page.fieldNameFromPrefixAndNameJS(false, "prefix", false, //$NON-NLS-1$
+        EditorModule.NEW_FIELD_VALUE, true);
+    out.write(").value;if(value==null){value='';}var newbody='");//$NON-NLS-1$
+
     out.write(EditorModule.CONFIG_ROW_START_1);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$
@@ -46,8 +50,7 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
     out.write("\" id=\"");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$
-    out.write("\">"); //$NON-NLS-1$
-
+    out.write("'+((value.length>0)?('\" value=\"'+value):'')+'\"/>"); //$NON-NLS-1$
     out.write(EditorModule.CONFIG_FIELD_END);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$

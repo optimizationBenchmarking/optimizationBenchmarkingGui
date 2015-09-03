@@ -3,12 +3,17 @@ package org.optimizationBenchmarking.gui.modules.instances;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 
 import org.optimizationBenchmarking.experimentation.data.impl.abstr.BasicInstanceSet;
 import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
+import org.optimizationBenchmarking.experimentation.data.spec.IDimension;
+import org.optimizationBenchmarking.experimentation.data.spec.IFeature;
+import org.optimizationBenchmarking.experimentation.data.spec.IFeatureValue;
 import org.optimizationBenchmarking.experimentation.data.spec.IInstance;
 import org.optimizationBenchmarking.experimentation.data.spec.IInstanceSet;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
@@ -19,6 +24,7 @@ import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.collections.iterators.IterablePlusOne;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
+import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
 /** A form which allows you to edit instance sets. */
@@ -34,6 +40,12 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
   private static final String INSTANCE_DESC = "description";//$NON-NLS-1$
   /** the dimension blueprint */
   private static final String BLUEPRINT_ID = "_blueprint_";//$NON-NLS-1$
+  /** the feature prefix */
+  private static final String PREFIX_FEATURE = "fe";//$NON-NLS-1$
+  /** the lower bound prefix */
+  private static final String PREFIX_LOWER = "lo";//$NON-NLS-1$
+  /** the upper bound prefix */
+  private static final String PREFIX_UPPER = "up";//$NON-NLS-1$
 
   /** create the instances */
   private InstancesIO() {
@@ -66,7 +78,11 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
       final IInstanceSet data, final Page page) throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
-    String instId, instPrefix, instTitle, instName, id;
+    IFeature feature;
+    String instId, instPrefix, instTitle, instName, id, typePrefix, name;
+    Object fvalue;
+    Number number;
+    double d;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
@@ -119,6 +135,109 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
       encoded.append("A description of the instance."); //$NON-NLS-1$
       this.formTableDescRowEnd(id, false, page);
 
+      // features
+
+      this.formTableSpacer(page);
+      out.write(//
+      "<tr class=\"invisible\"><th colspan=\"3\" class=\"invisible\"><hr/>Benchmark Instance Features</th></tr>");//$NON-NLS-1$
+      typePrefix = Page.fieldNameFromPrefixAndName(instPrefix,
+          InstancesIO.PREFIX_FEATURE);
+
+      if (inst != null) {
+        for (final IFeatureValue value : inst.getFeatureSetting()) {
+          feature = value.getOwner();
+
+          name = feature.getName();
+          id = Page.fieldNameFromPrefixAndName(typePrefix, name);
+          this.formTableFieldRowBegin(id, name, true, page);
+          fvalue = value.getValue();
+          this.formPutString(id,
+              ((fvalue != null) ? String.valueOf(fvalue) : null), page);
+          this.formTableFieldRowEndDescRowBegin(id, true, true, page);
+          encoded.append(//
+              "The value of feature '" + name + '\'' + '.'); //$NON-NLS-1$
+          this.formTableDescRowEnd(id, false, page);
+        }
+      }
+
+      this.formTableSpacer(page);
+      this.formPutAddField(typePrefix, "add feature",//$NON-NLS-1$
+          "feature", null, page); //$NON-NLS-1$
+
+      // lower bounds
+
+      this.formTableSpacer(page);
+      out.write(//
+      "<tr class=\"invisible\"><th colspan=\"3\" class=\"invisible\"><hr/>Lower Bounds of Dimension Values</th></tr>");//$NON-NLS-1$
+      typePrefix = Page.fieldNameFromPrefixAndName(instPrefix,
+          InstancesIO.PREFIX_LOWER);
+
+      if (inst != null) {
+        lbloop: for (final IDimension dim : data.getOwner()
+            .getDimensions().getData()) {
+          number = inst.getLowerBound(dim);
+
+          if (number == null) {
+            continue lbloop;
+          }
+          d = number.doubleValue();
+          if ((d <= Double.NEGATIVE_INFINITY) || (d != d)) {
+            continue lbloop;
+          }
+
+          name = dim.getName();
+          id = Page.fieldNameFromPrefixAndName(typePrefix, name);
+          this.formTableFieldRowBegin(id, "lb[" + name + ']', true, page); //$NON-NLS-1$
+          this.formPutFloat(id, number, page);
+
+          this.formTableFieldRowEndDescRowBegin(id, true, true, page);
+          encoded.append(//
+              "The lower bound of dimension '" + name + '\'' + '.'); //$NON-NLS-1$
+          this.formTableDescRowEnd(id, false, page);
+        }
+      }
+
+      this.formTableSpacer(page);
+      this.formPutAddField(typePrefix, "add lower bound",//$NON-NLS-1$
+          "dimension", "bound", page); //$NON-NLS-1$//$NON-NLS-2$
+
+      // upper bounds
+
+      this.formTableSpacer(page);
+      out.write(//
+      "<tr class=\"invisible\"><th colspan=\"3\" class=\"invisible\"><hr/>Upper Bounds of Dimension Values</th></tr>");//$NON-NLS-1$
+      typePrefix = Page.fieldNameFromPrefixAndName(instPrefix,
+          InstancesIO.PREFIX_UPPER);
+      if (inst != null) {
+        lbloop: for (final IDimension dim : data.getOwner()
+            .getDimensions().getData()) {
+          number = inst.getUpperBound(dim);
+
+          if (number == null) {
+            continue lbloop;
+          }
+          d = number.doubleValue();
+          if ((d >= Double.POSITIVE_INFINITY) || (d != d)) {
+            continue lbloop;
+          }
+
+          name = dim.getName();
+          id = Page.fieldNameFromPrefixAndName(typePrefix, name);
+          this.formTableFieldRowBegin(id, "ub[" + name + ']', true, page); //$NON-NLS-1$
+
+          this.formPutFloat(id, number, page);
+          this.formTableFieldRowEndDescRowBegin(id, true, true, page);
+
+          encoded.append(//
+              "The upper bound of dimension '" + name + '\'' + '.'); //$NON-NLS-1$
+          this.formTableDescRowEnd(id, false, page);
+        }
+      }
+
+      this.formTableSpacer(page);
+      this.formPutAddField(typePrefix, "add upper bound",//$NON-NLS-1$
+          "dimension", "bound", page); //$NON-NLS-1$//$NON-NLS-2$
+
       this.formTableEnd(page);
 
       this.formPutComponentFoot(instTitle, instPrefix, true, true, page);
@@ -131,11 +250,16 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
       final HttpServletRequest request, final Handle handle) {
     final PartialExperimentSetBuilder builder;
     final String[] strings;
+    HashSet<String> done;
+    String typePrefix, field, name, enabled, temp, value;
 
     builder = new PartialExperimentSetBuilder();
 
-    strings = request.getParameterValues(//
-        Page.fieldNameFromPrefixAndName(prefix, InstancesIO.INSTANCE_SET));
+    field = Page.fieldNameFromPrefixAndName(prefix,
+        InstancesIO.INSTANCE_SET);
+    done = new HashSet<>();
+    done.add(field);
+    strings = request.getParameterValues(field);
 
     if (strings != null) {
       for (final String dprefix : strings) {
@@ -145,12 +269,90 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
         }
 
         builder.instanceBegin(true);
-        builder.instanceSetName(request.getParameter(//
-            Page.fieldNameFromPrefixAndName(dprefix,
-                InstancesIO.INSTANCE_NAME)));
-        builder.instanceSetDescription(request.getParameter(//
-            Page.fieldNameFromPrefixAndName(dprefix,
-                InstancesIO.INSTANCE_DESC)));
+        field = Page.fieldNameFromPrefixAndName(dprefix,
+            InstancesIO.INSTANCE_NAME);
+        done.add(field);
+        builder.instanceSetName(request.getParameter(field));
+        field = Page.fieldNameFromPrefixAndName(dprefix,
+            InstancesIO.INSTANCE_DESC);
+        done.add(field);
+        builder.instanceSetDescription(request.getParameter(field));
+
+        // features
+        typePrefix = Page.fieldNameFromPrefixAndName(dprefix,
+            InstancesIO.PREFIX_FEATURE);
+        for (final Map.Entry<String, String[]> entry : request
+            .getParameterMap().entrySet()) {
+          field = entry.getKey();
+          if (!(done.contains(field))) {
+            name = Page.nameFromPrefixAndFieldName(typePrefix, field);
+            if (name != null) {
+              temp = (field + EditorModule.BUTTON_ENABLE_SUFFIX);
+              enabled = request.getParameter(temp);
+              if (enabled != null) {
+                if (done.add(temp) && done.add(field)) {
+                  if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+                    value = request.getParameter(field);
+                    if (value != null) {
+                      builder.instanceSetFeatureValue(name, value);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // lower bounds
+        typePrefix = Page.fieldNameFromPrefixAndName(dprefix,
+            InstancesIO.PREFIX_LOWER);
+        for (final Map.Entry<String, String[]> entry : request
+            .getParameterMap().entrySet()) {
+          field = entry.getKey();
+          if (!(done.contains(field))) {
+            name = Page.nameFromPrefixAndFieldName(typePrefix, field);
+            if (name != null) {
+              temp = (field + EditorModule.BUTTON_ENABLE_SUFFIX);
+              enabled = request.getParameter(temp);
+              if (enabled != null) {
+                if (done.add(temp) && done.add(field)) {
+                  if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+                    value = request.getParameter(field);
+                    if (value != null) {
+                      builder.instanceSetLowerBound(name, value);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // upper bounds
+        typePrefix = Page.fieldNameFromPrefixAndName(dprefix,
+            InstancesIO.PREFIX_UPPER);
+        for (final Map.Entry<String, String[]> entry : request
+            .getParameterMap().entrySet()) {
+          field = entry.getKey();
+          if (!(done.contains(field))) {
+            name = Page.nameFromPrefixAndFieldName(typePrefix, field);
+            if (name != null) {
+              temp = (field + EditorModule.BUTTON_ENABLE_SUFFIX);
+              enabled = request.getParameter(temp);
+              if (enabled != null) {
+                if (done.add(temp) && done.add(field)) {
+                  if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+                    value = request.getParameter(field);
+                    if (value != null) {
+                      builder.instanceSetUpperBound(name, value);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
         builder.instanceEnd();
       }
     }

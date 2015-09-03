@@ -166,6 +166,8 @@ public abstract class EditorModule<T> {
 
   /** new field name */
   static final String NEW_FIELD_NAME = "_new_field_name"; //$NON-NLS-1$
+  /** new field value */
+  static final String NEW_FIELD_VALUE = "_new_field_value"; //$NON-NLS-1$
   /** the id of the add-field-row */
   static final String ADD_FIELD_ROW_ID = "_add_field_row"; //$NON-NLS-1$
 
@@ -501,10 +503,10 @@ public abstract class EditorModule<T> {
 
           try {
             this.storeToFile(data, realPath, handle);
-            handle.success("Successfully stored configuration file '" + //$NON-NLS-1$
+            handle.success("Successfully stored file '" + //$NON-NLS-1$
                 pathName + '\'' + '.');
           } catch (final Throwable error) {
-            handle.failure("Failed to store configuration file '" //$NON-NLS-1$
+            handle.failure("Failed to store file '" //$NON-NLS-1$
                 + pathName + '\'' + '.', error);
           }
         }
@@ -1127,7 +1129,7 @@ public abstract class EditorModule<T> {
 
   /**
    * Add a button which can copy a blueprint component.
-   * 
+   *
    * @param globalPrefix
    *          the global prefix
    * @param componentPrefix
@@ -1165,7 +1167,7 @@ public abstract class EditorModule<T> {
     out.write(',');
     out.write('\'');
     encoded.append(componentPrefix);
-    out.write("')\"/>");//$NON-NLS-1$    
+    out.write("')\"/>");//$NON-NLS-1$
   }
 
   /**
@@ -1322,8 +1324,12 @@ public abstract class EditorModule<T> {
    *
    * @param prefix
    *          the form prefix
-   * @param name
+   * @param buttonText
    *          the button's name
+   * @param nameText
+   *          the text for the name field, or {@code null} for the default
+   * @param valueText
+   *          the text for the value field, or {@code null} for the default
    * @param page
    *          the page
    * @throws IOException
@@ -1331,7 +1337,8 @@ public abstract class EditorModule<T> {
    */
   @SuppressWarnings("resource")
   protected final void formPutAddField(final String prefix,
-      final String name, final Page page) throws IOException {
+      final String buttonText, final String nameText,
+      final String valueText, final Page page) throws IOException {
 
     final JspWriter out;
     final ITextOutput encoded;
@@ -1351,13 +1358,30 @@ public abstract class EditorModule<T> {
     out.write('\'');
     encoded.append(prefix);
     out.write("')\" value=\"");//$NON-NLS-1$
-    encoded.append(name);
-    out.write("\"/>&nbsp;</td><td colspan=\"2\" class=\"configAddNameCell\">&nbsp;<input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
+    encoded.append(buttonText);
+    out.write("\"/></td><td colspan=\"2\" class=\"configAddNameCell\"><table class=\"invisible\"><tr class=\"invisible\"><td class=\"addNameLbl\">");//$NON-NLS-1$
+    if (nameText == null) {
+      out.write("name");//$NON-NLS-1$
+    } else {
+      encoded.append(nameText);
+    }
+    out.write(":</td><td class=\"addNameVal\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
     encoded.append(//
         Page.fieldNameFromPrefixAndName(prefix,
             EditorModule.NEW_FIELD_NAME));
+    out.write("\"/></td></tr><tr class=\"invisible\"><td class=\"addValueLbl\">");//$NON-NLS-1$
+    if (valueText == null) {
+      out.write("value");//$NON-NLS-1$
+    } else {
+      encoded.append(valueText);
+    }
+    out.write(":</td><td class=\"addValueVal\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
+
+    encoded.append(//
+        Page.fieldNameFromPrefixAndName(prefix,
+            EditorModule.NEW_FIELD_VALUE));
     out.write(//
-    "\"/></td></tr>");//$NON-NLS-1$
+    "\"/></td></tr></table></td></tr>");//$NON-NLS-1$
   }
 
   /**

@@ -163,7 +163,8 @@ public final class ConfigIO extends EditorModule<Dump> {
 
     if (data.allowsMore()) {
       this.formTableSpacer(page);
-      this.formPutAddField(prefix, "add parameter", page); //$NON-NLS-1$
+      this.formPutAddField(prefix, "add parameter",//$NON-NLS-1$
+          "parameter", null, page); //$NON-NLS-1$
     }
 
     this.formTableEnd(page);

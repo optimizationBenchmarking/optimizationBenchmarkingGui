@@ -362,6 +362,15 @@
 									<fileset refid="jsp.fileset" />
 								</replaceregexp>
 
+								<replaceregexp match="&lt;noscript>\s*" flags="gi"
+									replace="&lt;noscript>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+								<replaceregexp match="\s*&lt;/noscript>*" flags="gi"
+									replace="&lt;/noscript>">
+									<fileset refid="jsp.fileset" />
+								</replaceregexp>
+
 								<replaceregexp match="\s*&lt;html>\s*" flags="gi"
 									replace="&lt;html>">
 									<fileset refid="jsp.fileset" />
@@ -945,7 +954,8 @@
 								<replaceregexp match="\s*=\s*" flags="gi" replace="=">
 									<fileset refid="js.fileset" />
 								</replaceregexp>
-								<replaceregexp match="\s*\+\s*" flags="gi" replace="+">
+								<replaceregexp match="\s*\+\s*" flags="gi"
+									replace="+">
 									<fileset refid="js.fileset" />
 								</replaceregexp>
 								<replaceregexp match="\s*==\s*" flags="gi"
