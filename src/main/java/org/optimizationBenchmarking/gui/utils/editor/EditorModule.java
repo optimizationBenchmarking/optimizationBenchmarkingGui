@@ -164,6 +164,23 @@ public abstract class EditorModule<T> {
   private static final char[] CONFIG_CHOICE_ROW_3 = { '"', '/', '>', '<',
       '/', 't', 'r', '>' };
 
+  /** begin a text area */
+  static final char[] TEXT_AREA_BEGIN = { '<', 't', 'e', 'x', 't', 'a',
+      'r', 'e', 'a', ' ', 'r', 'o', 'w', 's', '=', '"', '4', '"', ' ',
+      'c', 'o', 'l', 's', '=', '"', '6', '0', '"', ' ', 'i', 'd', '=',
+      '"', };
+  /** begin the wrapping class */
+  static final char[] TEXT_AREA_WRAPPER_CLASS = { '"', ' ', 'c', 'l', 'a',
+      's', 's', '=', '"', 'c', 't', 'r', 'l', 'w', '"', '>' };
+  /** begin the none-wrapping class */
+  static final char[] TEXT_AREA_NOWRAPPER_CLASS = { '"', ' ', 'c', 'l',
+      'a', 's', 's', '=', '"', 'c', 't', 'r', 'l', '"', '>' };
+  /** end a text area */
+  static final char[] TEXT_AREA_END = { '<', '/', 't', 'e', 'x', 't', 'a',
+      'r', 'e', 'a', '>' };
+  /** end a text area */
+  static final char[] ID_STRING = { '"', ' ', 'i', 'd', '=', '"' };
+
   /** new field name */
   static final String NEW_FIELD_NAME = "_new_field_name"; //$NON-NLS-1$
   /** new field value */
@@ -570,7 +587,7 @@ public abstract class EditorModule<T> {
 
     out.write("<select name=\"");//$NON-NLS-1$
     encoded.append(id);
-    out.write("\" id=\"");//$NON-NLS-1$
+    out.write(EditorModule.ID_STRING);
     encoded.append(id);
 
     js = (((((page.getFunction(new _ChoiceUpdateFunctionRenderer(choices)) + '(') + '\'') + //
@@ -649,7 +666,7 @@ public abstract class EditorModule<T> {
       final ITextOutput encoded, final String id) throws IOException {
     out.write("\" name=\"");//$NON-NLS-1$
     encoded.append(id);
-    out.write("\" id=\"");//$NON-NLS-1$
+    out.write(EditorModule.ID_STRING);
     encoded.append(id);
     out.write("\">"); //$NON-NLS-1$
   }
@@ -999,20 +1016,19 @@ public abstract class EditorModule<T> {
     out = page.getOut();
     encoded = page.getHTMLEncoded();
 
-    out.write("<textarea rows=\"4\" cols=\"60\" name=\"");//$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_BEGIN);
     encoded.append(id);
-    out.write("\" id=\"");//$NON-NLS-1$
+    out.write("\" name=\""); //$NON-NLS-1$
     encoded.append(id);
     if (autowrap) {
-      out.write("\" class=\"ctrlw\"");//$NON-NLS-1$
+      out.write(EditorModule.TEXT_AREA_WRAPPER_CLASS);
     } else {
-      out.write("\" class=\"ctrl\"");//$NON-NLS-1$
+      out.write(EditorModule.TEXT_AREA_NOWRAPPER_CLASS);
     }
-    out.write('>');
     if (value != null) {
       page.printLines(value, false, false);
     }
-    out.write("</textarea>"); //$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_END);
   }
 
   /**
@@ -1385,6 +1401,82 @@ public abstract class EditorModule<T> {
   }
 
   /**
+   * Put an add-field button
+   *
+   * @param prefix
+   *          the form prefix
+   * @param buttonText
+   *          the button's name
+   * @param nameText
+   *          the text for the name field, or {@code null} for the default
+   * @param valueText
+   *          the text for the value field, or {@code null} for the default
+   * @param autowrap
+   *          should the added text field auto-wrap?
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if i/o fails
+   */
+  @SuppressWarnings("resource")
+  protected final void formPutAddTextField(final String prefix,
+      final String buttonText, final String nameText,
+      final String valueText, final boolean autowrap, final Page page)
+      throws IOException {
+
+    final JspWriter out;
+    final ITextOutput encoded;
+
+    out = page.getOut();
+    encoded = page.getHTMLEncoded();
+
+    out.write(//
+    "<tr class=\"configAddFieldRow\" id=\""); //$NON-NLS-1$
+
+    encoded.append(Page.fieldNameFromPrefixAndName(prefix,
+        EditorModule.ADD_FIELD_ROW_ID));
+    out.write(//
+    "\"><td class=\"configAddFieldButtonCell\"><input type=\"button\" onclick=\""); //$NON-NLS-1$
+    out.write(page.getFunction(_AddTextFieldFunctionRenderer.INSTANCE));
+    out.write('(');
+    out.write('\'');
+    encoded.append(prefix);
+    out.write("')\" value=\"");//$NON-NLS-1$
+    encoded.append(buttonText);
+    out.write("\"/></td><td colspan=\"2\" class=\"configAddNameCell\"><table class=\"invisible\"><tr class=\"invisible\"><td class=\"addNameLbl\">");//$NON-NLS-1$
+    if (nameText == null) {
+      out.write("name");//$NON-NLS-1$
+    } else {
+      encoded.append(nameText);
+    }
+    out.write(":</td><td class=\"addNameVal\"><input type=\"text\" size=\"60\" id=\"");//$NON-NLS-1$
+    encoded.append(//
+        Page.fieldNameFromPrefixAndName(prefix,
+            EditorModule.NEW_FIELD_NAME));
+    out.write("\"/></td></tr><tr class=\"invisible\"><td class=\"addValueLbl\">");//$NON-NLS-1$
+    if (valueText == null) {
+      out.write("value");//$NON-NLS-1$
+    } else {
+      encoded.append(valueText);
+    }
+    out.write(":</td><td class=\"addValueVal\">");//$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_BEGIN);
+    encoded.append(//
+        Page.fieldNameFromPrefixAndName(prefix,
+            EditorModule.NEW_FIELD_VALUE));
+
+    if (autowrap) {
+      out.write(EditorModule.TEXT_AREA_WRAPPER_CLASS);
+    } else {
+      out.write(EditorModule.TEXT_AREA_NOWRAPPER_CLASS);
+    }
+    out.write(EditorModule.TEXT_AREA_END);
+
+    out.write(//
+    "\"/></td></tr></table></td></tr>");//$NON-NLS-1$
+  }
+
+  /**
    * begin a new form table
    *
    * @param page
@@ -1485,7 +1577,7 @@ public abstract class EditorModule<T> {
       out.write(EditorModule.CONFIG_FIELD_END);
       out.write(id);
       out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
-      out.write("\" id=\"");//$NON-NLS-1$
+      out.write(EditorModule.ID_STRING);
       encoded.append(id);
       out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
       out.write('"');

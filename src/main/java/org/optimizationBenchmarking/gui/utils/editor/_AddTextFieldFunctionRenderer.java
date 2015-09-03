@@ -7,16 +7,16 @@ import javax.servlet.jsp.JspWriter;
 import org.optimizationBenchmarking.gui.utils.FunctionRenderer;
 import org.optimizationBenchmarking.gui.utils.Page;
 
-/** The add field function renderer */
-final class _AddFieldFunctionRenderer extends FunctionRenderer {
+/** The add text (area) field function renderer */
+final class _AddTextFieldFunctionRenderer extends FunctionRenderer {
 
   /** the shared instance */
-  static final _AddFieldFunctionRenderer INSTANCE = new _AddFieldFunctionRenderer();
+  static final _AddTextFieldFunctionRenderer INSTANCE = new _AddTextFieldFunctionRenderer();
 
   /**
    * create the choice function renderer
    */
-  private _AddFieldFunctionRenderer() {
+  private _AddTextFieldFunctionRenderer() {
     super();
   }
 
@@ -27,7 +27,7 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
     final JspWriter out;
 
     out = page.getOut();
-    out.write("(prefix){var name=document.getElementById(");//$NON-NLS-1$
+    out.write("(prefix,wrap){var name=document.getElementById(");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(false, "prefix", false, //$NON-NLS-1$
         EditorModule.NEW_FIELD_NAME, true);
     out.write(").value;if((name!=null)&&(name.length>0)){var value=document.getElementById(");//$NON-NLS-1$
@@ -43,19 +43,23 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
     out.write("'+name+'");//$NON-NLS-1$
     out.write(EditorModule.CONFIG_NAME_END);
     out.write("/>");//$NON-NLS-1$
-    out.write(EditorModule.STRING_FIELD);
+    out.write(EditorModule.TEXT_AREA_BEGIN);
+    page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
+        "name", false);//$NON-NLS-1$
     out.write("\" name=\"");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$
-    out.write("\" id=\"");//$NON-NLS-1$
-    page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
-    out.write("'+((value.length>0)?('\" value=\"'+value):'')+'\"/>"); //$NON-NLS-1$
+    out.write("'+(wrap?'");//$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_WRAPPER_CLASS);
+    out.write("':'");//$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_NOWRAPPER_CLASS);
+    out.write("')+value+'"); //$NON-NLS-1$
+    out.write(EditorModule.TEXT_AREA_END);
     out.write(EditorModule.CONFIG_FIELD_END);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$
     out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
-    out.write(EditorModule.ID_STRING);
+    out.write("\" id=\"");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         "name", false);//$NON-NLS-1$
     out.write(EditorModule.BUTTON_ENABLE_SUFFIX);

@@ -22,6 +22,7 @@ import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
+import org.optimizationBenchmarking.utils.collections.iterators.EnumerationIterator;
 import org.optimizationBenchmarking.utils.collections.iterators.IterablePlusOne;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
@@ -41,11 +42,13 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
   /** the dimension blueprint */
   private static final String BLUEPRINT_ID = "_blueprint_";//$NON-NLS-1$
   /** the feature prefix */
-  private static final String PREFIX_FEATURE = "fe";//$NON-NLS-1$
+  private static final String PREFIX_FEATURE = "_fe_";//$NON-NLS-1$
   /** the lower bound prefix */
-  private static final String PREFIX_LOWER = "lo";//$NON-NLS-1$
+  private static final String PREFIX_LOWER = "_lo_";//$NON-NLS-1$
   /** the upper bound prefix */
-  private static final String PREFIX_UPPER = "up";//$NON-NLS-1$
+  private static final String PREFIX_UPPER = "_up_";//$NON-NLS-1$
+  /** the features prefix */
+  private static final String PREFIX_FEATURE_DESC = "_fs_";//$NON-NLS-1$
 
   /** create the instances */
   private InstancesIO() {
@@ -79,10 +82,11 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
     final JspWriter out;
     final ITextOutput encoded;
     IFeature feature;
-    String instId, instPrefix, instTitle, instName, id, typePrefix, name;
+    String instId, instPrefix, title, instName, id, typePrefix, name, desc;
     Object fvalue;
     Number number;
     double d;
+    boolean first;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
@@ -99,9 +103,9 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
             InstancesIO.BLUEPRINT_ID);
         instName = "New Instance";//$NON-NLS-1$
       }
-      instTitle = ("Instance " + instName);//$NON-NLS-1$
+      title = ("Instance " + instName);//$NON-NLS-1$
 
-      this.formPutComponentHead(instTitle, null, prefix, instPrefix, true,
+      this.formPutComponentHead(title, null, prefix, instPrefix, true,
           true, true, (inst == null), (inst == null), page);
 
       out.write("<input type=\"hidden\" name=\""); //$NON-NLS-1$
@@ -240,8 +244,56 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
 
       this.formTableEnd(page);
 
-      this.formPutComponentFoot(instTitle, instPrefix, true, true, page);
+      this.formPutComponentFoot(title, instPrefix, true, true, page);
     }
+
+    instPrefix = Page.fieldNameFromPrefixAndName(prefix,
+        InstancesIO.PREFIX_FEATURE_DESC);
+
+    title = "Feature Descriptions"; //$NON-NLS-1$
+    this.formPutComponentHead(title, null, prefix, instPrefix, false,
+        false, false, false, false, page);
+    this.formTableBegin(page);
+
+    first = true;
+    for (final IFeature curFeature : data.getOwner().getFeatures()
+        .getData()) {
+      if (curFeature == null) {
+        continue;
+      }
+      desc = curFeature.getDescription();
+      if (desc == null) {
+        continue;
+      }
+
+      if (first) {
+        first = false;
+      } else {
+        this.formTableSpacer(page);
+      }
+
+      name = curFeature.getName();
+      id = Page.fieldNameFromPrefixAndName(instPrefix, name);
+      this.formTableFieldRowBegin(id, name, true, page);
+      this.formPutText(id, desc, true, page);
+      this.formTableFieldRowEndDescRowBegin(id, true, true, page);
+      encoded.append(//
+          "The description of curFeature '" + name + '\'' + '.'); //$NON-NLS-1$
+      this.formTableDescRowEnd(id, false, page);
+    }
+
+    if (first) {
+      first = false;
+    } else {
+      this.formTableSpacer(page);
+    }
+
+    this.formPutAddTextField(instPrefix, "add description", //$NON-NLS-1$
+        "feature", "description", true, page);//$NON-NLS-1$//$NON-NLS-2$
+
+    this.formTableEnd(page);
+    this.formPutComponentFoot(title, instPrefix, true, true, page);
+
   }
 
   /** {@inheritDoc} */
@@ -255,13 +307,39 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
 
     builder = new PartialExperimentSetBuilder();
 
+    // do the features
+    done = new HashSet<>();
+    typePrefix = Page.fieldNameFromPrefixAndName(prefix,
+        InstancesIO.PREFIX_FEATURE_DESC);
+    for (final String param : new EnumerationIterator<>(
+        request.getParameterNames())) {
+      if (!(done.contains(param))) {
+        name = Page.nameFromPrefixAndFieldName(typePrefix, param);
+        if (name != null) {
+          temp = (param + EditorModule.BUTTON_ENABLE_SUFFIX);
+          enabled = request.getParameter(temp);
+          if (enabled != null) {
+            if (done.add(temp) && done.add(param)) {
+              if (LooseBooleanParser.INSTANCE.parseBoolean(enabled)) {
+                value = request.getParameter(param);
+                if (value != null) {
+                  builder.featureDeclare(name, value);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // now add the instances
+
     field = Page.fieldNameFromPrefixAndName(prefix,
         InstancesIO.INSTANCE_SET);
-    done = new HashSet<>();
     done.add(field);
     strings = request.getParameterValues(field);
-
     if (strings != null) {
+      // do the instances
       for (final String dprefix : strings) {
         if (InstancesIO.BLUEPRINT_ID.equalsIgnoreCase(//
             Page.nameFromPrefixAndFieldName(prefix, dprefix))) {
