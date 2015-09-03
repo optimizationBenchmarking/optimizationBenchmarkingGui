@@ -37,7 +37,7 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
 
     out.write(EditorModule.CONFIG_ROW_START_1);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
     out.write(EditorModule.TABLE_FIELD_ROW_SUFFIX);
     out.write(EditorModule.CONFIG_ROW_START_2);
     out.write("'+name+'");//$NON-NLS-1$
@@ -46,25 +46,25 @@ final class _AddFieldFunctionRenderer extends FunctionRenderer {
     out.write(EditorModule.STRING_FIELD);
     out.write("\" name=\"");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
-    out.write("\" id=\"");//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
+    out.write(EditorModule.ID_STRING);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
     out.write("'+((value.length>0)?('\" value=\"'+value):'')+'\"/>"); //$NON-NLS-1$
     out.write(EditorModule.CONFIG_FIELD_END);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
     out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
     out.write(EditorModule.ID_STRING);
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
     out.write(EditorModule.BUTTON_ENABLE_SUFFIX);
     out.write("\" checked onclick=\"");//$NON-NLS-1$
     out.write(page.getFunction(//
         _FieldEnableUpdateFunctionRenderer.INSTANCE));
     out.write("(\\'");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
-        "name", false);//$NON-NLS-1$
+        EditorModule.NAME_STRING, false);
     out.write("\\')\"/></td></tr>';var rowToInsertBefore=document.getElementById('");//$NON-NLS-1$
     page.fieldNameFromPrefixAndNameJS(true, "prefix", false, //$NON-NLS-1$
         EditorModule.ADD_FIELD_ROW_ID, true);

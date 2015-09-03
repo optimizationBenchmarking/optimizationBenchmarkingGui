@@ -188,6 +188,9 @@ public abstract class EditorModule<T> {
   /** the id of the add-field-row */
   static final String ADD_FIELD_ROW_ID = "_add_field_row"; //$NON-NLS-1$
 
+  /** the name string */
+  static final String NAME_STRING = "name";//$NON-NLS-1$
+
   /** the current selection */
   public static final String CURRENT_SELECTION = "<em>Current Selection:</em>&nbsp;"; //$NON-NLS-1$
 
@@ -1286,7 +1289,9 @@ public abstract class EditorModule<T> {
       out.write(' ');
       out.write("<input type=\"button\" value=\"");//$NON-NLS-1$
       out.write(EditorModule.BUTTON_DELETE_VALUE);
-      out.write("\" class=\"moduleCtrl\" onclick=\"this.parentElement.parentElement.parentElement.remove()\"/>");//$NON-NLS-1$
+      out.write("\" class=\"moduleCtrl\" onclick=\"var __a__=this;while((__a__!=null)&&(__a__.tagName.toUpperCase()!='DIV')){__a__=__a__.parentElement;}");//$NON-NLS-1$
+      out.write(page.getFunction(_DeleteFunctionRenderer.INSTANCE));
+      out.write("(__a__)\"/>");//$NON-NLS-1$
     }
     if (canCopy) {
       out.write(' ');
@@ -1377,7 +1382,7 @@ public abstract class EditorModule<T> {
     encoded.append(buttonText);
     out.write("\"/></td><td colspan=\"2\" class=\"configAddNameCell\"><table class=\"invisible\"><tr class=\"invisible\"><td class=\"addNameLbl\">");//$NON-NLS-1$
     if (nameText == null) {
-      out.write("name");//$NON-NLS-1$
+      out.write(EditorModule.NAME_STRING);
     } else {
       encoded.append(nameText);
     }
@@ -1445,7 +1450,7 @@ public abstract class EditorModule<T> {
     encoded.append(buttonText);
     out.write("\"/></td><td colspan=\"2\" class=\"configAddNameCell\"><table class=\"invisible\"><tr class=\"invisible\"><td class=\"addNameLbl\">");//$NON-NLS-1$
     if (nameText == null) {
-      out.write("name");//$NON-NLS-1$
+      out.write(EditorModule.NAME_STRING);
     } else {
       encoded.append(nameText);
     }
