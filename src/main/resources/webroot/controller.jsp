@@ -108,6 +108,7 @@ Selected element(s):
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
@@ -184,6 +185,7 @@ Selected remembered element(s):
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
+<option><%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
 <option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>

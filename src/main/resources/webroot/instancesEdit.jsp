@@ -8,7 +8,7 @@
 <%@ page import="org.optimizationBenchmarking.experimentation.data.spec.IInstanceSet" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
-<h1>Edit Instances  Files</h1>
+<h1>Edit Instances Files</h1>
 <p>On this page, you can edit instances files. A instances file specifies
 the names and features of benchmark problem instances to which you apply your algorithm.
 You can save your changes by pressing the &quot;Save&quot; button.

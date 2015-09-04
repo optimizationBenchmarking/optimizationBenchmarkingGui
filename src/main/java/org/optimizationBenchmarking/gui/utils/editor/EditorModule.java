@@ -1074,12 +1074,15 @@ public abstract class EditorModule<T> {
    *          can we delete components?
    * @param page
    *          the page
+   * @param canCopy
+   *          can components be copied?
    * @throws IOException
    *           if I/o fails
    */
   @SuppressWarnings("resource")
-  protected void formPutComponentButtonHelp(final boolean canMove,
-      final boolean canDelete, final Page page) throws IOException {
+  protected void formPutComponentDefaultButtonHelp(final boolean canMove,
+      final boolean canDelete, final boolean canCopy, final Page page)
+      throws IOException {
     final JspWriter out;
     final ITextOutput encoded;
     final String componentType;
@@ -1092,7 +1095,7 @@ public abstract class EditorModule<T> {
     out.write('A');
     out.write(' ');
     encoded.append(componentType);
-    out.write(" shown/expanded by pressing the <code>");//$NON-NLS-1$
+    out.write(" is shown/expanded by pressing the <code>");//$NON-NLS-1$
     encoded.append(EditorModule.BUTTON_VISIBILITY_HIDDEN);
     out.write("</code> button and minimized by pressing <code>");//$NON-NLS-1$
     encoded.append(EditorModule.BUTTON_VISIBILITY_VISIBLE);
@@ -1102,7 +1105,7 @@ public abstract class EditorModule<T> {
       encoded.append(EditorModule.BUTTON_UP_VALUE);
       out.write("</code> button moves a ");//$NON-NLS-1$
       encoded.append(componentType);
-      out.write(" up, The <code>");//$NON-NLS-1$
+      out.write(" up and the <code>");//$NON-NLS-1$
       encoded.append(EditorModule.BUTTON_DOWN_VALUE);
       out.write("</code> button moves it down.");//$NON-NLS-1$
     }
@@ -1111,7 +1114,14 @@ public abstract class EditorModule<T> {
       encoded.append(EditorModule.BUTTON_DELETE_VALUE);
       out.write("</code> button deletes a ");//$NON-NLS-1$
       encoded.append(componentType);
-      out.write(". There is no undo!"); //$NON-NLS-1$
+      out.write(" (this cannot be undone)."); //$NON-NLS-1$
+    }
+    if (canCopy) {
+      out.write(" The <code>");//$NON-NLS-1$
+      encoded.append(EditorModule.BUTTON_COPY_VALUE);
+      out.write("</code> button creates a copy of a ");//$NON-NLS-1$
+      encoded.append(componentType);
+      out.write('.');
     }
   }
 
@@ -1125,10 +1135,22 @@ public abstract class EditorModule<T> {
   }
 
   /**
+   * Describe the controls
+   *
+   * @param page
+   *          the page
+   * @throws IOException
+   *           if I/o fails
+   */
+  protected void formDoPutComponentButtonHelp(final Page page)
+      throws IOException {
+    this.formPutComponentDefaultButtonHelp(true, true, true, page);
+  }
+
+  /**
    * Put the help for the component buttons. This should add a paragraph of
-   * text, including a call to
-   * {@link #formPutComponentButtonHelp(boolean, boolean, Page)}. It should
-   * be called before any form is constructed.
+   * text, including a call to {@link #formPutComponentButtonHelp(Page)}.
+   * It should be called before any form is constructed.
    *
    * @param page
    *          the page
@@ -1136,13 +1158,13 @@ public abstract class EditorModule<T> {
    *           if I/O fails
    */
   @SuppressWarnings("resource")
-  public void formPutComponentButtonHelp(final Page page)
+  public final void formPutComponentButtonHelp(final Page page)
       throws IOException {
     final JspWriter out;
 
     out = page.getOut();
     out.write("<p class=\"buttonHelp\">");//$NON-NLS-1$
-    this.formPutComponentButtonHelp(true, true, page);
+    this.formDoPutComponentButtonHelp(page);
     out.write("</p>");//$NON-NLS-1$
   }
 

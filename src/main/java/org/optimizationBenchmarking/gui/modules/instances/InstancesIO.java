@@ -39,7 +39,7 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
   private static final String INSTANCE_NAME = "name";//$NON-NLS-1$
   /** the instance's description */
   private static final String INSTANCE_DESC = "description";//$NON-NLS-1$
-  /** the dimension blueprint */
+  /** the instance blueprint */
   private static final String BLUEPRINT_ID = "_blueprint_";//$NON-NLS-1$
   /** the feature prefix */
   private static final String PREFIX_FEATURE = "_fe_";//$NON-NLS-1$
@@ -136,7 +136,7 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
               : "Enter description here."),//$NON-NLS-1$
           true, page);
       this.formTableFieldRowEndDescRowBegin(id, false, true, page);
-      encoded.append("A description of the instance."); //$NON-NLS-1$
+      encoded.append("The description of the instance."); //$NON-NLS-1$
       this.formTableDescRowEnd(id, false, page);
 
       // features
@@ -333,7 +333,6 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
     }
 
     // now add the instances
-
     field = Page.fieldNameFromPrefixAndName(prefix,
         InstancesIO.INSTANCE_SET);
     done.add(field);
@@ -456,5 +455,18 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
       final Path file, final Handle handle) throws IOException {
     EDIOutput.getInstance().use().setLogger(handle).setPath(file)
         .setSource(data).create().call();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final void formDoPutComponentButtonHelp(final Page page)
+      throws IOException {
+    this.formPutComponentDefaultButtonHelp(true, true, true, page);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getComponentTypeName() {
+    return "benchmark instance"; //$NON-NLS-1$
   }
 }

@@ -47,6 +47,12 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%>": {
+          form.method = "get";
+          form.action = "/experimentEdit.jsp";
+          form.target = "_self";      
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {
           form.method = "get";
           form.action = "/configEdit.jsp";
@@ -91,7 +97,11 @@ function onWithSelectionChange(prefix, selection) {
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%>": {
-          text = "Edit the selected file as instances file. An instances file specifies the names and features of benchmark problem instances .";
+          text = "Edit the selected file as instances file. An instances file specifies the names and features of benchmark problem instances.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%>": {
+          text = "Edit the selected file as experiment file. An instances file specifies the parameter settings of one specific setup of an algorithm, which is applied to the benchmark instancs.";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%>": {

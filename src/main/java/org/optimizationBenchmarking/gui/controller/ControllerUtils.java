@@ -53,6 +53,8 @@ public final class ControllerUtils {
   public static final String COMMAND_EDIT_AS_DIMENSIONS = "edit as dimensions file";//$NON-NLS-1$
   /** edit an instances file */
   public static final String COMMAND_EDIT_AS_INSTANCES = "edit as instances file";//$NON-NLS-1$
+  /** edit an experiment file */
+  public static final String COMMAND_EDIT_AS_EXPERIMENT = "edit as experiment file";//$NON-NLS-1$
   /** edit a config file */
   public static final String COMMAND_EDIT_AS_CONFIG = "edit as config file";//$NON-NLS-1$
   /** edit a evaluation file */
