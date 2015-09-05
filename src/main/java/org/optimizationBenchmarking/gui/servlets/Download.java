@@ -17,7 +17,7 @@ import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Header;
 import org.optimizationBenchmarking.utils.io.EArchiveType;
-import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
+import org.optimizationBenchmarking.utils.io.FileTypeRegistry;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** A java servlet for downloading the selected elements. */
@@ -202,8 +202,8 @@ public final class Download extends HttpServlet {
     if (elements.size() == 1) {
       done = elements.get(0);
       if (Files.isRegularFile(done, LinkOption.NOFOLLOW_LINKS)) {
-        response.setContentType(MimeTypeDetector.getInstance()
-            .getMimeType(done));
+        response.setContentType(FileTypeRegistry.getInstance()
+            .getMimeTypeForPath(done));
         Header.defaultHeader(response);
         response
             .setHeader(

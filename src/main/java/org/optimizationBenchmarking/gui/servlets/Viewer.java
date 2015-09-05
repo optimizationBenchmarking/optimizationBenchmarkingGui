@@ -14,7 +14,7 @@ import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Header;
-import org.optimizationBenchmarking.utils.io.MimeTypeDetector;
+import org.optimizationBenchmarking.utils.io.FileTypeRegistry;
 
 /** A java servlet for viewing an element. */
 public final class Viewer extends HttpServlet {
@@ -67,8 +67,8 @@ public final class Viewer extends HttpServlet {
           if (path != null) {
             try {
               if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
-                resp.setContentType(MimeTypeDetector.getInstance()
-                    .getMimeType(path));
+                resp.setContentType(FileTypeRegistry.getInstance()
+                    .getMimeTypeForPath(path));
                 Header.defaultHeader(resp);
                 Files.copy(path, resp.getOutputStream());
                 handle.success("Successfully provided file '" + //$NON-NLS-1$
