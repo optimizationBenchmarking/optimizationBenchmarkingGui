@@ -214,9 +214,9 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
     XMLStreamReader reader;
 
     type = FileTypeRegistry.getInstance().getTypeForPath(file);
+
     if (type != null) {
       if ((type == XMLFileType.XML) || (type == EDI.EDI_XML)) {
-
         try (final InputStream is = PathUtils.openInputStream(file)) {
           ipf = FSElement.XML_INPUT_FACTORY;
           if (ipf == null) {
