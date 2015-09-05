@@ -1,5 +1,5 @@
-<%@ page import="org.optimizationBenchmarking.gui.controller.FSElement" %>
-<%@ page import="org.optimizationBenchmarking.gui.controller.EFSElementType" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.files.FSElement" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.files.EFSElementType" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerState" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>

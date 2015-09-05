@@ -1,4 +1,4 @@
-package org.optimizationBenchmarking.gui.controller;
+package org.optimizationBenchmarking.gui.utils.files;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -15,7 +15,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.logging.Level;
 
-import org.optimizationBenchmarking.gui.utils.FileDesc;
+import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
@@ -28,7 +28,7 @@ import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransforme
 public class FSElement extends FileDesc implements Comparable<FSElement> {
 
   /** the root path */
-  static final String ROOT_PATH = "/"; //$NON-NLS-1$
+  public static final String ROOT_PATH = "/"; //$NON-NLS-1$
 
   /** the size of the file */
   private final long m_size;
@@ -41,6 +41,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
 
   /** the size string */
   private String m_sizeString;
+
   /** the time string */
   private String m_timeString;
 
@@ -60,8 +61,9 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    * @param time
    *          the time
    */
-  FSElement(final Path path, final String name, final String relative,
-      final EFSElementType type, final long size, final long time) {
+  private FSElement(final Path path, final String name,
+      final String relative, final EFSElementType type, final long size,
+      final long time) {
     super(path, name, relative);
     this.m_type = type;
     this.m_size = size;
@@ -187,105 +189,144 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
   }
 
   /**
-   * Add/remove the given path to the set
+   * Create a file system element from a path
    *
-   * @param add
-   *          should we add the element ({@code true}) or remove it (
-   *          {@code false}?
+   * @param path
+   *          the path
+   * @param handle
+   *          the handle
+   * @return the new element, or {@code null} if none could be created
+   */
+  public static final FSElement fromPath(final Path path,
+      final Handle handle) {
+    return FSElement.fromPath(null, null, path, null, handle);
+  }
+
+  /**
+   * Create a file system element from a path
+   *
    * @param root
-   *          the overall root
+   *          the root path, or {@code null} to use the controller's root
    * @param listRoot
-   *          the list root
+   *          the parent path of the current listing process, or
+   *          {@code null} if equal to {@code root}
    * @param path
    *          the path
    * @param attrs
-   *          the attributes
-   * @param set
-   *          the set
+   *          the basic file attributes, or {@code null} if none have been
+   *          loaded yet
    * @param handle
    *          the handle
-   * @return {@code 1} if adding the path changed the set, {@code 0}
-   *         otherwise, {@code -1} if the element could not be found
+   * @return the new element, or {@code null} if none could be created
    */
-  static final int _changeCollection(final boolean add, final Path root,
+  public static final FSElement fromPath(final Path root,
       final Path listRoot, final Path path,
-      final BasicFileAttributes attrs, final Collection<FSElement> set,
-      final Handle handle) {
+      final BasicFileAttributes attrs, final Handle handle) {
     final EFSElementType type;
-    final FSElement el;
+    final Path useRoot, useListRoot;
+    final BasicFileAttributes bfa;
     Path use;
     String name, relativePath;
     FileTime fileTime;
     long size, time;
 
     use = PathUtils.normalize(path);
+    if (root != null) {
+      useRoot = root;
+    } else {
+      if (handle == null) {
+        return null;
+      }
+      useRoot = handle.getController().getRootDir();
+    }
+    useListRoot = ((listRoot != null) ? listRoot : root);
 
-    if (use.startsWith(root)) {
+    if (!(use.startsWith(root))) {
+      if (handle != null) {
+        handle.warning("The path '" + path + //$NON-NLS-1$
+            "' is not contained in the root path '" + root + //$NON-NLS-1$
+            "' and therefore ignored."); //$NON-NLS-1$
+      }
+      return null;
+    }
 
-      size = time = Long.MIN_VALUE;
+    if (attrs != null) {
+      bfa = attrs;
+    } else {
+      try {
+        bfa = Files.readAttributes(use, BasicFileAttributes.class,
+            LinkOption.NOFOLLOW_LINKS);
+      } catch (final Throwable error) {
+        if (handle != null) {
+          handle.log(Level.WARNING,
+              ("Error when reading attributes of path '"//$NON-NLS-1$
+                  + path + '\'' + '.'), error);
+        }
+        return null;
+      }
+    }
 
-      if (attrs.isDirectory()) {
-        if (use.equals(listRoot)) {
-          type = EFSElementType.LIST_ROOT;
-          use = listRoot;
+    if (bfa == null) {
+      if (handle != null) {
+        handle.warning("The path '" + path + //$NON-NLS-1$
+            "' seemingly does (no longer?) exist.");//$NON-NLS-1$
+      }
+      return null;
+    }
+
+    size = time = Long.MIN_VALUE;
+
+    if (bfa.isDirectory()) {
+      if (use.equals(useListRoot)) {
+        type = EFSElementType.LIST_ROOT;
+        use = useListRoot;
+      } else {
+        if (use.equals(listRoot.getParent())) {
+          type = EFSElementType.NEXT_UP;
         } else {
-          if (use.equals(listRoot.getParent())) {
-            type = EFSElementType.NEXT_UP;
-          } else {
-            type = EFSElementType.FOLDER;
+          type = EFSElementType.FOLDER;
+        }
+      }
+    } else {
+      if (bfa.isRegularFile()) {
+        type = EFSElementType.FILE;
+
+        size = bfa.size();
+        fileTime = bfa.lastModifiedTime();
+        if (fileTime != null) {
+          time = fileTime.toMillis();
+          if (time <= 0L) {
+            time = Long.MIN_VALUE;
           }
         }
-      } else {
-        if (attrs.isRegularFile()) {
-          type = EFSElementType.FILE;
-
-          size = attrs.size();
-
-          fileTime = attrs.lastModifiedTime();
+        if (time <= 0L) {
+          fileTime = attrs.creationTime();
           if (fileTime != null) {
             time = fileTime.toMillis();
             if (time <= 0L) {
               time = Long.MIN_VALUE;
             }
           }
-          if (time <= 0L) {
-            fileTime = attrs.creationTime();
-            if (fileTime != null) {
-              time = fileTime.toMillis();
-              if (time <= 0L) {
-                time = Long.MIN_VALUE;
-              }
-            }
-          }
-
-        } else {
-          if ((handle != null) && handle.isLoggable(Level.FINE)) {
-            handle.fine("Ignoring '" + use + //$NON-NLS-1$
-                "' since it is neither a regular file nor a directory."); //$NON-NLS-1$
-          }
-          return (-1);
         }
-      }
 
-      if (root.equals(use)) {
-        use = root;
-        name = relativePath = FSElement.ROOT_PATH;
       } else {
-        name = PathUtils.getName(use);
-        relativePath = root.relativize(use).toString();
+        if ((handle != null) && handle.isLoggable(Level.FINE)) {
+          handle.fine("Ignoring '" + use + //$NON-NLS-1$
+              "' since it is neither a regular file nor a directory."); //$NON-NLS-1$
+        }
+        return null;
       }
+    }
 
-      el = new FSElement(use, name, relativePath, type, size, time);
-      synchronized (set) {
-        return ((add ? set.add(el) : set.remove(el)) ? 1 : 0);
-      }
+    if (useRoot.equals(use)) {
+      use = useRoot;
+      name = relativePath = FSElement.ROOT_PATH;
+    } else {
+      name = PathUtils.getName(use);
+      relativePath = useRoot.relativize(use).toString();
     }
-    if (handle != null) {
-      handle.warning("The path '" + path + //$NON-NLS-1$
-          "' is not contained in the root path '" + root + //$NON-NLS-1$
-          "' and therefore ignored."); //$NON-NLS-1$
-    }
-    return (-1);
+
+    return new FSElement(use, name, relativePath, type, size, time);
   }
 
   /**
@@ -295,45 +336,34 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    *          should we add the element ({@code true}) or remove it (
    *          {@code false}?
    * @param root
-   *          the overall root
+   *          the overall root (or {@code null} to use the one of the
+   *          controller)
    * @param listRoot
-   *          the list root
+   *          the list root (or {@code null} to use {@code root})
    * @param path
    *          the path
+   * @param attrs
+   *          the file attributes, or {@code null} to load them
    * @param set
    *          the set
    * @param handle
    *          the handle
-   * @return {@code 1} if adding/removing the path changed the set,
-   *         {@code 0} otherwise, {@code -1} if the element could not be
-   *         found
+   * @return the change result
    */
-  public static final int changeCollection(final boolean add,
+  public static final EChangeResult changeCollection(final boolean add,
       final Path root, final Path listRoot, final Path path,
-      final Collection<FSElement> set, final Handle handle) {
-    BasicFileAttributes attrs;
-    Throwable caught;
+      final BasicFileAttributes attrs, final Collection<FSElement> set,
+      final Handle handle) {
+    final FSElement el;
 
-    attrs = null;
-    caught = null;
-    try {
-      attrs = Files.readAttributes(path, BasicFileAttributes.class,
-          LinkOption.NOFOLLOW_LINKS);
-    } catch (final Throwable error) {
-      attrs = null;
-      caught = error;
+    el = FSElement.fromPath(root, listRoot, path, attrs, handle);
+    if (el == null) {
+      return EChangeResult.ELEMENT_NOT_FOUND;
     }
-
-    if (attrs == null) {
-      if (handle != null) {
-        handle.failure((("Could not get attributes of path '" + //$NON-NLS-1$
-            path) + "' - maybe it does not exist."), caught);//$NON-NLS-1$
-      }
-      return (-1);
+    synchronized (set) {
+      return ((add ? set.add(el) : set.remove(el)) ? EChangeResult.CHANGED
+          : EChangeResult.NOTHING_CHANGED);
     }
-
-    return FSElement._changeCollection(add, root, listRoot, path, attrs,
-        set, handle);
   }
 
   /**
@@ -379,7 +409,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    * @return the set of file system elements in that folder
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  static final ArraySetView<FSElement> _dir(final Path root,
+  public static final ArraySetView<FSElement> dir(final Path root,
       final Path start, final Handle handle) {
     __FSDir col;
     Path up;
@@ -389,7 +419,6 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
       col = new __FSDir(root, start, handle);
       Files.walkFileTree(start, EnumSet.noneOf(FileVisitOption.class), 1,
           col);
-
     } catch (final Throwable error) {
       if (handle != null) {
         handle.failure(((((("Failed to scan path '" + start) //$NON-NLS-1$
@@ -402,7 +431,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
       up = start.getParent();
       if ((up != null) && (up.startsWith(root))) {
         FSElement.changeCollection(true, root, start, up,//
-            col.m_elements, handle);
+            null, col.m_elements, handle);
       }
 
       return FSElement.collectionToList(col.m_elements);
@@ -451,8 +480,8 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
         if (dir.equals(this.m_start)) {
           return FileVisitResult.CONTINUE;
         }
-        if (FSElement._changeCollection(true, this.m_root, this.m_start,
-            dir, attrs, this.m_elements, this.m_handle) > 0) {
+        if (FSElement.changeCollection(true, this.m_root, this.m_start,
+            dir, attrs, this.m_elements, this.m_handle) == EChangeResult.CHANGED) {
           return FileVisitResult.CONTINUE;
         }
       }
@@ -464,7 +493,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
     public final FileVisitResult visitFile(final Path file,
         final BasicFileAttributes attrs) {
       if ((file != null) && (attrs != null)) {
-        FSElement._changeCollection(true, this.m_root, this.m_start, file,
+        FSElement.changeCollection(true, this.m_root, this.m_start, file,
             attrs, this.m_elements, this.m_handle);
       }
       return FileVisitResult.CONTINUE;

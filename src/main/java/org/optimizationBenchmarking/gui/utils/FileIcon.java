@@ -1,5 +1,6 @@
 package org.optimizationBenchmarking.gui.utils;
 
+import org.optimizationBenchmarking.gui.utils.files.FileDesc;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;

@@ -6,8 +6,8 @@ import java.util.logging.Level;
 
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.Evaluator;
 import org.optimizationBenchmarking.gui.controller.Controller;
-import org.optimizationBenchmarking.gui.controller.FSElement;
 import org.optimizationBenchmarking.gui.controller.Handle;
+import org.optimizationBenchmarking.gui.utils.files.FSElement;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.Configuration;
@@ -71,7 +71,8 @@ public final class Evaluation {
     list = new ArrayList<>();
     root = handle.getController().getRootDir();
     for (final Path path : produced.getProducedFiles().keySet()) {
-      FSElement.changeCollection(true, root, root, path, list, handle);
+      FSElement.changeCollection(true, root, root, path, null, list,
+          handle);
     }
 
     return FSElement.collectionToList(list);

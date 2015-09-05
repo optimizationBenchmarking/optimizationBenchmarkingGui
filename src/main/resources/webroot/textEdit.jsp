@@ -4,7 +4,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.modules.TextIO" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.Loaded" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.files.Loaded" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
 <h1>Edit as Plain Text</h1>

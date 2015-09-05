@@ -17,9 +17,9 @@ import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io.EvaluationXMLOutput;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
-import org.optimizationBenchmarking.gui.utils.Loaded;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
+import org.optimizationBenchmarking.gui.utils.files.Loaded;
 import org.optimizationBenchmarking.utils.config.ConfigurationBuilder;
 import org.optimizationBenchmarking.utils.config.Definition;
 import org.optimizationBenchmarking.utils.config.DefinitionXMLInput;

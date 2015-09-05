@@ -1,4 +1,4 @@
-package org.optimizationBenchmarking.gui.utils;
+package org.optimizationBenchmarking.gui.utils.files;
 
 import java.nio.file.Path;
 

@@ -1,5 +1,6 @@
 package org.optimizationBenchmarking.gui.controller;
 
+import org.optimizationBenchmarking.gui.utils.files.FSElement;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 
 /** the controller state */
@@ -19,7 +20,7 @@ public final class ControllerState {
 
   /**
    * The controller state
-   * 
+   *
    * @param relPath
    *          the relative path
    * @param path
@@ -42,7 +43,7 @@ public final class ControllerState {
 
   /**
    * Get the relative path
-   * 
+   *
    * @return the relative path
    */
   public final String getRelativePath() {
@@ -51,7 +52,7 @@ public final class ControllerState {
 
   /**
    * Get the elements of the current path, i.e., the folder hierarchy
-   * 
+   *
    * @return the elements of the current path, i.e., the folder hierarchy
    */
   public final ArraySetView<FSElement> getPath() {
@@ -60,7 +61,7 @@ public final class ControllerState {
 
   /**
    * Get the folders and files inside the current directory
-   * 
+   *
    * @return the folders and files inside the current directory
    */
   public final ArraySetView<FSElement> getCurrent() {
@@ -69,7 +70,7 @@ public final class ControllerState {
 
   /**
    * Get the current selection
-   * 
+   *
    * @return the elements in the current selection
    */
   public final ArraySetView<FSElement> getSelected() {

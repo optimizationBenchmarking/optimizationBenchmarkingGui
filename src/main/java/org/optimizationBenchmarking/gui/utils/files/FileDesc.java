@@ -1,8 +1,7 @@
-package org.optimizationBenchmarking.gui.utils;
+package org.optimizationBenchmarking.gui.utils.files;
 
 import java.nio.file.Path;
 
-import org.optimizationBenchmarking.gui.controller.FSElement;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 
 /** A description item of a file. */

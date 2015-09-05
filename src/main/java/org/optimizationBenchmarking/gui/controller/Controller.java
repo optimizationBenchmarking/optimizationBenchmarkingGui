@@ -17,6 +17,8 @@ import javax.servlet.jsp.PageContext;
 
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.optimizationBenchmarking.gui.application.ApplicationInstanceBuilder;
+import org.optimizationBenchmarking.gui.utils.files.EChangeResult;
+import org.optimizationBenchmarking.gui.utils.files.FSElement;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.Configuration;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
@@ -151,14 +153,14 @@ public final class Controller implements Serializable {
     final Path root;
     final ArraySetView<FSElement> paths;
     Path path;
-    int res;
+    EChangeResult res;
 
     root = this.m_root;
     path = this.m_current;
 
     this.m_temp.clear();
     for (;;) {
-      res = FSElement.changeCollection(true, root, root, path,
+      res = FSElement.changeCollection(true, root, root, path, null,
           this.m_temp, handle);
       if (root.equals(path)) {
         break;
@@ -167,7 +169,7 @@ public final class Controller implements Serializable {
       if ((path == null) || (!(path.startsWith(root)))) {
         break;
       }
-      if (res < 0) {
+      if (res == EChangeResult.ELEMENT_NOT_FOUND) {
         handle.warning("Current path '" + //$NON-NLS-1$
             root.relativize(this.m_current).toString() + //
             "' seemingly does no longer exist, setting current path to '" //$NON-NLS-1$
@@ -181,7 +183,7 @@ public final class Controller implements Serializable {
     return new ControllerState(//
         root.relativize(this.m_current).toString(),//
         paths,//
-        FSElement._dir(root, this.m_current, handle),//
+        FSElement.dir(root, this.m_current, handle),//
         this.getSelected(handle));
   }
 
@@ -484,7 +486,7 @@ public final class Controller implements Serializable {
       caught = null;
       path = it.next();
       if (FSElement.changeCollection(true, this.m_root, this.m_root, path,
-          this.m_temp, handle) < 0) {
+          null, this.m_temp, handle) == EChangeResult.ELEMENT_NOT_FOUND) {
         it.remove();
         handle
             .log(

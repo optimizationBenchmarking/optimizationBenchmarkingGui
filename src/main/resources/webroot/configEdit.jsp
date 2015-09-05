@@ -4,7 +4,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.modules.config.ConfigIO" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.Loaded" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.files.Loaded" %>
 <%@ page import="org.optimizationBenchmarking.utils.config.Dump" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 
