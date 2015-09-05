@@ -17,6 +17,8 @@ import java.util.logging.Level;
 
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
+import org.optimizationBenchmarking.utils.io.FileTypeRegistry;
+import org.optimizationBenchmarking.utils.io.IFileType;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
 import org.optimizationBenchmarking.utils.text.TextUtils;
@@ -189,6 +191,23 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
   }
 
   /**
+   * get the file type belonging to a given file
+   *
+   * @param file
+   *          the file
+   * @return the file type
+   */
+  private static final EFSElementType __getFileType(final Path file) {
+    final IFileType type;
+
+    type = FileTypeRegistry.getInstance().getTypeForPath(file);
+    if (type != null) {
+      return EFSElementType.forFileType(type);
+    }
+    return EFSElementType.FILE;
+  }
+
+  /**
    * Create a file system element from a path
    *
    * @param path
@@ -289,7 +308,6 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
       }
     } else {
       if (bfa.isRegularFile()) {
-        type = EFSElementType.FILE;
 
         size = bfa.size();
         fileTime = bfa.lastModifiedTime();
@@ -308,6 +326,9 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
             }
           }
         }
+
+        type = ((size > 0L) ? FSElement.__getFileType(use)
+            : EFSElementType.FILE);
 
       } else {
         if ((handle != null) && handle.isLoggable(Level.FINE)) {
@@ -526,5 +547,4 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
       return FileVisitResult.CONTINUE;
     }
   }
-
 }

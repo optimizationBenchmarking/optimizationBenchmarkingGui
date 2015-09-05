@@ -5,7 +5,7 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.files.FSElement" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.FileIcon" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.EFSElementType" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArrayListView" %>
 <%@ page import="java.util.logging.Level" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
@@ -60,15 +60,16 @@ Take it easy, relax, and let the program do its job.</p>
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath());
    String shortPath               = htmlEncodedRelativePath;
    int    lastSlash               = shortPath.lastIndexOf('/');
+   EFSElementType type            = element.getType();
    if((lastSlash > 0)&&(lastSlash<(shortPath.length()-1))) {
       shortPath = shortPath.substring(lastSlash+1);
    } %>
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% if(element.getType().isFile()) {  %>
-        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
       <% } else { %>
-        <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
+        <img src="/icons/<%=EFSElementType.FOLDER.getIcon()%>.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
       <% } %>
   </td>
   <% final long size = element.getSize();

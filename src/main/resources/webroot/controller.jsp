@@ -4,7 +4,6 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.TextUtils" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.Handle" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
-<%@ page import="org.optimizationBenchmarking.gui.utils.FileIcon" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArraySetView" %>
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
@@ -45,26 +44,26 @@
 <th class="folderViewHead">changed</th>
 <td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
 </tr>
-
 <% int row = 0;
    for(FSElement element : cstate.getCurrent()) { 
    String elementName             = Encoder.htmlEncode(element.getName());
    String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
-   String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); %>
+   String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); 
+   EFSElementType type            = element.getType(); %>   
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
-    <% switch(element.getType()) { %>
+    <% switch(type) { %>
       <% case NEXT_UP: { %>
-        <img src="/icons/folderUp.png" class="folderIcon" alt="Move up one folder (to '<%= elementName%>')." />
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="Move up one folder (to '<%= elementName%>')." />
       <%  elementName = ".."; break; } %>
       <% case LIST_ROOT: {  %>
-        <img src="/icons/folderCur.png" class="folderIcon" alt="The current folder ('<%= elementName%>')." />
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="The current folder ('<%= elementName%>')." />
       <% elementName = "."; break; } %>
       <% case FOLDER: { %>
-        <img src="/icons/folder.png" class="folderIcon" alt="Enter folder '<%= elementName%>'." />
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="Enter folder '<%= elementName%>'." />
       <% break; } %>
       <% default: { %>
-        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="File '<%= elementName%>'." />
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="File '<%= elementName%>'." />
       <% break; } 
      } %>
   </td>
@@ -131,17 +130,17 @@ Selected element(s):
 <th class="folderViewHead">changed</th>
 <td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
 </tr>
-
 <% row = 0;
    for(FSElement element : selected) { 
    String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
-   String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath()); %>
+   String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath());   
+   EFSElementType type            = element.getType();  %>
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
   <td class="folderViewIcon">
     <% if(element.getType().isFile()) {  %>
-        <img src="/icons/<%=FileIcon.getFileIcon(element)%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
+        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
       <% } else { %>
-        <img src="/icons/folder.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
+        <img src="/icons/<%=EFSElementType.FOLDER.getIcon()%>.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
       <% } %>
   </td>
   <% final long size = element.getSize();

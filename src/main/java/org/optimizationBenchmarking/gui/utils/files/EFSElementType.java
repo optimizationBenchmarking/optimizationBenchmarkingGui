@@ -1,5 +1,12 @@
 package org.optimizationBenchmarking.gui.utils.files;
 
+import java.util.HashMap;
+
+import org.optimizationBenchmarking.utils.graphics.graphic.EGraphicFormat;
+import org.optimizationBenchmarking.utils.io.IFileType;
+import org.optimizationBenchmarking.utils.io.xml.XMLFileType;
+import org.optimizationBenchmarking.utils.tools.impl.latex.ELaTeXFileType;
+
 /** the fs element type */
 public enum EFSElementType {
 
@@ -13,7 +20,28 @@ public enum EFSElementType {
   FOLDER(false, "folder"), //$NON-NLS-1$
 
   /** a file */
-  FILE(true, "file"); //$NON-NLS-1$
+  FILE(true, "file"), //$NON-NLS-1$
+
+  /** an xml file */
+  XML(true, "xml"), //$NON-NLS-1$
+  /** an pdf file */
+  PDF(true, "pdf"), //$NON-NLS-1$
+  /** an tex file */
+  TEX(true, "tex"), //$NON-NLS-1$
+
+  ;
+
+  /** the map */
+  private static final HashMap<IFileType, EFSElementType> MAP;
+
+  static {
+    MAP = new HashMap<>();
+
+    EFSElementType.MAP.put(XMLFileType.XML, XML);
+    EFSElementType.MAP.put(ELaTeXFileType.PDF, PDF);
+    EFSElementType.MAP.put(ELaTeXFileType.TEX, TEX);
+    EFSElementType.MAP.put(EGraphicFormat.PDF, PDF);
+  }
 
   /** is this a file type? */
   private final boolean m_isFile;
@@ -51,5 +79,23 @@ public enum EFSElementType {
    */
   public final String getIcon() {
     return this.m_icon;
+  }
+
+  /**
+   * Get the type belonging to a given file type
+   *
+   * @param type
+   *          the element type
+   * @return the corresponding FS type
+   */
+  public static final EFSElementType forFileType(final IFileType type) {
+    final EFSElementType fstype;
+    if (type != null) {
+      fstype = EFSElementType.MAP.get(type);
+      if (fstype != null) {
+        return fstype;
+      }
+    }
+    return EFSElementType.FILE;
   }
 }
