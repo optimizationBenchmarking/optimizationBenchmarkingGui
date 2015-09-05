@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.optimizationBenchmarking.utils.graphics.graphic.EGraphicFormat;
 import org.optimizationBenchmarking.utils.io.IFileType;
+import org.optimizationBenchmarking.utils.io.xml.IXMLFileType;
 import org.optimizationBenchmarking.utils.io.xml.XMLFileType;
 import org.optimizationBenchmarking.utils.tools.impl.latex.ELaTeXFileType;
 
@@ -29,6 +30,14 @@ public enum EFSElementType {
   /** an tex file */
   TEX(true, "tex"), //$NON-NLS-1$
 
+  /** an EDI file */
+  EDI(true, "edi"), //$NON-NLS-1$
+  /** an EDI dimensions file */
+  EDI_DIMENSIONS(true, "ediDimensions"), //$NON-NLS-1$
+  /** an EDI instances file */
+  EDI_INSTANCES(true, "ediInstances"), //$NON-NLS-1$
+  /** an EDI experiment file */
+  EDI_EXPERIMENT(true, "ediExperiment"), //$NON-NLS-1$
   ;
 
   /** the map */
@@ -38,6 +47,10 @@ public enum EFSElementType {
     MAP = new HashMap<>();
 
     EFSElementType.MAP.put(XMLFileType.XML, XML);
+    EFSElementType.MAP
+        .put(
+            org.optimizationBenchmarking.experimentation.io.impl.edi.EDI.EDI_XML,
+            EDI);
     EFSElementType.MAP.put(ELaTeXFileType.PDF, PDF);
     EFSElementType.MAP.put(ELaTeXFileType.TEX, TEX);
     EFSElementType.MAP.put(EGraphicFormat.PDF, PDF);
@@ -94,6 +107,9 @@ public enum EFSElementType {
       fstype = EFSElementType.MAP.get(type);
       if (fstype != null) {
         return fstype;
+      }
+      if (type instanceof IXMLFileType) {
+        return EFSElementType.XML;
       }
     }
     return EFSElementType.FILE;

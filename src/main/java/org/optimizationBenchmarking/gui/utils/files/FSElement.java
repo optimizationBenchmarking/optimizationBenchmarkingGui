@@ -1,6 +1,7 @@
 package org.optimizationBenchmarking.gui.utils.files;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -15,11 +16,17 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.logging.Level;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
+
+import org.optimizationBenchmarking.experimentation.io.impl.edi.EDI;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.io.FileTypeRegistry;
 import org.optimizationBenchmarking.utils.io.IFileType;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
+import org.optimizationBenchmarking.utils.io.xml.XMLFileType;
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
 import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
@@ -31,6 +38,9 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
 
   /** the root path */
   public static final String ROOT_PATH = "/"; //$NON-NLS-1$
+
+  /** the xml input factory */
+  private static XMLInputFactory XML_INPUT_FACTORY = null;
 
   /** the size of the file */
   private final long m_size;
@@ -198,10 +208,61 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    * @return the file type
    */
   private static final EFSElementType __getFileType(final Path file) {
-    final IFileType type;
+    IFileType type, nextType;
+    String namespace;
+    XMLInputFactory ipf;
+    XMLStreamReader reader;
 
     type = FileTypeRegistry.getInstance().getTypeForPath(file);
     if (type != null) {
+      if ((type == XMLFileType.XML) || (type == EDI.EDI_XML)) {
+
+        try (final InputStream is = PathUtils.openInputStream(file)) {
+          ipf = FSElement.XML_INPUT_FACTORY;
+          if (ipf == null) {
+            ipf = XMLInputFactory.newFactory();
+          }
+          reader = ipf.createXMLStreamReader(is);
+          try {
+            outer: while (reader.hasNext()) {
+              if (reader.next() == XMLStreamConstants.START_ELEMENT) {
+                namespace = reader.getNamespaceURI();
+                if (namespace != null) {
+                  nextType = FileTypeRegistry.getInstance()
+                      .getTypeForNamespace(namespace);
+                  if (nextType == null) {
+                    return EFSElementType.forFileType(XMLFileType.XML);
+                  }
+                  type = nextType;
+                  if (nextType == EDI.EDI_XML) {
+                    switch (TextUtils.toLowerCase(reader.getLocalName())) {
+                      case EDI.ELEMENT_DIMENSIONS: {
+                        return EFSElementType.EDI_DIMENSIONS;
+                      }
+                      case EDI.ELEMENT_EXPERIMENT: {
+                        return EFSElementType.EDI_EXPERIMENT;
+                      }
+                      case EDI.ELEMENT_INSTANCES: {
+                        return EFSElementType.EDI_INSTANCES;
+                      }
+                      default: {
+                        return EFSElementType.EDI;
+                      }
+                    }
+                  }
+                }
+                break outer;
+              }
+            }
+          } finally {
+            reader.close();
+          }
+          FSElement.XML_INPUT_FACTORY = ipf;
+        } catch (final Throwable error) {
+          // ignore
+        }
+      }
+
       return EFSElementType.forFileType(type);
     }
     return EFSElementType.FILE;
