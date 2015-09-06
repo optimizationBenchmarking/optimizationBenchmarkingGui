@@ -76,6 +76,10 @@ public enum EFSElementType {
   CONFIGURATION(true,
       "configuration", //$NON-NLS-1$
       "A configuration file specifies the setup of the evaluation process, including where the input data comes from, where the output data should be written, and what format we should use for the output. You can edit this file as 'configuration file'."), //$NON-NLS-1$
+
+  /** an xhtml file */
+  XHTML(true, "xhtml", //$NON-NLS-1$
+      "A web page in the XHTML format."), //$NON-NLS-1$
   ;
 
   /** the map */
@@ -94,6 +98,10 @@ public enum EFSElementType {
     EFSElementType.MAP.put(ELaTeXFileType.PDF, PDF);
     EFSElementType.MAP.put(ELaTeXFileType.TEX, TEX);
     EFSElementType.MAP.put(EGraphicFormat.PDF, PDF);
+    EFSElementType.MAP
+        .put(
+            org.optimizationBenchmarking.utils.document.impl.xhtml10.XHTML.XHTML_1_0,
+            XHTML);
   }
 
   /** is this a file type? */
