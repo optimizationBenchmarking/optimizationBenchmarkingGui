@@ -205,11 +205,14 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    *
    * @param file
    *          the file
+   * @param size
+   *          the file size
    * @return the file type
    */
-  private static final EFSElementType __getFileType(final Path file) {
+  private static final EFSElementType __getFileType(final Path file,
+      final long size) {
     IFileType type, nextType;
-    String namespace;
+    String namespace, name;
     XMLInputFactory ipf;
     XMLStreamReader reader;
 
@@ -217,49 +220,80 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
 
     if (type != null) {
       if ((type == XMLFileType.XML) || (type == EDI.EDI_XML)) {
-        try (final InputStream is = PathUtils.openInputStream(file)) {
-          ipf = FSElement.XML_INPUT_FACTORY;
-          if (ipf == null) {
-            ipf = XMLInputFactory.newFactory();
-          }
-          reader = ipf.createXMLStreamReader(is);
-          try {
-            outer: while (reader.hasNext()) {
-              if (reader.next() == XMLStreamConstants.START_ELEMENT) {
-                namespace = reader.getNamespaceURI();
-                if (namespace != null) {
-                  nextType = FileTypeRegistry.getInstance()
-                      .getTypeForNamespace(namespace);
-                  if (nextType == null) {
-                    return EFSElementType.forFileType(XMLFileType.XML);
-                  }
-                  type = nextType;
-                  if (nextType == EDI.EDI_XML) {
-                    switch (TextUtils.toLowerCase(reader.getLocalName())) {
-                      case EDI.ELEMENT_DIMENSIONS: {
-                        return EFSElementType.EDI_DIMENSIONS;
-                      }
-                      case EDI.ELEMENT_EXPERIMENT: {
-                        return EFSElementType.EDI_EXPERIMENT;
-                      }
-                      case EDI.ELEMENT_INSTANCES: {
-                        return EFSElementType.EDI_INSTANCES;
-                      }
-                      default: {
-                        return EFSElementType.EDI;
+        if (size > 0) {
+          try (final InputStream is = PathUtils.openInputStream(file)) {
+            ipf = FSElement.XML_INPUT_FACTORY;
+            if (ipf == null) {
+              ipf = XMLInputFactory.newFactory();
+            }
+            reader = ipf.createXMLStreamReader(is);
+            try {
+              outer: while (reader.hasNext()) {
+                if (reader.next() == XMLStreamConstants.START_ELEMENT) {
+                  namespace = reader.getNamespaceURI();
+                  if (namespace != null) {
+                    nextType = FileTypeRegistry.getInstance()
+                        .getTypeForNamespace(namespace);
+                    if (nextType == null) {
+                      return EFSElementType.forFileType(XMLFileType.XML);
+                    }
+                    type = nextType;
+                    if (nextType == EDI.EDI_XML) {
+                      switch (TextUtils.toLowerCase(reader.getLocalName())) {
+                        case EDI.ELEMENT_DIMENSIONS: {
+                          return EFSElementType.EDI_DIMENSIONS;
+                        }
+                        case EDI.ELEMENT_EXPERIMENT: {
+                          return EFSElementType.EDI_EXPERIMENT;
+                        }
+                        case EDI.ELEMENT_INSTANCES: {
+                          return EFSElementType.EDI_INSTANCES;
+                        }
+                        default: {
+                          return EFSElementType.EDI;
+                        }
                       }
                     }
                   }
+                  break outer;
                 }
-                break outer;
               }
+            } finally {
+              reader.close();
             }
-          } finally {
-            reader.close();
+            FSElement.XML_INPUT_FACTORY = ipf;
+          } catch (final Throwable error) {
+            // ignore
           }
-          FSElement.XML_INPUT_FACTORY = ipf;
-        } catch (final Throwable error) {
-          // ignore
+        } else {
+          // check empty files
+
+          name = PathUtils.getFileNameWithoutExtension(file);
+
+          if ("dimensions".equalsIgnoreCase(name) || //$NON-NLS-1$
+              "dimension".equalsIgnoreCase(name)) { //$NON-NLS-1$
+            return EFSElementType.EDI_DIMENSIONS;
+          }
+
+          if ("instances".equalsIgnoreCase(name) || //$NON-NLS-1$
+              "instance".equalsIgnoreCase(name)) { //$NON-NLS-1$
+            return EFSElementType.EDI_INSTANCES;
+          }
+
+          if ("experiment".equalsIgnoreCase(name)) { //$NON-NLS-1$
+            return EFSElementType.EDI_EXPERIMENT;
+          }
+
+          if (type == XMLFileType.XML) {
+            if ("evaluation".equalsIgnoreCase(name)) { //$NON-NLS-1$
+              return EFSElementType.EVALUATION;
+            }
+
+            if ("configuration".equalsIgnoreCase(name) || //$NON-NLS-1$
+                "config".equalsIgnoreCase(name)) { //$NON-NLS-1$
+              return EFSElementType.CONFIGURATION;
+            }
+          }
         }
       }
 
@@ -388,8 +422,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
           }
         }
 
-        type = ((size > 0L) ? FSElement.__getFileType(use)
-            : EFSElementType.FILE);
+        type = FSElement.__getFileType(use, size);
 
       } else {
         if ((handle != null) && handle.isLoggable(Level.FINE)) {

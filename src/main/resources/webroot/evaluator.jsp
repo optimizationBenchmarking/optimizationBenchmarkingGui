@@ -7,6 +7,8 @@
 <%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.EFSElementType" %>
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArrayListView" %>
+<%@ page import="javax.servlet.jsp.JspWriter" %>
+<%@ page import="org.optimizationBenchmarking.utils.text.textOutput.ITextOutput" %>
 <%@ page import="java.util.logging.Level" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>Evaluation</h1>
@@ -53,8 +55,8 @@ Take it easy, relax, and let the program do its job.</p>
 <th class="folderViewHead">changed</th>
 <td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', true)" value="&#x2611;"/></th>
 </tr>
-
-<% int row = 0;
+<% final ITextOutput encoded = Encoder.htmlEncode(out);
+         int         row     = 0;   
    for(FSElement element : collected) { 
    String urlEncodedRelativePath  = Encoder.urlEncode(element.getRelativePath()); 
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath());
@@ -65,13 +67,7 @@ Take it easy, relax, and let the program do its job.</p>
       shortPath = shortPath.substring(lastSlash+1);
    } %>
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
-  <td class="folderViewIcon">
-    <% if(element.getType().isFile()) {  %>
-        <img src="/icons/<%=type.getIcon()%>.png" class="folderIcon" alt="Selected file '<%= htmlEncodedRelativePath%>'." />        
-      <% } else { %>
-        <img src="/icons/<%=EFSElementType.FOLDER.getIcon()%>.png" class="folderIcon" alt="Selected folder '<%= htmlEncodedRelativePath%>'." />
-      <% } %>
-  </td>
+  <td class="folderViewIcon"><% (type.isFile()?type:EFSElementType.FOLDER).putIcon(out, encoded); %></td>
   <% final long size = element.getSize();
      final long time = element.getTime();     
      String tag;

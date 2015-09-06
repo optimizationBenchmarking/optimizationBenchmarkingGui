@@ -35,8 +35,8 @@ tr.folderViewRowEven {
 td.folderViewIcon {
   padding-left : 1px;
   padding-right: 1px;
-  max-width    : 1.5em;
-  width        : 1.2em;
+  max-width    : 6.8mm;
+  width        : 6.8mm;
 }
 
 td.folderViewName {
@@ -72,8 +72,12 @@ td.folderViewSel {
 }
 
 img.folderIcon {
-  width   : 1.25em;
-  height  : 1.25em
+  width     : 6mm;
+  height    : 6mm;
+  max-width : 6mm;
+  max-height: 6mm;
+  min-width : 6mm;
+  min-height: 6mm;
 }
 
 p.breadcrumps {

@@ -79,18 +79,21 @@ tr.logSevere {
 }
 
 img.logIcon {
-  width   : 1.2em;
-  height  : 1.2em
+  width     : 5.8mm;
+  height    : 5.8mm;
+  max-width : 5.8mm;
+  max-height: 5.8mm;
+  min-width : 5.8mm;
+  min-height: 5.8mm;
 }
 
 td.logIconCol {
   vertical-align: top;
   text-align    : center;
-  padding-top   : 1px;
   padding-left  : 1px;
   padding-right : 1px;
-  max-width     : 1.5em;
-  width         : 1.2em;
+  max-width     : 6.6mm;
+  width         : 6.6mm;
 }
 
 td.logTimeCol {

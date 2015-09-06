@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
+import org.optimizationBenchmarking.gui.utils.Image;
 import org.optimizationBenchmarking.utils.text.ESimpleDateFormat;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.TextOutputWriter;
@@ -243,16 +244,16 @@ final class _JspHandle extends Handle {
           id = null;
         }
         out.write("\"><td class=\"logIconCol\">"); //$NON-NLS-1$
-        out.write("<img src=\"/icons/"); //$NON-NLS-1$
-        out.write(levelClass);
-        out.write(".png\" class=\"logIcon\" alt=\""); //$NON-NLS-1$
-        out.write(level.getName());
-        out.write("\"/></td><td class=\"logTimeCol\">"); //$NON-NLS-1$
+
+        encoded = this.__getEncoded();
+        Image.image(true, levelClass, level.getName(), "logIcon",//$NON-NLS-1$
+            out, encoded);
+
+        out.write("</td><td class=\"logTimeCol\">"); //$NON-NLS-1$
         out.write(ESimpleDateFormat.DATE_TIME.format(record.getMillis()));
         out.write("</td><td class=\"logMsgCol\">"); //$NON-NLS-1$
 
         format = this.m_format;
-        encoded = this.__getEncoded();
         if (format != null) {
           encoded.append(format.formatMessage(record));
         } else {
