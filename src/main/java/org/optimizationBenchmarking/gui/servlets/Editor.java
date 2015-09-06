@@ -138,6 +138,7 @@ public final class Editor extends HttpServlet {
               break looper;
             }
             case TEXT:
+            case CSV:
             case XHTML:
             case TEX: {
               forward = "/textEdit.jsp";//$NON-NLS-1$

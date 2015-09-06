@@ -83,8 +83,12 @@ public enum EFSElementType {
       "A web page in the XHTML format."), //$NON-NLS-1$
 
   /** a plain text file */
-  TEXT(true, "file", //$NON-NLS-1$
+  TEXT(true, "text", //$NON-NLS-1$
       "A plain text file."), //$NON-NLS-1$
+
+  /** a comma-separated values file */
+  CSV(true, "csv", //$NON-NLS-1$
+      "A comma-separated values file (which can be treated as text file)."), //$NON-NLS-1$
   ;
 
   /** the map */
@@ -108,7 +112,7 @@ public enum EFSElementType {
             org.optimizationBenchmarking.utils.document.impl.xhtml10.XHTML.XHTML_1_0,
             XHTML);
     EFSElementType.MAP.put(ETextFileType.TXT, TEXT);
-    EFSElementType.MAP.put(ETextFileType.CSV, TEXT);
+    EFSElementType.MAP.put(ETextFileType.CSV, CSV);
   }
 
   /** is this a file type? */
