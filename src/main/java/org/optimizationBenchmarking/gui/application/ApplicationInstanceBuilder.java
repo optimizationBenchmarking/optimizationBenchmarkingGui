@@ -14,6 +14,7 @@ import org.optimizationBenchmarking.gui.server.ServerInstance;
 import org.optimizationBenchmarking.gui.server.ServerInstanceBuilder;
 import org.optimizationBenchmarking.gui.server.ServerTool;
 import org.optimizationBenchmarking.gui.servlets.Download;
+import org.optimizationBenchmarking.gui.servlets.Editor;
 import org.optimizationBenchmarking.gui.servlets.Upload;
 import org.optimizationBenchmarking.gui.servlets.Viewer;
 import org.optimizationBenchmarking.utils.config.Configuration;
@@ -175,6 +176,7 @@ public final class ApplicationInstanceBuilder extends
     builder.addServlet(Upload.class, "/upload", //$NON-NLS-1$
         new MultipartConfigElement(null, -1L, -1L, (16 * 1024 * 1024)));
     builder.addServlet(Viewer.class, "/viewer"); //$NON-NLS-1$
+    builder.addServlet(Editor.class, "/editor"); //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */

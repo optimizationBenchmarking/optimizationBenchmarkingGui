@@ -47,6 +47,8 @@ public final class ControllerUtils {
   public static final String COMMAND_DOWNLOAD = "download";//$NON-NLS-1$
   /** execute the evaluator */
   public static final String COMMAND_EXECUTE_EVALUATOR = "evaluate";//$NON-NLS-1$
+  /** edit a file with the default editor */
+  public static final String COMMAND_EDIT = "edit";//$NON-NLS-1$
   /** edit a text file */
   public static final String COMMAND_EDIT_AS_TEXT = "edit as plain text";//$NON-NLS-1$
   /** edit a dimensions file */

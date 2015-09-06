@@ -29,6 +29,12 @@ function onWithSelectionChange(prefix, selection) {
           form.target = "_self";      
           break;
         }
+        case "<%= ControllerUtils.COMMAND_EDIT%>": {
+          form.method = "get";
+          form.action = "/editor";
+          form.target = "_self";      
+          break;
+        }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {
           form.method = "get";
           form.action = "/textEdit.jsp";
@@ -86,6 +92,10 @@ function onWithSelectionChange(prefix, selection) {
         }
         case "<%= ControllerUtils.COMMAND_DOWNLOAD%>": {
           text = "Download the selected file(s). If one file is selected, it is sent as-is. If multiple files or folders are selected, they will be put into a <code>zip</code> archive.";
+          break;
+        }
+        case "<%= ControllerUtils.COMMAND_EDIT%>": {
+          text = "Edit the selected file as with the default editor. For most of the file types our system works with, a default editor is available. This choice will automatically pick the right editor for the selected file (or tell you if there is no suitable editor for it).";
           break;
         }
         case "<%= ControllerUtils.COMMAND_EDIT_AS_TEXT%>": {

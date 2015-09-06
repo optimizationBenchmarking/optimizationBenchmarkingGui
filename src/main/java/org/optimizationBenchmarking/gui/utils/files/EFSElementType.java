@@ -12,6 +12,7 @@ import org.optimizationBenchmarking.utils.graphics.graphic.EGraphicFormat;
 import org.optimizationBenchmarking.utils.io.IFileType;
 import org.optimizationBenchmarking.utils.io.xml.IXMLFileType;
 import org.optimizationBenchmarking.utils.io.xml.XMLFileType;
+import org.optimizationBenchmarking.utils.text.ETextFileType;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.tools.impl.latex.ELaTeXFileType;
 
@@ -80,6 +81,10 @@ public enum EFSElementType {
   /** an xhtml file */
   XHTML(true, "xhtml", //$NON-NLS-1$
       "A web page in the XHTML format."), //$NON-NLS-1$
+
+  /** a plain text file */
+  TEXT(true, "file", //$NON-NLS-1$
+      "A plain text file."), //$NON-NLS-1$
   ;
 
   /** the map */
@@ -102,6 +107,8 @@ public enum EFSElementType {
         .put(
             org.optimizationBenchmarking.utils.document.impl.xhtml10.XHTML.XHTML_1_0,
             XHTML);
+    EFSElementType.MAP.put(ETextFileType.TXT, TEXT);
+    EFSElementType.MAP.put(ETextFileType.CSV, TEXT);
   }
 
   /** is this a file type? */

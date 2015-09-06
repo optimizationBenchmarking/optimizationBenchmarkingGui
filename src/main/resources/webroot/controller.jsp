@@ -92,6 +92,7 @@ Selected element(s):
 <select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('main', this)">
 <option><%= ControllerUtils.COMMAND_REMEMBER%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
+<option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
@@ -164,6 +165,7 @@ Selected remembered element(s):
 <select id="remSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('rem', this)">
 <option><%= ControllerUtils.COMMAND_FORGET%></option>
 <option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
+<option><%= ControllerUtils.COMMAND_EDIT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
 <option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
