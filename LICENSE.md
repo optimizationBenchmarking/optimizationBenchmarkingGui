@@ -530,6 +530,12 @@ The following libraries are needed by *the project*:
     - Status: freely available in the internet
     - Source: ?
 
+* `jsoup-1.8.3.jar`
+    - License: [MIT License](http://opensource.org/licenses/MIT), (see file "[meta/licenses/mit.txt](http://github.com/optimizationBenchmarking/optimizationBenchmarkingGui/tree/master/meta/licenses/mit.txt)")
+    - Version: 1.8.3
+    - Status: freely available in the internet
+    - Source: [http://jsoup.org/](http://jsoup.org/)
+
 
 ## Questions and Problems
 

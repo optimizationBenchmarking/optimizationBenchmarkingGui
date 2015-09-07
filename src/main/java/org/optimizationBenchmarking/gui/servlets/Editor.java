@@ -139,6 +139,7 @@ public final class Editor extends HttpServlet {
             }
             case TEXT:
             case CSV:
+            case XML:
             case XHTML:
             case TEX: {
               forward = "/textEdit.jsp";//$NON-NLS-1$
