@@ -1,4 +1,5 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.ESimpleDateFormat" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Menu" %>
 <p class="footerInfo">
 Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
 </p>
@@ -10,11 +11,12 @@ Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
 [<a href="http://optimizationbenchmarking.github.io/optimizationBenchmarking/rss.xml">RSS feed</a>]
 </p></section>
 <aside id="sidebar">
-<h2>Menu</h2>
-<ul class="sideMenu">
-<li><a href="/index.jsp">main</a></li>
-<li><a href="/controller.jsp">control center</a></li>
-<li><a href="/logLevel.jsp">set log level</a></li>
-</ul>
+<% Menu.renderMenu(request, out); %>
+<div class="asideBottom">
+<div class="ustcLogo"><img src="/images/ustcLogo.png" style="width:140px;height:140px;" /></div>
+<div class="support">
+Developed by Dr. <a href="http://www.it-weise.de/">Thomas Weise</a> at the University of Science and Technology of China (<a href="http://www.ustc.edu.cn/">USTC</a>).
+Supported by the Fundamental Research Funds for the Central Universities.
+</div></div>
 </aside>
 </div></div></body></html>

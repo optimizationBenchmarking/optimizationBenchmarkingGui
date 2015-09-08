@@ -10,6 +10,8 @@
 <% Header.jspHeader(pageContext.getOut()); %>   
 <link rel="stylesheet" type="text/css" href="/stylesheets/screen.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="/stylesheets/print.css" media="print" />
+<link rel="icon" href="/favicon.png" type="image/png" />
+<link rel="shortcut icon" href="/favicon.png" type="image/png" />
 <!--[if lt IE 9]>
 <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->

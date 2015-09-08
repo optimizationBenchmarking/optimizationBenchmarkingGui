@@ -1,12 +1,79 @@
-ul.sideMenu {
-  font-size: 17px;
+div.menu {
+  font-family   : 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size     : 17px;
+  padding-left  : 2px;
+  padding-right : 2px;
+  color         : #373737;
+  margin-top    : 1.2em;
+}
+
+a.menuItem {
+  color         : #505050;
+}
+
+div.menuItem1 {
+  -moz-border-radius    : 9px;
+  -webkit-border-radius : 9px;
+  border-radius         : 9px;
+  -khtml-border-radius  : 9px;
+  -o-border-radius      : 9px;
+  background            : #e5e5ff;
+  margin-top            : 3px;
+  margin-bottom         : 3px;
+  padding               : 1px 6px 1px 6px;
+}
+
+div.menuItem2 {
+  -moz-border-radius    : 9px;
+  -webkit-border-radius : 9px;
+  border-radius         : 9px;
+  -khtml-border-radius  : 9px;
+  -o-border-radius      : 9px;
+  background            : #e5e5ff;
+  margin-top            : 3px;
+  margin-bottom         : 3px;
+  margin-left           : 1em;
+  padding               : 1px 6px 1px 6px;
+  font-size             : 90%;    
+}
+
+div.menuItem3 {
+  -moz-border-radius    : 9px;
+  -webkit-border-radius : 9px;
+  border-radius         : 9px;
+  -khtml-border-radius  : 9px;
+  -o-border-radius      : 9px;
+  background            : #e5e5ff;
+  margin-top            : 3px;
+  margin-bottom         : 3px;
+  margin-left           : 2em;
+  padding               : 1px 6px 1px 6px;
+  font-size             : 80%;    
+}
+
+
+div.menuSelected {
+  background        : #c9c9ff;  
 }
 
 p.footerInfo {
-  margin-top   : 1.25em;
-  margin-bottom: 0em;
+  margin-top    : 1.25em;
+  margin-bottom : 0em;
 }
 
 p.footerLinks {
-  margin-top   : 0.3em;
+  margin-top    : 0.3em;
+}
+
+div.ustcLogo {
+  text-align    : center;
+}
+
+div.support {
+  text-align    : left;
+  margin        : 5px 10px 3px;
+}
+
+div.asideBottom {
+  margin-top    : 4em;
 }
