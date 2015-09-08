@@ -35,19 +35,6 @@ public enum EFSElementType {
   FILE(true, "file", //$NON-NLS-1$
       "The normal file. You can view or download it."), //$NON-NLS-1$
 
-  /** an xml file */
-  XML(true, "xml", //$NON-NLS-1$
-      "An XML file. You may edit it as text file, view, or download it."), //$NON-NLS-1$
-
-  /** an pdf file */
-  PDF(true, "pdf", //$NON-NLS-1$
-      "A PDF file. You cannot edit it, but you can view and download it."), //$NON-NLS-1$
-
-  /** an tex file */
-  TEX(true,
-      "tex", //$NON-NLS-1$
-      "A LaTeX source file. Such files usually contain a document, such as an article or paper, and can be compiled to PDF with a suitable LaTeX compiler. They can be edited as simple text files."), //$NON-NLS-1$
-
   /** an EDI file */
   EDI(true,
       "edi", //$NON-NLS-1$
@@ -78,10 +65,6 @@ public enum EFSElementType {
       "configuration", //$NON-NLS-1$
       "A configuration file specifies the setup of the evaluation process, including where the input data comes from, where the output data should be written, and what format we should use for the output. You can edit this file as 'configuration file'."), //$NON-NLS-1$
 
-  /** an xhtml file */
-  XHTML(true, "xhtml", //$NON-NLS-1$
-      "A web page in the XHTML format."), //$NON-NLS-1$
-
   /** a plain text file */
   TEXT(true, "text", //$NON-NLS-1$
       "A plain text file."), //$NON-NLS-1$
@@ -89,6 +72,24 @@ public enum EFSElementType {
   /** a comma-separated values file */
   CSV(true, "csv", //$NON-NLS-1$
       "A comma-separated values file (which can be treated as text file)."), //$NON-NLS-1$
+
+  /** an xml file */
+  XML(true, "xml", //$NON-NLS-1$
+      "An XML file. You may edit it as text file, view, or download it."), //$NON-NLS-1$
+
+  /** an pdf file */
+  PDF(true, "pdf", //$NON-NLS-1$
+      "A PDF file. You cannot edit it, but you can view and download it."), //$NON-NLS-1$
+
+  /** an tex file */
+  TEX(true,
+      "tex", //$NON-NLS-1$
+      "A LaTeX source file. Such files usually contain a document, such as an article or paper, and can be compiled to PDF with a suitable LaTeX compiler. They can be edited as simple text files."), //$NON-NLS-1$
+
+  /** an xhtml file */
+  XHTML(true, "xhtml", //$NON-NLS-1$
+      "A web page in the XHTML format."), //$NON-NLS-1$
+
   ;
 
   /** the map */

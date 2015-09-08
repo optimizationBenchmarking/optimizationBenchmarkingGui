@@ -15,7 +15,7 @@ Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
 <div class="asideBottom">
 <div class="ustcLogo"><img src="/images/ustcLogo.png" style="width:140px;height:140px;" /></div>
 <div class="support">
-Developed by Dr. <a href="http://www.it-weise.de/">Thomas Weise</a> at the University of Science and Technology of China (<a href="http://www.ustc.edu.cn/">USTC</a>).
+Developed at the University of Science and Technology of China (<a href="http://www.ustc.edu.cn/">USTC</a>).
 Supported by the Fundamental Research Funds for the Central Universities.
 </div></div>
 </aside>
