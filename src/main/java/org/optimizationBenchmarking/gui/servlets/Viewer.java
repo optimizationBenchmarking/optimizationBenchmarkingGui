@@ -17,8 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.nodes.Document.OutputSettings.Syntax;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
@@ -140,6 +142,7 @@ public final class Viewer extends HttpServlet {
       final String root, final boolean isXHTML, final OutputStream os)
       throws IOException {
     final int rootStart;
+    final OutputSettings output;
     int rootLength;
     String base, currentURL;
     Document doc;
@@ -193,7 +196,12 @@ public final class Viewer extends HttpServlet {
       }
     }
 
-    doc.outputSettings().syntax(isXHTML ? Syntax.xml : Syntax.html);
+    output = doc.outputSettings();
+
+    output.syntax(isXHTML ? Syntax.xml : Syntax.html);
+    output.escapeMode(EscapeMode.xhtml);
+    output.indentAmount(0);
+    output.prettyPrint(false);
 
     try (final OutputStreamWriter osw = new OutputStreamWriter(os)) {
       osw.write(doc.outerHtml());
