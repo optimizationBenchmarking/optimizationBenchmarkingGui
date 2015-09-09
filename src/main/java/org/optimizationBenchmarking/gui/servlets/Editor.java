@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.optimizationBenchmarking.gui.controller.Controller;
 import org.optimizationBenchmarking.gui.controller.ControllerUtils;
 import org.optimizationBenchmarking.gui.controller.Handle;
+import org.optimizationBenchmarking.gui.utils.Encoder;
 import org.optimizationBenchmarking.gui.utils.files.EFSElementType;
 import org.optimizationBenchmarking.gui.utils.files.FSElement;
 
@@ -70,8 +71,8 @@ public final class Editor extends HttpServlet {
       submit = req.getParameter(ControllerUtils.INPUT_SUBMIT);
       if (ControllerUtils.BUTTON_OK.equalsIgnoreCase(submit)) {
         basePath = null;
-        params = req
-            .getParameterValues(ControllerUtils.PARAMETER_SELECTION);
+        params = req.getParameterValues(//
+            ControllerUtils.PARAMETER_SELECTION);
       } else {
         if (ControllerUtils.COMMAND_NEW_FILE.equalsIgnoreCase(submit)) {
           basePath = req.getParameter(ControllerUtils.INPUT_CURRENT_DIR);
@@ -80,11 +81,11 @@ public final class Editor extends HttpServlet {
         } else {
           if (ControllerUtils.PARAM_SAVE.equalsIgnoreCase(submit)) {
             basePath = null;
-            params = new String[] { req
-                .getParameter(ControllerUtils.PARAMETER_SELECTION) };
+            params = new String[] { req.getParameter(//
+                ControllerUtils.PARAMETER_SELECTION) };
           } else {
             handle.unknownSubmit(submit);
-            Editor.__exit(resp);
+            Editor.__exit(resp, null);
             return;
           }
         }
@@ -92,14 +93,14 @@ public final class Editor extends HttpServlet {
 
       if (params == null) {
         handle.failure("The set of paths to load cannot be null."); //$NON-NLS-1$
-        Editor.__exit(resp);
+        Editor.__exit(resp, null);
         return;
       }
 
       if (params.length <= 0) {
         handle.failure(//
             "The set of paths to load cannot be empty."); //$NON-NLS-1$
-        Editor.__exit(resp);
+        Editor.__exit(resp, null);
         return;
       }
 
@@ -111,6 +112,7 @@ public final class Editor extends HttpServlet {
       }
 
       forward = null;
+      fse = null;
 
       looper: for (final String str : params) {
         fse = FSElement.fromPath(root, base, base.resolve(str), null,
@@ -158,7 +160,7 @@ public final class Editor extends HttpServlet {
 
       if (forward == null) {
         handle.failure("Could not find suitable editor module."); //$NON-NLS-1$
-        Editor.__exit(resp);
+        Editor.__exit(resp, fse);
         return;
       }
 
@@ -171,11 +173,18 @@ public final class Editor extends HttpServlet {
    *
    * @param resp
    *          the servlet response
+   * @param path
+   *          the path
    * @throws IOException
    *           if i/o fails
    */
-  private static final void __exit(final HttpServletResponse resp)
-      throws IOException {
-    resp.sendRedirect("/controller.jsp"); //$NON-NLS-1$
+  private static final void __exit(final HttpServletResponse resp,
+      final FSElement path) throws IOException {
+    if (path != null) {
+      resp.sendRedirect("/viewer?view=" + //$NON-NLS-1$
+          Encoder.urlEncode(path.getRelativePath()));
+    } else {
+      resp.sendRedirect("/controller.jsp"); //$NON-NLS-1$
+    }
   }
 }
