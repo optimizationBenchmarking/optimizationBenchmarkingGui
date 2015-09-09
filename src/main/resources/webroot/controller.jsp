@@ -8,14 +8,19 @@
 <%@ page import="org.optimizationBenchmarking.gui.controller.ControllerUtils" %>
 <%@ page import="javax.servlet.jsp.JspWriter" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.textOutput.ITextOutput" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Page" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.SelButtonFunctionRenderer" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.ControllerActionFunctionRenderer" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <%@include file="/includes/defaultHeader.jsp" %>
 <%
  final ControllerState cstate = ControllerUtils.performRequest(request, pageContext); 
  if(cstate != null) {
 %>
-
-<form class="controller" method="get" action="#">
+<% try(final Page hpage = new Page(pageContext)) {
+       final ControllerActionFunctionRenderer selFunc =
+         new ControllerActionFunctionRenderer("<em>Currently Chosen Action:</em>&nbsp;"); %>
+<form class="controller" method="get" action="/controller.jsp">
 <h2>Path</h2>
 <p class="breadcrumps">
   <%
@@ -35,8 +40,7 @@
 </p>
 <input type="hidden" name="<%= ControllerUtils.INPUT_CURRENT_DIR%>" value="<%= Encoder.htmlEncode(currentDir)%>" />
 </form>
-
-<form id="mainForm" class="controller" method="get" action="#">
+<form id="mainForm" class="controller" method="get" action="/controller.jsp">
 <h2>Current Folder</h2>
 <table class="folderView">
 <tr class="folderViewHead">
@@ -44,7 +48,7 @@
 <th class="folderViewHead">name</th>
 <th class="folderViewHead">size</th>
 <th class="folderViewHead">changed</th>
-<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', true)" value="&#x2611;" /></th>
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="<%=hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('mainForm',true)" value="&#x2611;" /></th>
 </tr>
 <% final ITextOutput encoded = Encoder.htmlEncode(out);
          int         row     = 0;   
@@ -85,24 +89,22 @@
   <td class="folderViewSel"><input type="checkbox" name="<%= ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
-<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('mainForm', false)" value="&#x2610;"/></td></tr>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="<%=hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('mainForm',false)" value="&#x2610;"/></td></tr>
 </table>
 <div class="controllerActions">
-Selected element(s):
-<select id="mainSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('main', this)">
-<option><%= ControllerUtils.COMMAND_REMEMBER%></option>
-<option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
-<option><%= ControllerUtils.COMMAND_EDIT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
-<option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
-<option><%= ControllerUtils.COMMAND_DELETE%></option>
-</select>
-<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
+Selected element(s):&nbsp;<% ControllerUtils.putFormSelection("main", hpage, selFunc,
+     ControllerUtils.REMEMBER,
+     ControllerUtils.DOWNLOAD,
+     ControllerUtils.EDIT,
+     ControllerUtils.EDIT_AS_TEXT,
+     ControllerUtils.EDIT_AS_DIMENSIONS,
+     ControllerUtils.EDIT_AS_INSTANCES,
+     ControllerUtils.EDIT_AS_EXPERIMENT,
+     ControllerUtils.EDIT_AS_CONFIG,
+     ControllerUtils.EDIT_AS_EVALUATION,
+     ControllerUtils.EXECUTE_EVALUATOR,
+     ControllerUtils.DELETE);
+%>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </div>
 <p id="mainDesc" class="actionDescription" />
 </form>
@@ -117,7 +119,7 @@ Selected element(s):
 <th class="folderViewHead">name</th>
 <th class="folderViewHead">size</th>
 <th class="folderViewHead">changed</th>
-<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', true)" value="&#x2611;"/></th>
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="<%=hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('remForm',true)" value="&#x2611;"/></th>
 </tr>
 <% row = 0;
    for(FSElement element : selected) { 
@@ -125,8 +127,7 @@ Selected element(s):
    String htmlEncodedRelativePath = Encoder.htmlEncode(element.getRelativePath());   
    EFSElementType type            = element.getType();  %>
 <tr class="folderViewRow<% if(((++row)&1)==0){%>Even<%}%>">
-  <td class="folderViewIcon">
-  <td class="folderViewIcon"><% (type.isFile()?type:EFSElementType.FOLDER).putIcon(out, encoded); %></td>
+<td class="folderViewIcon"><% (type.isFile()?type:EFSElementType.FOLDER).putIcon(out, encoded); %></td>
   <% final long size = element.getSize();
      final long time = element.getTime();     
      String tag;
@@ -158,33 +159,24 @@ Selected element(s):
   <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
-<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('remForm', false)" value="&#x2610;"/></td></tr>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="<%=hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('remForm',false)" value="&#x2610;"/></td></tr>
 </table>
 <p class="controllerActions">
-Selected remembered element(s):
-<select id="remSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('rem', this)">
-<option><%= ControllerUtils.COMMAND_FORGET%></option>
-<option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
-<option><%= ControllerUtils.COMMAND_EDIT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_TEXT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_DIMENSIONS%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_INSTANCES%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_EXPERIMENT%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_CONFIG%></option>
-<option><%= ControllerUtils.COMMAND_EDIT_AS_EVALUATION%></option>
-<option><%= ControllerUtils.COMMAND_EXECUTE_EVALUATOR%></option>
-<option><%= ControllerUtils.COMMAND_DELETE%></option>
-</select>
-<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
+Selected remembered element(s):&nbsp;<% ControllerUtils.putFormSelection("rem", hpage, selFunc,
+     ControllerUtils.FORGET,
+     ControllerUtils.DOWNLOAD,
+     ControllerUtils.EDIT,
+     ControllerUtils.EDIT_AS_TEXT,
+     ControllerUtils.EDIT_AS_DIMENSIONS,
+     ControllerUtils.EDIT_AS_INSTANCES,
+     ControllerUtils.EDIT_AS_EXPERIMENT,
+     ControllerUtils.EDIT_AS_CONFIG,
+     ControllerUtils.EDIT_AS_EVALUATION,
+     ControllerUtils.EXECUTE_EVALUATOR,
+     ControllerUtils.DELETE);
+%>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </p>
 <p id="remDesc" class="actionDescription" />
 </form>
-<% }} %>
-<script type="text/javascript">
-<%@include file="/includes/controllerJavascript.js.jsp" %>
-window.onload = function() {
-  onWithSelectionChange("main", document.getElementById("mainSelection"));
-  onWithSelectionChange("rem",  document.getElementById("remSelection"));
-}
-</script>
+<% }}} %>
 <%@include file="/includes/defaultFooter.jsp" %>

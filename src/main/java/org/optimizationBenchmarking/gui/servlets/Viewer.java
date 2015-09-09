@@ -104,6 +104,10 @@ public final class Viewer extends HttpServlet {
       return null;
     }
 
+    if (current.charAt(0) == '#') {
+      return null;
+    }
+
     try {
       currentURI = new URI(current).normalize();
       if (!(currentURI.isAbsolute())) {

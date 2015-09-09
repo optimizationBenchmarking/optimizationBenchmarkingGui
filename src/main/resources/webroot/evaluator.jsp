@@ -9,6 +9,9 @@
 <%@ page import="org.optimizationBenchmarking.utils.collections.lists.ArrayListView" %>
 <%@ page import="javax.servlet.jsp.JspWriter" %>
 <%@ page import="org.optimizationBenchmarking.utils.text.textOutput.ITextOutput" %>
+<%@ page import="org.optimizationBenchmarking.gui.utils.Page" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.SelButtonFunctionRenderer" %>
+<%@ page import="org.optimizationBenchmarking.gui.controller.ControllerActionFunctionRenderer" %>
 <%@ page import="java.util.logging.Level" %>
 <jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>Evaluation</h1>
@@ -45,7 +48,10 @@ Take it easy, relax, and let the program do its job.</p>
   }
 %>
 <h2>Created Files</h2>
-<% if( (collected != null) && (!(collected.isEmpty())) ) {%>
+<% if( (collected != null) && (!(collected.isEmpty())) ) {
+    try(final Page hpage = new Page(pageContext)) {
+       final ControllerActionFunctionRenderer selFunc =
+         new ControllerActionFunctionRenderer("<em>Currently Chosen Action:</em>&nbsp;"); %>
 <form id="prodForm" class="controller" method="get" action="/controller.jsp">
 <table class="folderView">
 <tr class="folderViewHead">
@@ -53,7 +59,7 @@ Take it easy, relax, and let the program do its job.</p>
 <th class="folderViewHead">name</th>
 <th class="folderViewHead">size</th>
 <th class="folderViewHead">changed</th>
-<td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', true)" value="&#x2611;"/></th>
+<td class="folderViewSelect"><input type="button" class="selButton" onclick="<%=hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('prodForm',true)" value="&#x2611;"/></th>
 </tr>
 <% final ITextOutput encoded = Encoder.htmlEncode(out);
          int         row     = 0;   
@@ -99,27 +105,19 @@ Take it easy, relax, and let the program do its job.</p>
   <td class="folderViewSel"><input type="checkbox" name="<%=ControllerUtils.PARAMETER_SELECTION%>" value="<%= htmlEncodedRelativePath %>"/></td>
 </tr>
 <% } %>
-<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="onSelButtonClick('prodForm', false)" value="&#x2610;"/></td></tr>
+<tr class="folderViewBottom"><td colspan="4" class="folderViewBottomInfo"/><td class="folderViewSelect"><input type="button" class="selButton" onclick="hpage.getFunction(SelButtonFunctionRenderer.INSTANCE)%>('prodForm',false)" value="&#x2610;"/></td></tr>
 </table>
 <div class="controllerActions">
-Selected produced element(s):
-<select id="prodSelection" name="<%= ControllerUtils.PARAMETER_WITH_SELECTED%>" onchange="onWithSelectionChange('prod', this)">
-<option><%= ControllerUtils.COMMAND_REMEMBER%></option>
-<option><%= ControllerUtils.COMMAND_DOWNLOAD%></option>
-<option><%= ControllerUtils.COMMAND_DELETE%></option>
-</select>
-<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
+Selected produced element(s):&nbsp;<% ControllerUtils.putFormSelection("prod", hpage, selFunc,
+     ControllerUtils.REMEMBER,
+     ControllerUtils.DOWNLOAD,
+     ControllerUtils.EDIT_AS_TEXT,
+     ControllerUtils.DELETE);
+%>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </div>
 <p id="prodDesc" class="actionDescription" />
 </form>
-
-<script type="text/javascript">
-<%@include file="/includes/controllerJavascript.js.jsp" %>
-window.onload = function() {
-  onWithSelectionChange("prod", document.getElementById("prodSelection"));
-}
-</script>
-<% } else { %>
+<% } } else { %>
 <p>No files were created. Probably something went wrong.</p>
 <% } %>
 <p>
