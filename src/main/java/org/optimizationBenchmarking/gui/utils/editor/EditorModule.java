@@ -225,7 +225,7 @@ public abstract class EditorModule<T> {
 
   /**
    * Get the default file suffix
-   * 
+   *
    * @return the default file suffix
    */
   protected abstract String getDefaultFileSuffix();
@@ -345,6 +345,7 @@ public abstract class EditorModule<T> {
 
           if ((bfa == null) || (bfa.isRegularFile() && (bfa.size() <= 0L))) {
             if (bfa == null) {
+              Files.createDirectories(path.getParent());
               Files.createFile(path);
               handle
                   .info("File '" + relPath + //$NON-NLS-1$
