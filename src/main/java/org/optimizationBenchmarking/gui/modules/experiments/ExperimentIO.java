@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspWriter;
 import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
 import org.optimizationBenchmarking.experimentation.data.spec.IExperiment;
 import org.optimizationBenchmarking.experimentation.data.spec.IParameterValue;
+import org.optimizationBenchmarking.experimentation.io.impl.edi.EDI;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.FlatEDIInput;
 import org.optimizationBenchmarking.gui.controller.Handle;
@@ -262,5 +263,11 @@ public final class ExperimentIO extends EditorModule<IExperiment> {
   @Override
   protected final String getComponentTypeName() {
     return "parameter"; //$NON-NLS-1$
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getDefaultFileSuffix() {
+    return EDI.EDI_XML.getDefaultSuffix();
   }
 }

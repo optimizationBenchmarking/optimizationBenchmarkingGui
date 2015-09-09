@@ -15,6 +15,7 @@ import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.da
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.data.ModuleEntryBuilder;
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io.EvaluationXMLInput;
 import org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.io.EvaluationXMLOutput;
+import org.optimizationBenchmarking.experimentation.io.impl.edi.EDI;
 import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.modules.config.ConfigIO;
 import org.optimizationBenchmarking.gui.utils.Page;
@@ -272,5 +273,11 @@ public final class EvaluationIO extends EditorModule<EvaluationModules> {
   @Override
   protected final String getComponentTypeName() {
     return "module";//$NON-NLS-1$
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getDefaultFileSuffix() {
+    return EDI.EDI_XML.getDefaultSuffix();
   }
 }

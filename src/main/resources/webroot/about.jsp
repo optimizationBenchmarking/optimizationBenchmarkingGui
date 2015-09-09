@@ -38,7 +38,7 @@ and <a href="http://www.github.com/optimizationBenchmarking">http://www.github.c
 <li><a href="https://github.com/optimizationBenchmarking/optimizationBenchmarking">core command-line argument</a></li>
 <li><a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingGui">this GUI</a></li>
 <li><a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingDocu">documentation</a></li>
-<li>predecessor project:<a href="https://github.com/optimizationBenchmarking/tspSuite">tspSuite</a></li>
+<li>predecessor project: <a href="https://github.com/optimizationBenchmarking/tspSuite">tspSuite</a></li>
 </ul>
 <h2>Support and Funding</h2>
 <p>The main work in this project is conducted by Dr. Thomas Weise at the

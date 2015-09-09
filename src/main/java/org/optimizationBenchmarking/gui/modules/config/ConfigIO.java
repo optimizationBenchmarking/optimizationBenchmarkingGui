@@ -15,6 +15,7 @@ import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.gui.utils.files.Loaded;
 import org.optimizationBenchmarking.utils.config.ConfigurationBuilder;
+import org.optimizationBenchmarking.utils.config.ConfigurationXML;
 import org.optimizationBenchmarking.utils.config.ConfigurationXMLInput;
 import org.optimizationBenchmarking.utils.config.ConfigurationXMLOutput;
 import org.optimizationBenchmarking.utils.config.Definition;
@@ -286,5 +287,11 @@ public final class ConfigIO extends EditorModule<Dump> {
     out.write("\" value=\"");//$NON-NLS-1$
     out.write(ControllerUtils.COMMAND_EXECUTE_EVALUATOR);
     out.write("\" formmethod=\"get\" formaction=\"/evaluator.jsp\"/>"); //$NON-NLS-1$
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getDefaultFileSuffix() {
+    return ConfigurationXML.CONFIG_XML.getDefaultSuffix();
   }
 }

@@ -18,6 +18,7 @@ import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.files.Loaded;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
+import org.optimizationBenchmarking.utils.io.paths.PathUtils;
 import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
 import org.optimizationBenchmarking.utils.parsers.LooseCharParser;
 import org.optimizationBenchmarking.utils.parsers.LooseDoubleParser;
@@ -223,6 +224,13 @@ public abstract class EditorModule<T> {
       throws IOException;
 
   /**
+   * Get the default file suffix
+   * 
+   * @return the default file suffix
+   */
+  protected abstract String getDefaultFileSuffix();
+
+  /**
    * Load the data element from the given request
    *
    * @param request
@@ -234,14 +242,29 @@ public abstract class EditorModule<T> {
   public final Loaded<T> executeAndLoad(final HttpServletRequest request,
       final Handle handle) {
     final String submit;
+    String path;
+    int index;
 
     submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
     if (ControllerUtils.BUTTON_OK.equalsIgnoreCase(submit)) {
       if (request.getParameter(ControllerUtils.PARAMETER_NEW) != null) {
-        return this.__loadFromFile(request.getParameter(//
-            ControllerUtils.INPUT_CURRENT_DIR), new String[] { //
-            request.getParameter(ControllerUtils.PARAMETER_SELECTION) },//
-            handle);
+        path = request.getParameter(ControllerUtils.PARAMETER_SELECTION);
+        if (path != null) {
+          index = path.lastIndexOf('/');
+          if (PathUtils.getFileExtension((index > 0) ? //
+          path.substring(index)
+              : path) == null) {
+            path += ('.' + this.getDefaultFileSuffix());
+          }
+
+          return this.__loadFromFile(request.getParameter(//
+              ControllerUtils.INPUT_CURRENT_DIR), new String[] { //
+              path },//
+              handle);
+        }
+        handle
+            .failure("No path specified, so we cannot create a new file"); //$NON-NLS-1$
+        return null;
       }
       return this.__loadFromFile(null,//
           request.getParameterValues(ControllerUtils.PARAMETER_SELECTION),//

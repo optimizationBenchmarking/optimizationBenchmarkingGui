@@ -14,6 +14,7 @@ import org.optimizationBenchmarking.experimentation.data.spec.IFeature;
 import org.optimizationBenchmarking.experimentation.data.spec.IFeatureValue;
 import org.optimizationBenchmarking.experimentation.data.spec.IInstance;
 import org.optimizationBenchmarking.experimentation.data.spec.IInstanceSet;
+import org.optimizationBenchmarking.experimentation.io.impl.edi.EDI;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.EDIOutput;
 import org.optimizationBenchmarking.experimentation.io.impl.edi.FlatEDIInput;
 import org.optimizationBenchmarking.gui.controller.Handle;
@@ -463,5 +464,11 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
   @Override
   protected final String getComponentTypeName() {
     return "benchmark instance"; //$NON-NLS-1$
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getDefaultFileSuffix() {
+    return EDI.EDI_XML.getDefaultSuffix();
   }
 }

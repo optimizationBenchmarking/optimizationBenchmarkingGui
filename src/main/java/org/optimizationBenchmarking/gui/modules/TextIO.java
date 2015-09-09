@@ -16,6 +16,7 @@ import org.optimizationBenchmarking.gui.controller.Handle;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
+import org.optimizationBenchmarking.utils.text.ETextFileType;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 import org.optimizationBenchmarking.utils.text.textOutput.MemoryTextOutput;
 import org.optimizationBenchmarking.utils.text.tokenizers.LineIterator;
@@ -110,5 +111,11 @@ public final class TextIO extends EditorModule<String> {
       return ""; //$NON-NLS-1$
     }
     return param;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected final String getDefaultFileSuffix() {
+    return ETextFileType.TXT.getDefaultSuffix();
   }
 }
