@@ -70,24 +70,24 @@ public final class Editor extends HttpServlet {
 
       submit = req.getParameter(ControllerUtils.INPUT_SUBMIT);
       if (ControllerUtils.BUTTON_OK.equalsIgnoreCase(submit)) {
-        basePath = null;
-        params = req.getParameterValues(//
-            ControllerUtils.PARAMETER_SELECTION);
-      } else {
-        if (ControllerUtils.COMMAND_NEW_FILE.equalsIgnoreCase(submit)) {
-          basePath = req.getParameter(ControllerUtils.INPUT_CURRENT_DIR);
-          params = new String[] { req
-              .getParameter(ControllerUtils.PARAMETER_CD_PATH) };
+        if (req.getParameter(ControllerUtils.PARAMETER_NEW) == null) {
+          basePath = null;
+          params = req.getParameterValues(//
+              ControllerUtils.PARAMETER_SELECTION);
         } else {
-          if (ControllerUtils.PARAM_SAVE.equalsIgnoreCase(submit)) {
-            basePath = null;
-            params = new String[] { req.getParameter(//
-                ControllerUtils.PARAMETER_SELECTION) };
-          } else {
-            handle.unknownSubmit(submit);
-            Editor.__exit(resp, null);
-            return;
-          }
+          basePath = req.getParameter(ControllerUtils.INPUT_CURRENT_DIR);
+          params = new String[] {//
+          req.getParameter(ControllerUtils.PARAMETER_SELECTION) };
+        }
+      } else {
+        if (ControllerUtils.PARAM_SAVE.equalsIgnoreCase(submit)) {
+          basePath = null;
+          params = new String[] { req.getParameter(//
+              ControllerUtils.PARAMETER_SELECTION) };
+        } else {
+          handle.unknownSubmit(submit);
+          Editor.__exit(resp, null);
+          return;
         }
       }
 

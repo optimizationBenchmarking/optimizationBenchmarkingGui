@@ -107,7 +107,8 @@ public final class TextIO extends EditorModule<String> {
     if (param == null) {
       handle.warning(//
           "No contents found to be stored. Will store empty string."); //$NON-NLS-1$
+      return ""; //$NON-NLS-1$
     }
-    return ""; //$NON-NLS-1$
+    return param;
   }
 }

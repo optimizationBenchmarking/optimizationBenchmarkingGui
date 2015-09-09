@@ -2,14 +2,12 @@ package org.optimizationBenchmarking.gui.modules.instances;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 
-import org.optimizationBenchmarking.experimentation.data.impl.abstr.BasicInstanceSet;
 import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
 import org.optimizationBenchmarking.experimentation.data.spec.IDimension;
 import org.optimizationBenchmarking.experimentation.data.spec.IFeature;
@@ -24,7 +22,6 @@ import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.gui.utils.files.Loaded;
 import org.optimizationBenchmarking.utils.collections.iterators.EnumerationIterator;
 import org.optimizationBenchmarking.utils.collections.iterators.IterablePlusOne;
-import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.parsers.LooseBooleanParser;
 import org.optimizationBenchmarking.utils.text.textOutput.ITextOutput;
 
@@ -56,11 +53,9 @@ public final class InstancesIO extends EditorModule<IInstanceSet> {
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   protected final IInstanceSet createEmpty(final Handle handle) {
-    return new BasicInstanceSet(null,//
-        ((Collection) (ArraySetView.EMPTY_SET_VIEW)));
+    return new PartialExperimentSetBuilder().getInstanceSet();
   }
 
   /** {@inheritDoc} */

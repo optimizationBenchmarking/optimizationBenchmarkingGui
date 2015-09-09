@@ -8,7 +8,6 @@ import javax.servlet.jsp.JspWriter;
 
 import org.optimizationBenchmarking.experimentation.data.impl.DimensionDirectionParser;
 import org.optimizationBenchmarking.experimentation.data.impl.DimensionTypeParser;
-import org.optimizationBenchmarking.experimentation.data.impl.abstr.BasicDimensionSet;
 import org.optimizationBenchmarking.experimentation.data.impl.partial.PartialExperimentSetBuilder;
 import org.optimizationBenchmarking.experimentation.data.spec.EDimensionDirection;
 import org.optimizationBenchmarking.experimentation.data.spec.EDimensionType;
@@ -23,7 +22,6 @@ import org.optimizationBenchmarking.gui.utils.editor.EditorModule;
 import org.optimizationBenchmarking.gui.utils.files.Loaded;
 import org.optimizationBenchmarking.utils.collections.iterators.IterablePlusOne;
 import org.optimizationBenchmarking.utils.collections.lists.ArrayListView;
-import org.optimizationBenchmarking.utils.collections.lists.ArraySetView;
 import org.optimizationBenchmarking.utils.config.DefinitionElement;
 import org.optimizationBenchmarking.utils.parsers.AnyNumberParser;
 import org.optimizationBenchmarking.utils.parsers.BoundedLooseByteParser;
@@ -206,11 +204,9 @@ public final class DimensionsIO extends EditorModule<IDimensionSet> {
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   protected final IDimensionSet createEmpty(final Handle handle) {
-    return new BasicDimensionSet(null,
-        ((ArrayListView) (ArraySetView.EMPTY_SET_VIEW)));
+    return new PartialExperimentSetBuilder().getDimensionSet();
   }
 
   /** {@inheritDoc} */

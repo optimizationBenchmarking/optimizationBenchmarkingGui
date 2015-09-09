@@ -62,7 +62,7 @@ public final class ConfigIO extends EditorModule<Dump> {
   /** {@inheritDoc} */
   @Override
   protected Dump createEmpty(final Handle handle) {
-    return Dump.emptyDumpForDefinition(this.__getDefinition(handle));
+    return this.__getDefinition(handle).dump(null);
   }
 
   /** {@inheritDoc} */

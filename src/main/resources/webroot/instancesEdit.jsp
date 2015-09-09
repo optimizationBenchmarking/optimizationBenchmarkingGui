@@ -11,6 +11,20 @@
 <h1>Edit Instances Files</h1>
 <p>On this page, you can edit instances files. A instances file specifies
 the names and features of benchmark problem instances to which you apply your algorithm.
+</p><p>
+Please notice that a benchmark instance must have at least one feature. This makes sense,
+because in reality,
+there cannot be a benchmark instance which has not at least one property, like
+<code>scale</code>, <code>(a)symmetry</code>, the
+<code>number of variables</code>, the <code>number of customers</code>,
+the <code>number of clauses</code>, whatever.
+Usually, you will have multiple benchmark instances with different values of
+the same feature: Would, e.g., have three benchmark instances whose
+<code>number of variables</code> could be
+<code>10</code>, <code>100</code>, and <code>1000</code>, respectively.
+Our system then can use these feature values to analyze what, well,
+features a problem hard for a given algorithm.
+</p><p>
 You can save your changes by pressing the &quot;Save&quot; button.
 If you leave this page any un-saved changes will be discarded.</p>
 <%

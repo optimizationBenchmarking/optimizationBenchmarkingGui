@@ -20,7 +20,7 @@
 <% try(final Page hpage = new Page(pageContext)) {
        final ControllerActionFunctionRenderer selFunc =
          new ControllerActionFunctionRenderer("<em>Currently Chosen Action:</em>&nbsp;"); %>
-<form class="controller" method="get" action="/controller.jsp">
+<form class="controller" id="pathForm" method="get" action="/controller.jsp">
 <h2>Path</h2>
 <p class="breadcrumps">
   <%
@@ -28,14 +28,21 @@
   for(FSElement element : cstate.getPath()) {
      currentDir = element.getRelativePath(); %>  
     <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;<%=ControllerUtils.INPUT_SUBMIT%>=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
-<input type="text" name="<%= ControllerUtils.PARAMETER_CD_PATH%>" size="12" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_CD_RELATIVE%>" />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_NEW_FILE%>" formaction="/textEdit.jsp" />
-</p>
-<p>
+    <input type="hidden" name="<%= ControllerUtils.PARAMETER_NEW%>" value="true" />
+    <input type="text" name="<%= ControllerUtils.PARAMETER_SELECTION%>" size="12" />&nbsp;<% ControllerUtils.putFormSelection("path", hpage,
+     new ControllerActionFunctionRenderer("<em>Currently Chosen Action:</em>&nbsp;"),
+     ControllerUtils.CD,
+     ControllerUtils.NEW_TEXT_FILE,
+     ControllerUtils.NEW_CONFIGURATION_FILE,
+     ControllerUtils.NEW_EVALUATION_FILE,
+     ControllerUtils.NEW_DIMENSIONS_FILE,
+     ControllerUtils.NEW_INSTANCES_FILE,
+     ControllerUtils.NEW_EXPERIMENT_FILE);
+%>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
+</p><p class="actionDescription" id="pathDesc"/><p>
 <input type="file" name="<%= ControllerUtils.PARAMETER_FILES%>" multiple />&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%= ControllerUtils.COMMAND_UPLOAD%>" formmethod="post" formaction="/upload" formenctype="multipart/form-data" />
 </p>
 <p class="actionDescription">
-<code><%= ControllerUtils.COMMAND_CD_RELATIVE%></code> will create a new directory if necessary.
-<code><%= ControllerUtils.COMMAND_NEW_FILE%></code> creates a new file (if it does not exist yet) and opens it as text file in the editor.
 <code><%= ControllerUtils.COMMAND_UPLOAD%></code> uploads a set of files. Uploaded <code>zip</code> archives are automatically extracted.
 </p>
 <input type="hidden" name="<%= ControllerUtils.INPUT_CURRENT_DIR%>" value="<%= Encoder.htmlEncode(currentDir)%>" />

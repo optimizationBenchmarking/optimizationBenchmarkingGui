@@ -2,7 +2,8 @@ package org.optimizationBenchmarking.gui.utils;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public final class Page implements Closeable {
   private int m_idCounter;
 
   /** the ids */
-  private LinkedHashMap<FunctionRenderer, String> m_functions;
+  private HashMap<FunctionRenderer, String> m_functions;
 
   /** the output writer */
   private JspWriter m_out;
@@ -198,7 +199,7 @@ public final class Page implements Closeable {
     String id;
 
     if (this.m_functions == null) {
-      this.m_functions = new LinkedHashMap<>();
+      this.m_functions = new HashMap<>();
     } else {
       id = this.m_functions.get(renderer);
       if (id != null) {
@@ -324,13 +325,29 @@ public final class Page implements Closeable {
    *           if i/o fails
    */
   private final void __flushFunctions() throws IOException {
+    final HashSet<Map.Entry<FunctionRenderer, String>> done;
+
     if (this.m_functions != null) {
       try {
-        for (final Map.Entry<FunctionRenderer, String> entry : this.m_functions
-            .entrySet()) {
-          this.m_out.write(Page.FUNCTION);
-          this.m_out.write(entry.getValue());
-          entry.getKey().render(this);
+        done = new HashSet<>(this.m_functions.size());
+
+        // This loop, as well as `done` and the `toArray`, cater for
+        // situations where functions are added by the rendering process of
+        // functions already in the list. This may otherwise lead to a
+        // ConcurrentModificationException.
+        looper: for (;;) {
+          for (final Map.Entry<FunctionRenderer, String> entry : //
+          this.m_functions.entrySet().toArray(//
+              new Map.Entry[this.m_functions.size()])) {
+            if (done.add(entry)) {
+              this.m_out.write(Page.FUNCTION);
+              this.m_out.write(entry.getValue());
+              entry.getKey().render(this);
+            }
+          }
+          if (done.size() >= this.m_functions.size()) {
+            break looper;
+          }
         }
       } finally {
         this.m_functions = null;

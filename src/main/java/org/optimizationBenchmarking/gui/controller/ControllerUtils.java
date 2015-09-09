@@ -68,8 +68,23 @@ public final class ControllerUtils {
   public static final String COMMAND_EDIT_AS_EVALUATION = "edit as evaluation file";//$NON-NLS-1$
   /** delete a file or path */
   public static final String COMMAND_DELETE = "delete";//$NON-NLS-1$
+
   /** create a new text file */
-  public static final String COMMAND_NEW_FILE = "new";//$NON-NLS-1$
+  public static final String COMMAND_NEW_TEXT_FILE = "new text";//$NON-NLS-1$
+  /** create a new configuration file */
+  public static final String COMMAND_NEW_CONFIGURATION_FILE = "new configuration";//$NON-NLS-1$
+  /** create a new evaluation file */
+  public static final String COMMAND_NEW_EVALUATION_FILE = "new evaluation";//$NON-NLS-1$
+  /** create a new dimensions file */
+  public static final String COMMAND_NEW_DIMENSIONS_FILE = "new dimensions";//$NON-NLS-1$
+  /** create a new instances file */
+  public static final String COMMAND_NEW_INSTANCES_FILE = "new instances";//$NON-NLS-1$
+  /** create a new experiment file */
+  public static final String COMMAND_NEW_EXPERIMENT_FILE = "new experiment";//$NON-NLS-1$
+
+  /** the tagging parameter indicating that we need to create a new file */
+  public static final String PARAMETER_NEW = "new";//$NON-NLS-1$
+
   /** the command for uploading the selected elements */
   public static final String COMMAND_UPLOAD = "upload";//$NON-NLS-1$
   /** save the stuff */
@@ -172,6 +187,69 @@ public final class ControllerUtils {
       "Delete the selected items. If a folder is deleted, all files and folders therein are deleted recursively. Handle with care."//$NON-NLS-1$
   );
 
+  /** the cd action */
+  public static final SelectionAction CD = new SelectionAction(
+      ControllerUtils.COMMAND_CD_RELATIVE,//
+      "/controller.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Change into the specify directory, create it if it does not exist yet."//$NON-NLS-1$
+  );
+
+  /** the create a new text file */
+  public static final SelectionAction NEW_TEXT_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_TEXT_FILE,//
+      "/textEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty text file."//$NON-NLS-1$
+  );
+
+  /** the create a new configuration file */
+  public static final SelectionAction NEW_CONFIGURATION_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_CONFIGURATION_FILE,//
+      "/configEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty configuration file."//$NON-NLS-1$
+  );
+
+  /** the create a new evaluation file */
+  public static final SelectionAction NEW_EVALUATION_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_EVALUATION_FILE,//
+      "/evaluationEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty evaluation file."//$NON-NLS-1$
+  );
+
+  /** the create a new dimensions file */
+  public static final SelectionAction NEW_DIMENSIONS_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_DIMENSIONS_FILE,//
+      "/dimensionsEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty dimensions file."//$NON-NLS-1$
+  );
+
+  /** the create a new instances file */
+  public static final SelectionAction NEW_INSTANCES_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_INSTANCES_FILE,//
+      "/instancesEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty instances file."//$NON-NLS-1$
+  );
+
+  /** the create a new experiment file */
+  public static final SelectionAction NEW_EXPERIMENT_FILE = new SelectionAction(
+      ControllerUtils.COMMAND_NEW_EXPERIMENT_FILE,//
+      "/experimentEdit.jsp",//$NON-NLS-1$
+      "_self",//$NON-NLS-1$
+      "get",//$NON-NLS-1$
+      "Create a new, empty experiment file."//$NON-NLS-1$
+  );
+
   /**
    * Get the controller
    *
@@ -223,12 +301,6 @@ public final class ControllerUtils {
                 request.getParameter(ControllerUtils.PARAMETER_CD_PATH));
             break sub;
           }
-          case COMMAND_CD_RELATIVE: { // relative cd
-            controller.cdRelative(handle,
-                request.getParameter(ControllerUtils.INPUT_CURRENT_DIR),//
-                request.getParameter(ControllerUtils.PARAMETER_CD_PATH));
-            break sub;
-          }
           case BUTTON_OK: { // select
             final String selectionValue = request
                 .getParameter(ControllerUtils.PARAMETER_WITH_SELECTED);
@@ -249,6 +321,13 @@ public final class ControllerUtils {
                 case COMMAND_DELETE: {
                   Delete.delete(request.getParameterValues(//
                       ControllerUtils.PARAMETER_SELECTION), handle);
+                  break sub;
+                }
+                case COMMAND_CD_RELATIVE: { // relative cd
+                  controller.cdRelative(handle, request.getParameter(//
+                      ControllerUtils.INPUT_CURRENT_DIR),//
+                      request.getParameter(//
+                          ControllerUtils.PARAMETER_SELECTION));
                   break sub;
                 }
                 default: {
@@ -294,6 +373,7 @@ public final class ControllerUtils {
     final JspWriter out;
     final ITextOutput encoded;
     final String update;
+    boolean first;
 
     out = page.getOut();
     encoded = page.getHTMLEncoded();
@@ -306,8 +386,14 @@ public final class ControllerUtils {
     page.onLoad(update);
     out.write(update);
     out.write("\">"); //$NON-NLS-1$
+    first = true;
     for (final SelectionAction action : actions) {
-      out.write("<option>"); //$NON-NLS-1$
+      out.write("<option"); //$NON-NLS-1$
+      if (first) {
+        out.write(" selected"); //$NON-NLS-1$
+        first = false;
+      }
+      out.write('>');
       encoded.append(action.m_name);
       out.write("</option>"); //$NON-NLS-1$
     }

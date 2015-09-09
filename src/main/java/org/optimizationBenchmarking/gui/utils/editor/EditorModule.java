@@ -237,15 +237,14 @@ public abstract class EditorModule<T> {
 
     submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
     if (ControllerUtils.BUTTON_OK.equalsIgnoreCase(submit)) {
+      if (request.getParameter(ControllerUtils.PARAMETER_NEW) != null) {
+        return this.__loadFromFile(request.getParameter(//
+            ControllerUtils.INPUT_CURRENT_DIR), new String[] { //
+            request.getParameter(ControllerUtils.PARAMETER_SELECTION) },//
+            handle);
+      }
       return this.__loadFromFile(null,//
           request.getParameterValues(ControllerUtils.PARAMETER_SELECTION),//
-          handle);
-    }
-
-    if (ControllerUtils.COMMAND_NEW_FILE.equalsIgnoreCase(submit)) {
-      return this.__loadFromFile(request.getParameter(//
-          ControllerUtils.INPUT_CURRENT_DIR), new String[] { //
-          request.getParameter(ControllerUtils.PARAMETER_CD_PATH) },//
           handle);
     }
 
