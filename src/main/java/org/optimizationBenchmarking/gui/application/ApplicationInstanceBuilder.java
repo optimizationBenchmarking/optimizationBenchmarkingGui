@@ -1,5 +1,6 @@
 package org.optimizationBenchmarking.gui.application;
 
+import java.awt.SplashScreen;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -187,93 +188,105 @@ public final class ApplicationInstanceBuilder extends
     final ServerInstance instance;
     final URL localURL;
     final Browser btool;
+    SplashScreen splash;
     Path rootPath;
     Logger logger;
     BrowserJob browser;
 
-    this.__checkCreated();
-    this.m_created = true;
-
-    logger = this.getLogger();
-    if (logger == null) {
-      logger = Configuration.getGlobalLogger();
-    }
-    if ((logger != null) && (!(logger.isLoggable(Result.SUCCESS)))) {
-      logger.setLevel(Result.SUCCESS);
-    }
-
-    rootPath = this.m_rootPath;
     try {
+      this.__checkCreated();
+      this.m_created = true;
 
-      if (rootPath == null) {
-        rootPath = PathUtils.createPathInside(PathUtils.getCurrentDir(),
-            "data");//$NON-NLS-1$
+      logger = this.getLogger();
+      if (logger == null) {
+        logger = Configuration.getGlobalLogger();
+      }
+      if ((logger != null) && (!(logger.isLoggable(Result.SUCCESS)))) {
+        logger.setLevel(Result.SUCCESS);
       }
 
-      if ((logger != null) && (logger.isLoggable(Level.CONFIG))) {
-        logger.config((("Root directory is '" //$NON-NLS-1$
-            + rootPath) + '\'') + '.');
+      rootPath = this.m_rootPath;
+      try {
+
+        if (rootPath == null) {
+          rootPath = PathUtils.createPathInside(PathUtils.getCurrentDir(),
+              "data");//$NON-NLS-1$
+        }
+
+        if ((logger != null) && (logger.isLoggable(Level.CONFIG))) {
+          logger.config((("Root directory is '" //$NON-NLS-1$
+              + rootPath) + '\'') + '.');
+        }
+        Files.createDirectories(rootPath);
+      } catch (final Throwable error) {
+        ErrorUtils.logError(
+            logger,
+            ((("Error while trying to set root path '" //$NON-NLS-1$
+            + rootPath) + '\'') + '.'), error, false,
+            RethrowMode.AS_IO_EXCEPTION);
       }
-      Files.createDirectories(rootPath);
-    } catch (final Throwable error) {
-      ErrorUtils.logError(
-          logger,
-          ((("Error while trying to set root path '" //$NON-NLS-1$
-          + rootPath) + '\'') + '.'), error, false,
-          RethrowMode.AS_IO_EXCEPTION);
-    }
 
-    server = this.m_server;
-    this.m_server = null;
+      server = this.m_server;
+      this.m_server = null;
 
-    server.setLogger(logger);
-    server.addAttribute(ApplicationInstanceBuilder.PARAM_ROOT_PATH,
-        rootPath);
-    ApplicationInstanceBuilder.__addServlets(server);
-    instance = server.create();
+      server.setLogger(logger);
+      server.addAttribute(ApplicationInstanceBuilder.PARAM_ROOT_PATH,
+          rootPath);
+      ApplicationInstanceBuilder.__addServlets(server);
+      instance = server.create();
 
-    try {
-      localURL = instance.getLocalURL();
+      try {
+        localURL = instance.getLocalURL();
 
-      if (this.m_dontOpenBrowser) {
-        browser = null;
-      } else {
-        btool = Browser.getInstance();
-        if (btool.canUse()) {
-
-          if ((logger != null) && (logger.isLoggable(Level.INFO))) {
-            logger.info("Now starting browser to " + localURL); //$NON-NLS-1$
-          }
-
-          try {
-            browser = btool.use()//
-                .setLogger(logger)//
-                .setURL(localURL)//
-                .create();
-          } catch (final Throwable error) {
-            browser = null;
-
-            ErrorUtils
-                .logError(logger,
-                    Level.WARNING,//
-                    ((("Error while trying to start browser. Please start the browser manually and browse to '" //$NON-NLS-1$
-                    + localURL) + '\'') + '.'), error, true,//
-                    RethrowMode.DONT_RETHROW);
-          }
-        } else {
+        if (this.m_dontOpenBrowser) {
           browser = null;
-          if ((logger != null) && (logger.isLoggable(Level.WARNING))) {
-            logger.warning(((//
-                "No browser was detected. Please start the browser manually and browse to '" //$NON-NLS-1$
-                + localURL) + '\'') + '.');
+        } else {
+          btool = Browser.getInstance();
+          if (btool.canUse()) {
+
+            if ((logger != null) && (logger.isLoggable(Level.INFO))) {
+              logger.info("Now starting browser to " + localURL); //$NON-NLS-1$
+            }
+
+            try {
+              browser = btool.use()//
+                  .setLogger(logger)//
+                  .setURL(localURL)//
+                  .create();
+            } catch (final Throwable error) {
+              browser = null;
+
+              ErrorUtils
+                  .logError(logger,
+                      Level.WARNING,//
+                      ((("Error while trying to start browser. Please start the browser manually and browse to '" //$NON-NLS-1$
+                      + localURL) + '\'') + '.'), error, true,//
+                      RethrowMode.DONT_RETHROW);
+            }
+          } else {
+            browser = null;
+            if ((logger != null) && (logger.isLoggable(Level.WARNING))) {
+              logger.warning(((//
+                  "No browser was detected. Please start the browser manually and browse to '" //$NON-NLS-1$
+                  + localURL) + '\'') + '.');
+            }
           }
         }
-      }
 
-      return new ApplicationInstance(logger, instance, browser);
-    } catch (final Exception e1) {
-      instance.close();
-      throw e1;
+        return new ApplicationInstance(logger, instance, browser);
+      } catch (final Exception e1) {
+        instance.close();
+        throw e1;
+      }
+    } finally {
+      try {
+        splash = SplashScreen.getSplashScreen();
+        if (splash != null) {
+          splash.close();
+        }
+      } catch (final Throwable error) {
+        // ignore
+      }
     }
   }
 }

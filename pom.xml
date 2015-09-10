@@ -241,6 +241,11 @@
 						<exclude>webroot/stylesheets/print/**</exclude>
 						<exclude>webroot/stylesheets/screen/**</exclude>
 					</excludes>
+					<archive>
+						<manifestEntries>
+							<SplashScreen-Image>org/optimizationBenchmarking/gui/application/splash.png</SplashScreen-Image>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 
