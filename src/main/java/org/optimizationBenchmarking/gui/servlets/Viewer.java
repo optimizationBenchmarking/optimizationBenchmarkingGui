@@ -1,5 +1,6 @@
 package org.optimizationBenchmarking.gui.servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -91,11 +92,13 @@ public final class Viewer extends HttpServlet {
    *          the base url
    * @param current
    *          the current url
+   * @param handle
+   *          the handle
    * @return the resolved one, or {@code null} if resolution is not
    *         necessary
    */
   private static final String __resolve(final String base,
-      final String current) {
+      final String current, final Handle handle) {
     URI currentURI;
     String currentURL;
     int length;
@@ -106,6 +109,9 @@ public final class Viewer extends HttpServlet {
 
     if (current.charAt(0) == '#') {
       return null;
+    }
+    if ((handle != null) && (handle.isLoggable(Level.FINEST))) {
+      handle.finest("Now resolving URL '" + current + '\'' + '.'); //$NON-NLS-1$
     }
 
     try {
@@ -123,7 +129,11 @@ public final class Viewer extends HttpServlet {
       }
 
     } catch (final Throwable error) {
-      //
+      if ((handle != null) && (handle.isLoggable(Level.WARNING))) {
+        handle.log(Level.WARNING,//
+            ("Error when resolving URL '" + current + '\'' + '.'), //$NON-NLS-1$
+            error);
+      }
     }
     return null;
   }
@@ -135,21 +145,30 @@ public final class Viewer extends HttpServlet {
    *          the input path
    * @param root
    *          the root path
+   * @param view
+   *          the file to view
    * @param os
    *          the output stream
    * @param isXHTML
    *          is the stuff XHTML?
+   * @param handle
+   *          the handle
    * @throws IOException
    *           if i/o fails
    */
   private static final void __serveHTML(final Path input,
-      final String root, final boolean isXHTML, final OutputStream os)
-      throws IOException {
+      final String root, final String view, final boolean isXHTML,
+      final OutputStream os, final Handle handle) throws IOException {
     final int rootStart;
     final OutputSettings output;
     int rootLength;
     String base, currentURL;
     Document doc;
+
+    if ((handle != null) && (handle.isLoggable(Level.FINE))) {
+      handle.fine("Now serving path '" + view + //$NON-NLS-1$
+          (isXHTML ? "' as XHTML." : "' as HTML.")); //$NON-NLS-1$//$NON-NLS-2$
+    }
 
     // find the base url
     base = "/viewer?view=";//$NON-NLS-1$
@@ -167,15 +186,27 @@ public final class Viewer extends HttpServlet {
       }
     }
 
+    if ((handle != null) && (handle.isLoggable(Level.FINER))) {
+      handle.finer("Now loading '" + view + //$NON-NLS-1$
+          "' using via Jsoup.");//$NON-NLS-1$
+    }
+
     // load the data
     try (final InputStream is = PathUtils.openInputStream(input)) {
       doc = Jsoup.parse(is, "UTF-8", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    if ((handle != null) && (handle.isLoggable(Level.FINER))) {
+      handle.finer("Done loading '" + view + //$NON-NLS-1$
+          "' using via Jsoup, now resolving URLs against base '"//$NON-NLS-1$
+          + base + '\'' + '.');
+    }
+
     // resolve the urls in '<a>' and '<link>' tags
     for (final String tag : new String[] { "a", "link" }) {//$NON-NLS-1$ //$NON-NLS-2$
       for (final Element element : doc.select(tag)) {
-        currentURL = Viewer.__resolve(base, element.attr("href"));//$NON-NLS-1$
+        currentURL = Viewer.__resolve(base, element.attr("href"),//$NON-NLS-1$
+            handle);
         if (currentURL != null) {
           element.attr("href", currentURL);//$NON-NLS-1$
         }
@@ -185,7 +216,8 @@ public final class Viewer extends HttpServlet {
     // resolve the urls in '<img>' and '<script>'
     for (final String tag : new String[] { "img", "script" }) {//$NON-NLS-1$ //$NON-NLS-2$
       for (final Element element : doc.select(tag)) {
-        currentURL = Viewer.__resolve(base, element.attr("src"));//$NON-NLS-1$
+        currentURL = Viewer.__resolve(base, element.attr("src"),//$NON-NLS-1$
+            handle);
         if (currentURL != null) {
           element.attr("src", currentURL);//$NON-NLS-1$
         }
@@ -194,10 +226,17 @@ public final class Viewer extends HttpServlet {
 
     // resolve background urls in '<body>' tags
     for (final Element element : doc.select("body")) {//$NON-NLS-1$
-      currentURL = Viewer.__resolve(base, element.attr("background"));//$NON-NLS-1$
+      currentURL = Viewer.__resolve(base, element.attr("background"),//$NON-NLS-1$
+          handle);
       if (currentURL != null) {
         element.attr("background", currentURL);//$NON-NLS-1$
       }
+    }
+
+    if ((handle != null) && (handle.isLoggable(Level.FINER))) {
+      handle.finer("Done resolving URLs against base '"//$NON-NLS-1$
+          + base + "' for document '" + view + //$NON-NLS-1$
+          "', now serializing the modified document using via Jsoup.");//$NON-NLS-1$
     }
 
     output = doc.outputSettings();
@@ -231,6 +270,7 @@ public final class Viewer extends HttpServlet {
     final Path path;
     final String type;
     final boolean isHTML, isXHTML;
+    String root;
 
     controller = ControllerUtils.getController(req);
     if (controller != null) {
@@ -253,10 +293,14 @@ public final class Viewer extends HttpServlet {
                   if ((handle != null) && (handle.isLoggable(Level.INFO))) {
                     handle.info("Parsing and refining (X)HTML document."); //$NON-NLS-1$
                   }
-                  Viewer.__serveHTML(path,//
-                      controller.getRootDir().relativize(//
-                          path.getParent()).toString(), //
-                      isXHTML, resp.getOutputStream());
+
+                  root = controller.getRootDir().relativize(//
+                      path.getParent()).toString();
+                  if (File.separatorChar == '\\') {
+                    root = root.replace(File.separatorChar, '/');
+                  }
+                  Viewer.__serveHTML(path, root, view, //
+                      isXHTML, resp.getOutputStream(), handle);
                 } else {
                   Files.copy(path, resp.getOutputStream());
                 }
