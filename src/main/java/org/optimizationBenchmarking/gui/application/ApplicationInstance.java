@@ -45,6 +45,15 @@ public final class ApplicationInstance extends ToolJob implements
   }
 
   /**
+   * Check if a browser has been opened
+   *
+   * @return has a browser been opened?
+   */
+  public final boolean hasBrowser() {
+    return (this.m_browser != null);
+  }
+
+  /**
    * Get the URL to the entry point site for browsers running on the same
    * machine.
    *

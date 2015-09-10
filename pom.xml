@@ -243,7 +243,7 @@
 					</excludes>
 					<archive>
 						<manifestEntries>
-							<SplashScreen-Image>org/optimizationBenchmarking/gui/application/splash.png</SplashScreen-Image>
+							<SplashScreen-Image>org/optimizationBenchmarking/gui/splash.png</SplashScreen-Image>
 						</manifestEntries>
 					</archive>
 				</configuration>
