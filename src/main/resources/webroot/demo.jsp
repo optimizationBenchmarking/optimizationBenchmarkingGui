@@ -64,9 +64,10 @@ and under <a href="https://en.wikipedia.org/wiki/Mac_OS">MacOS</a>,
 but your operating system seems to be <%= EOSFamily.DETECTED%>. For this
 strange situation, now suitable automated download script exists.</p> 
 <% } } }
- if(canDo) {
+ if(canDo) { 
  final String currentDir = Encoder.htmlEncode(controller.getRootDir().relativize(controller.getCurrentDir()).toString());
  final String printDir   = ('/' + currentDir);
+ int example = 0;
 %>
 <p>You can now pick an example data set to download into the current folder (<code><%=printDir%></code>).
 After the download has completed, you will find two new folders: <code>results</code>
@@ -81,7 +82,7 @@ will be loading the page without much feedback if your <a href="/logLevel.jsp">l
 is too high. If you want to receive progress information, you may <a href="/logLevel.jsp">set it</a>
 to a more sensitive level, such as <code>FINER</code>. Otherwise, you may
 just be notified about success (or (hopefully not) failure).</p>
-<h2>MAX-3SAT</h2> 
+<h2>Example&nbsp;<%=(++example)%>:&nbsp;MAX-3SAT</h2> 
 <p>The <a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingDocu/blob/master/examples/maxSat/README.md">MAX-3SAT</a>
 example data set contains results from a few simple experiments on the, well,
 <a href="http://en.wikipedia.org/wiki/MAX-3SAT">MAX-3SAT</a> problem.</p>
@@ -95,7 +96,7 @@ goal is to find a bit string which makes a certain Boolean expression become tru
 Download the MAX-3SAT data into folder <code><%=printDir%></code>:&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </form>
 
-<h2>BBOB</h2>
+<h2>Example&nbsp;<%=(++example)%>:&nbsp;BBOB</h2>
 <p>The <a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingDocu/blob/master/examples/bbob/README.md">BBOB</a>
 example applies our software to some data gathered by other researchers: We download (some of) the
 results of the <a href="http://coco.gforge.inria.fr/doku.php?id=bbob-2013">Black-Box Optimization Benchmarking (BBOB) 2013</a>,
@@ -113,12 +114,12 @@ their data format.</p>
 Download the BBOB data into folder <code><%=printDir%></code>:&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </form>
 
-<form method="get" action="/controller.jsp">
-<h2>TSP Suite</h2>
+<h2>Example&nbsp;<%=(++example)%>:&nbsp; Suite</h2>
 <p>The <a href="https://github.com/optimizationBenchmarking/tspSuite">TSP Suite</a> is a system
 to benchmark and evaluate algorithms for the Traveling Salesman Problem (<a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">TSP</a>).
 It is the direct predecessor of this software. We run several small experiments on
 the TSP and gathered the result data in this example.</p>
+<form method="get" action="/controller.jsp">
 <input type="hidden" name="<%=ControllerUtils.PARAMETER_DEMO%>" value="tspSuite" />
 <input type="hidden" name="<%=ControllerUtils.INPUT_CURRENT_DIR%>" value="<%=currentDir%>" />
 <input type="hidden" name="<%=ControllerUtils.PARAMETER_WITH_SELECTED%>" value="<%=ControllerUtils.COMMAND_INSTALL_DEMO%>" />
