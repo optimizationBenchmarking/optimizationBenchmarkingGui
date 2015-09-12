@@ -143,6 +143,15 @@ public final class Controller implements Serializable {
   }
 
   /**
+   * Get the current directory
+   *
+   * @return the current directory
+   */
+  public synchronized final Path getCurrentDir() {
+    return this.m_current;
+  }
+
+  /**
    * Get the state of the controller
    *
    * @param handle
@@ -253,10 +262,11 @@ public final class Controller implements Serializable {
    *          the handle
    * @param relPath
    *          the relative path
+   * @return the path we cd'ed to, or {@code null} if the cd failed
    */
-  public synchronized final void cdAbsolute(final Handle handle,
+  public synchronized final Path cdAbsolute(final Handle handle,
       final String relPath) {
-    this.__cd(handle, this.m_root, relPath);
+    return this.__cd(handle, this.m_root, relPath);
   }
 
   /**
@@ -268,14 +278,16 @@ public final class Controller implements Serializable {
    *          the current directory
    * @param relPath
    *          the relative path
+   * @return the path we cd'ed to, or {@code null} if the cd failed
    */
-  public synchronized final void cdRelative(final Handle handle,
+  public synchronized final Path cdRelative(final Handle handle,
       final String current, final String relPath) {
     final Path cur;
     cur = this.resolve(handle, current, this.m_root);
     if (cur != null) {
-      this.__cd(handle, cur, relPath);
+      return this.__cd(handle, cur, relPath);
     }
+    return null;
   }
 
   /**
@@ -287,8 +299,9 @@ public final class Controller implements Serializable {
    *          the root path to use for resolution
    * @param relPath
    *          the relative path
+   * @return the path we cd'ed to, or {@code null} if the cd failed
    */
-  private final void __cd(final Handle handle, final Path root,
+  private final Path __cd(final Handle handle, final Path root,
       final String relPath) {
     final Path path;
     final BasicFileAttributes bfa;
@@ -296,46 +309,48 @@ public final class Controller implements Serializable {
     Throwable caught;
 
     path = this.resolve(handle, relPath, root);
-    if (path != null) {
+    if (path == null) {
+      return null;
+    }
 
-      doesNotExist = isDir = false;
-      caught = null;
+    doesNotExist = isDir = false;
+    caught = null;
+    try {
+      bfa = Files.readAttributes(path, BasicFileAttributes.class,
+          LinkOption.NOFOLLOW_LINKS);
+      isDir = bfa.isDirectory();
+    } catch (final NoSuchFileException ignore) {
+      doesNotExist = true;
+    } catch (final Throwable error) {
+      caught = error;
+      isDir = false;
+    }
+
+    if (doesNotExist) {
       try {
-        bfa = Files.readAttributes(path, BasicFileAttributes.class,
-            LinkOption.NOFOLLOW_LINKS);
-        isDir = bfa.isDirectory();
-      } catch (final NoSuchFileException ignore) {
-        doesNotExist = true;
+        Files.createDirectories(path);
+        isDir = true;
+        handle.info("Directory '" + relPath + //$NON-NLS-1$
+            "' did not exist and was created.");//$NON-NLS-1$
       } catch (final Throwable error) {
-        caught = error;
-        isDir = false;
-      }
-
-      if (doesNotExist) {
-        try {
-          Files.createDirectories(path);
-          isDir = true;
-          handle.info("Directory '" + relPath + //$NON-NLS-1$
-              "' did not exist and was created.");//$NON-NLS-1$
-        } catch (final Throwable error) {
-          handle.failure("Directory '" + relPath + //$NON-NLS-1$
-              "' does not exist and could not be created."); //$NON-NLS-1$
-          return;
-        }
-      }
-
-      if (isDir && (caught == null)) {
-        this.m_current = path;
-        handle.success("Succeeded in setting the current path to '" //$NON-NLS-1$
-            + relPath + "'. The full path is now '" + //$NON-NLS-1$
-            this.m_root.relativize(this.m_current).toString() + //
-            '\'' + '.');
-      } else {
-        handle.failure("Path '" + relPath + //$NON-NLS-1$
-            "' does not identify a directory.",//$NON-NLS-1$
-            caught);
+        handle.failure("Directory '" + relPath + //$NON-NLS-1$
+            "' does not exist and could not be created."); //$NON-NLS-1$
+        return null;
       }
     }
+
+    if (isDir && (caught == null)) {
+      this.m_current = path;
+      handle.success("Succeeded in setting the current path to '" //$NON-NLS-1$
+          + relPath + "'. The full path is now '" + //$NON-NLS-1$
+          this.m_root.relativize(this.m_current).toString() + //
+          '\'' + '.');
+      return path;
+    }
+    handle.failure("Path '" + relPath + //$NON-NLS-1$
+        "' does not identify a directory.",//$NON-NLS-1$
+        caught);
+    return null;
   }
 
   /**

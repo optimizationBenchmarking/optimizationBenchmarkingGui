@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
 import org.optimizationBenchmarking.gui.modules.Delete;
+import org.optimizationBenchmarking.gui.modules.Demo;
 import org.optimizationBenchmarking.gui.utils.Page;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.text.TextUtils;
@@ -81,6 +82,11 @@ public final class ControllerUtils {
   public static final String COMMAND_NEW_INSTANCES_FILE = "new instances";//$NON-NLS-1$
   /** create a new experiment file */
   public static final String COMMAND_NEW_EXPERIMENT_FILE = "new experiment";//$NON-NLS-1$
+
+  /** install a demo */
+  public static final String COMMAND_INSTALL_DEMO = "install";//$NON-NLS-1$
+  /** the chosen demo */
+  public static final String PARAMETER_DEMO = "demo";//$NON-NLS-1$
 
   /** the tagging parameter indicating that we need to create a new file */
   public static final String PARAMETER_NEW = "new";//$NON-NLS-1$
@@ -328,6 +334,14 @@ public final class ControllerUtils {
                       ControllerUtils.INPUT_CURRENT_DIR),//
                       request.getParameter(//
                           ControllerUtils.PARAMETER_SELECTION));
+                  break sub;
+                }
+                case COMMAND_INSTALL_DEMO: {
+                  Demo.install(
+                      request
+                      .getParameter(ControllerUtils.INPUT_CURRENT_DIR),
+                      request.getParameter(ControllerUtils.PARAMETER_DEMO),
+                      handle);
                   break sub;
                 }
                 default: {
