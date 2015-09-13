@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * {@link org.optimizationBenchmarking.gui.controller.Result#SUCCESS
  * succeeded} or
  * {@link org.optimizationBenchmarking.gui.controller.Result#FAILURE
- * failed}. </p>
+ * failed}.
  * <p>
  * A {@link Handle} is always able to log the following levels:
  * </p>
