@@ -65,38 +65,38 @@ public final class Download extends HttpServlet {
     Path currentRoot;
 
     controller = ControllerUtils.getController(req);
-    if (controller == null) {
-      return;
-    }
+    if (controller != null) {
 
-    try (final Handle handle = controller.createServletHandle()) {
-      selection = req.getParameterValues(//
-          ControllerUtils.PARAMETER_SELECTION);
+      try (final Handle handle = controller.createServletHandle()) {
+        selection = req.getParameterValues(//
+            ControllerUtils.PARAMETER_SELECTION);
 
-      if ((selection != null) && (selection.length > 0)) {
-        root = controller.getRootDir();
+        if ((selection != null) && (selection.length > 0)) {
+          root = controller.getRootDir();
 
-        // collect all selected files and directories
-        selected = new ArrayList<>();
-        currentRoot = null;
-        for (final String sel : selection) {//
-          currentRoot = Download.__addPath(
-              controller.resolve(handle, sel, null), selected, root,
-              handle, currentRoot);
-        }
-
-        if (selected.size() > 0) {
-          try {
-            Download.__download(resp, root, currentRoot, selected, handle);
-            handle.success(//
-                "Successfully downloaded the selected files.");//$NON-NLS-1$
-          } catch (final Throwable error) {
-            handle.failure("Failed to download selected files.", error);//$NON-NLS-1$
+          // collect all selected files and directories
+          selected = new ArrayList<>();
+          currentRoot = null;
+          for (final String sel : selection) {//
+            currentRoot = Download.__addPath(
+                controller.resolve(handle, sel, null), selected, root,
+                handle, currentRoot);
           }
-          return;
+
+          if (selected.size() > 0) {
+            try {
+              Download.__download(resp, root, currentRoot, selected,
+                  handle);
+              handle.success(//
+                  "Successfully downloaded the selected files.");//$NON-NLS-1$
+            } catch (final Throwable error) {
+              handle.failure("Failed to download selected files.", error);//$NON-NLS-1$
+            }
+            return;
+          }
         }
+        handle.warning("Nothing to download."); //$NON-NLS-1$
       }
-      handle.warning("Nothing to download."); //$NON-NLS-1$
     }
 
     resp.sendRedirect("/controller.jsp");//$NON-NLS-1$

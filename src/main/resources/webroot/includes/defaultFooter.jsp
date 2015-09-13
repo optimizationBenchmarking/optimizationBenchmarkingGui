@@ -1,7 +1,8 @@
 <%@ page import="org.optimizationBenchmarking.utils.text.ESimpleDateFormat" %>
+<%@ page import="org.optimizationBenchmarking.gui.application.ApplicationTool" %>
 <%@ page import="org.optimizationBenchmarking.gui.utils.Menu" %>
 <p class="footerInfo">
-Server time: <%= ESimpleDateFormat.DATE_TIME.formatNow() %>
+Version&nbsp;<%=ApplicationTool.getInstance().getProjectVersion()%>. Server&nbsp;time:&nbsp;<%= ESimpleDateFormat.DATE_TIME.formatNow() %>.
 </p>
 <p class="footerLinks"> 
 [<a href="http://optimizationBenchmarking.github.io/optimizationBenchmarking">project page</a>] &bull;

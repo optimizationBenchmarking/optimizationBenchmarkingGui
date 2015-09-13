@@ -79,7 +79,7 @@
       tag = "";
     } %>
   <td class="folderViewName"<%= tag%>>
-    <a <% if(element.getType().isFile()) { %>target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%><%
+    <a <% if(element.getType().isFile()) { %>target="_blank" href="/viewer?<%=ControllerUtils.PARAMETER_VIEW%>=<%= urlEncodedRelativePath%><%
     } else {%>href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= urlEncodedRelativePath%>&amp;<%=ControllerUtils.INPUT_SUBMIT%>=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%><% } %>"><%= elementName %></a>
   </td>
   <% if (size >= 0L) {
@@ -148,7 +148,7 @@ Selected element(s):&nbsp;<% ControllerUtils.putFormSelection("main", hpage, sel
       tag = "";
     } %>
   <td class="folderViewName"<%= tag%>>
-  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%>"><% } %>
+  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?<%=ControllerUtils.PARAMETER_VIEW%>=<%= urlEncodedRelativePath%>"><% } %>
     <%= htmlEncodedRelativePath %>
   <% if(element.getType().isFile()) { %></a><% } %>
   </td>

@@ -85,7 +85,7 @@ final class _AddFunctionRenderer extends FunctionRenderer {
     out.write("default:{return;}}var dummy=document.createElement('form');dummy.innerHTML=text;var insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);dummy.innerHTML='<input type=\"hidden\" name=\"");//$NON-NLS-1$
     out.write(ControllerUtils.INPUT_SUBMIT);
     out.write("\" value=\"");//$NON-NLS-1$
-    out.write(ControllerUtils.PARAM_SAVE);
+    out.write(ControllerUtils.PARAMETER_SAVE);
     out.write("\"/>';insert=dummy.firstChild;sel.parentNode.insertBefore(insert,sel);form.submit();}}}");//$NON-NLS-1$
   }
 }

@@ -275,7 +275,7 @@ public final class Viewer extends HttpServlet {
     controller = ControllerUtils.getController(req);
     if (controller != null) {
       try (final Handle handle = controller.createServletHandle()) {
-        view = req.getParameter("view"); //$NON-NLS-1$
+        view = req.getParameter(ControllerUtils.PARAMETER_VIEW);
         if (view != null) {
           path = controller.resolve(handle, view, null);
           if (path != null) {

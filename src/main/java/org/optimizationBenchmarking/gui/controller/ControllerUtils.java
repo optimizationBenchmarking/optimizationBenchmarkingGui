@@ -94,7 +94,10 @@ public final class ControllerUtils {
   /** the command for uploading the selected elements */
   public static final String COMMAND_UPLOAD = "upload";//$NON-NLS-1$
   /** save the stuff */
-  public static final String PARAM_SAVE = "save"; //$NON-NLS-1$
+  public static final String PARAMETER_SAVE = "save"; //$NON-NLS-1$
+
+  /** the view parameter */
+  public static final String PARAMETER_VIEW = "view"; //$NON-NLS-1$
 
   /** the remember action */
   public static final SelectionAction REMEMBER = new SelectionAction(

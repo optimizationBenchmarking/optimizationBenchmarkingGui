@@ -63,6 +63,7 @@ public final class Editor extends HttpServlet {
 
     controller = ControllerUtils.getController(req);
     if (controller == null) {
+      resp.sendRedirect("/controller.jsp");//$NON-NLS-1$
       return;
     }
 
@@ -80,7 +81,7 @@ public final class Editor extends HttpServlet {
           req.getParameter(ControllerUtils.PARAMETER_SELECTION) };
         }
       } else {
-        if (ControllerUtils.PARAM_SAVE.equalsIgnoreCase(submit)) {
+        if (ControllerUtils.PARAMETER_SAVE.equalsIgnoreCase(submit)) {
           basePath = null;
           params = new String[] { req.getParameter(//
               ControllerUtils.PARAMETER_SELECTION) };

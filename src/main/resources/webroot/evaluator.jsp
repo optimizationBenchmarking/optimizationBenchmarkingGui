@@ -87,7 +87,7 @@ Take it easy, relax, and let the program do its job.</p>
       tag = "";
     } %>
   <td class="folderViewName"<%= tag%>>
-  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?view=<%= urlEncodedRelativePath%>"><% } %>
+  <% if(element.getType().isFile()) { %><a target="_blank" href="/viewer?<%=ControllerUtils.PARAMETER_VIEW%>=<%= urlEncodedRelativePath%>"><% } %>
     <%= shortPath %>
   <% if(element.getType().isFile()) { %></a><% } %>
   </td>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cd:configurationDefinition
+	xmlns:cd="http://www.optimizationBenchmarking.org/formats/configuration/configurationDef.1.0.xsd"
+	allowsMore="false">
+
+	<cd:string name="rootPath" default="data"
+		description="The path to the workspace folder, i.e., the root path in which all files and experiment data are included." />
+
+	<cd:boolean name="dontOpenBrowser" default="false"
+		description="Don't open a browser on start-up. This parameter should be specified when the system is running as server and is accessed from browsers running on a differnet computers." />
+
+	<cd:inherit class="org.optimizationBenchmarking.gui.server.ServerTool" />
+
+</cd:configurationDefinition>

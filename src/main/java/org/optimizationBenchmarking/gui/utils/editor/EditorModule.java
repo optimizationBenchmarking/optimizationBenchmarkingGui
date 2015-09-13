@@ -271,7 +271,7 @@ public abstract class EditorModule<T> {
           handle);
     }
 
-    if (ControllerUtils.PARAM_SAVE.equalsIgnoreCase(submit)) {
+    if (ControllerUtils.PARAMETER_SAVE.equalsIgnoreCase(submit)) {
       this.store(handle, request);
       return this.__loadFromFile(null, new String[] {//
           request.getParameter(ControllerUtils.PARAMETER_SELECTION) }, //
@@ -443,7 +443,7 @@ public abstract class EditorModule<T> {
     out.write("<input type=\"submit\" name=\"");//$NON-NLS-1$
     out.write(ControllerUtils.INPUT_SUBMIT);
     out.write("\" value=\"");//$NON-NLS-1$
-    out.write(ControllerUtils.PARAM_SAVE);
+    out.write(ControllerUtils.PARAMETER_SAVE);
     out.write("\"/>&nbsp;<input type=\"submit\" name=\"");//$NON-NLS-1$
     out.write(ControllerUtils.INPUT_SUBMIT);
     out.write("\" value=\"");//$NON-NLS-1$
@@ -521,7 +521,7 @@ public abstract class EditorModule<T> {
     final T data;
 
     submit = request.getParameter(ControllerUtils.INPUT_SUBMIT);
-    if (submit.equalsIgnoreCase(ControllerUtils.PARAM_SAVE)) {
+    if (submit.equalsIgnoreCase(ControllerUtils.PARAMETER_SAVE)) {
       path = request.getParameter(ControllerUtils.PARAMETER_SELECTION);
       if (path != null) {
         controller = handle.getController();

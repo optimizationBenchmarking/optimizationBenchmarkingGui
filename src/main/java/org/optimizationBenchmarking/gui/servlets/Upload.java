@@ -40,6 +40,7 @@ public final class Upload extends HttpServlet {
 
     controller = ControllerUtils.getController(req);
     if (controller == null) {
+      resp.sendRedirect("/controller.jsp");//$NON-NLS-1$
       return;
     }
 

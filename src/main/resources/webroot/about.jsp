@@ -1,6 +1,7 @@
 <%@include file="/includes/defaultHeader.jsp" %>
 <%@ page import="org.optimizationBenchmarking.gui.application.ApplicationTool" %>
 <%@ page import="org.optimizationBenchmarking.experimentation.evaluation.impl.evaluator.Evaluator" %>
+<jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <h1>About</h1>  
 <p>
 This is the graphical user interface (<a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingGui">GUI</a>) of
@@ -28,6 +29,9 @@ the <a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkin
 <tr class="invisibleL"><th class="invisibleL">contact&nbsp;url:&nbsp;</th><td class="invisibleL"><a href="<%= ev.getContactURL()%>"><%= ev.getContactURL()%></a></td></tr>
 <tr class="invisibleL"><th class="invisibleL">contact&nbsp;email:&nbsp;</th><td class="invisibleL"><a href="mailto:<%= ev.getContactEmail()%>"><%= ev.getContactEmail()%></a></td></tr>
 </table>
+<p><a href="/this">Here</a> you can download a copy of the <code>jar</code> of
+this software you are using right now, but it is recommended to
+download the most recent <a href="https://github.com/optimizationBenchmarking/optimizationBenchmarkingGui/releases">release</a>.</p> 
 <h2>Web</h2>
 <p>This project is developed by the <a href="http://www.optimizationbenchmarking.org">optimizationBenchmarking</a>
 initiative. Our website can be found at <a href="http://www.optimizationbenchmarking.org">http://www.optimizationbenchmarking.org</a>
@@ -46,7 +50,7 @@ University of Science and Technology of China with support from the
 Fundamental Research Funds for the Central Universities. Further
 support is provided by the Faculty Strategic Initiatives Research Fund (SIRF) of the
 University of Newcastle and Dr. Raymond Chiong.</p>
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <table class="invisibleL">
 <tr class="invisibleL"><th class="invisibleL" colspan="2">Dr. Thomas Weise</th></tr>
 <tr class="invisibleL"><td class="invisibleL" colspan="2">Nature Inspired Computation and Applications Laboratory (NICAL)</td></tr>
