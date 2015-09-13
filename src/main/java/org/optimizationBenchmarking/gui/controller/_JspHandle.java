@@ -30,7 +30,7 @@ import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransforme
  * {@link org.optimizationBenchmarking.gui.controller.Result#SUCCESS
  * succeeded} or
  * {@link org.optimizationBenchmarking.gui.controller.Result#FAILURE
- * failed}. </p>
+ * failed}.
  */
 final class _JspHandle extends Handle {
 
