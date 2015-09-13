@@ -16,17 +16,11 @@ fat jar, no installation is required whatsoever, you can simply execute it at th
 line. There are two scenarios in which you may want to use the GUI:
 
 1. Working locally on your own computer.
-2. Running on a powerful server computer and accessed remotely from your own computer
-   inside your own intranet.
+2. Running on a powerful server computer and accessed remotely from your own computer inside your own intranet.
 
-The second use case is attractive if you deal with large sets of experimental results
-and complex evaluations. Then it will allow you to conveniently start an evaluation
-process consuming lots of memory and runtime, while you can still work on your PC.
+The second use case is attractive if you deal with large sets of experimental results and complex evaluations. Then it will allow you to conveniently start an evaluation process consuming lots of memory and runtime, while you can still work on your PC.
 
-**WARNING:** The current version of the GUI does neither contain user management nor
-any security features. You must **never** make it accessible from the internet. Matter
-of fact, you must **only** make it accessible to people working in your own group whom
-you fully trust.
+**WARNING:** The current version of the GUI does neither contain user management nor any security features. You must **never** make it accessible from the internet. Matter of fact, you must **only** make it accessible to people working in your own group whom you fully trust.
 
 ## Command Line Arguments
 
