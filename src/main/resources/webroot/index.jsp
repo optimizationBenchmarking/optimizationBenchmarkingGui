@@ -1,3 +1,5 @@
+<%@ page import="org.optimizationBenchmarking.gui.utils.Encoder" %>
+<jsp:useBean id="controller" scope="session" class="org.optimizationBenchmarking.gui.controller.Controller" />
 <%@include file="/includes/defaultHeader.jsp" %>
 <h1>Welcome</h1>  
 <p>
@@ -12,4 +14,7 @@ and read about how to get started.</p>
 <p>
 Otherwise, you should now go to the <a href="./controller.jsp">control center</a>.
 </p>
+<p>The system has been started with <code><%= Encoder.htmlEncode(controller.getRootDir().toString())%></code> as root folder &ndash; no
+files outside this folder can be accessed in the <a href="./controller.jsp">control center</a>. See the <a href="/help/system.jsp#arguments">help</a> page
+for information about the command line arguments of this system.</p>
 <%@include file="/includes/defaultFooter.jsp" %>

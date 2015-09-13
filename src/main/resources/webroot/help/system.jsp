@@ -46,7 +46,7 @@ policy defined).</li>
 </ol>
 <p>In both cases, the GUI will behave exactly the same.</p>
 
-<h2>Command Line Arguments</h2>
+<h2 id="arguments">Command Line Arguments</h2>
 <p>You can start the system by typing <code>java -jar <%encoded.append(pathName);%></code> on
 the command line. To this command, you can add the following parameters
 (in the form of <code>parameter=value</code>).</p>

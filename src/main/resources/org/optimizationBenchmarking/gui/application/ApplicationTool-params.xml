@@ -4,7 +4,7 @@
 	allowsMore="false">
 
 	<cd:string name="rootPath" default="data"
-		description="The path to the workspace folder, i.e., the root path in which all files and experiment data are included." />
+		description="The path to the workspace folder, i.e., the root path in which all files and experiment data are included. You cannot access any files outside of this folder." />
 
 	<cd:boolean name="dontOpenBrowser" default="false"
 		description="Don't open a browser on start-up. This parameter should be specified when the system is running as server and is accessed from browsers running on a differnet computers." />
