@@ -52,7 +52,10 @@ CPU time, and the best obtained solution quality.</p>
 usually called <code>dimensions.xml</code> or <code>dimensions.edi</code>.
 You can recognize such files by their icon <% EFSElementType.EDI_DIMENSIONS.putIcon(out, encoded); %>
 and edit or create them via simple forms in the <a href="/controller.jsp">controller</a>.
-</p>
+</p><p>Some data formats, such as <code>tspSuite</code> and <code>bbob</code>
+do not require you to specify the dimensions, as they are designed for one
+specific, narrow problem domain, where the dimensions are known. In the
+general case, however, you need to provide a dimensions file.</p> 
 
 <h2 id="instances"><%=(++h2)%>.&nbsp;Benchmark/Problem Instances&nbsp;<% EFSElementType.EDI_INSTANCES.putIcon(out, encoded); %></h2>
 <p>OK, so you have chosen what you want to measure.
@@ -82,6 +85,11 @@ and edit or create them via simple forms in the <a href="/controller.jsp">contro
 </p>
 <p>Of course, you can also do this step after you have run your
 experiments, meaning existing result data can be used by our system.</p>
+<p>Some data formats, such as <code>tspSuite</code> and <code>bbob</code>
+do not require you to specify the instances, as they are designed for one
+specific, narrow problem domain where the instances and their features are
+known. In the general case, however, you need to
+provide a dimensions file.</p>
 
 <h2 id="experiment"><%=(++h2)%>.&nbsp;Experiments&nbsp;<% EFSElementType.EDI_EXPERIMENT.putIcon(out, encoded); %></h2>
 <p>You now can run your experiments, where <em>experiment</em> means
@@ -112,6 +120,11 @@ and edit or create them via simple forms in the <a href="/controller.jsp">contro
 </p>
 <p>And again, of course, you can also do this step after you have run your
 experiments, meaning existing result data can be used by our system.</p>
+<p>Some data formats, such as <code>tspSuite</code> and <code>bbob</code>
+do not require you to specify the experiment parameters, as they can
+already be obtained from other sources (<code>tspSuite</code>) or are
+not part of the file format and cannot be specified (<code>bbob</code>). In
+the general case, however, you need to provide the experiment file.</p>
 
 <h2 id="evaluation"><%=(++h2)%>.&nbsp;Evaluation Specification&nbsp;<% EFSElementType.EVALUATION.putIcon(out, encoded); %></h2>
 <p>OK, now we got all the data from the experiments (the log files), as well
