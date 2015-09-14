@@ -114,7 +114,7 @@ their data format.</p>
 Download the BBOB data into folder <code><%=printDir%></code>:&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </form>
 
-<h2>Example&nbsp;<%=(++example)%>:&nbsp; Suite</h2>
+<h2>Example&nbsp;<%=(++example)%>:&nbsp;TSP&nbsp;Suite</h2>
 <p>The <a href="https://github.com/optimizationBenchmarking/tspSuite">TSP Suite</a> is a system
 to benchmark and evaluate algorithms for the Traveling Salesman Problem (<a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">TSP</a>).
 It is the direct predecessor of this software. We run several small experiments on
