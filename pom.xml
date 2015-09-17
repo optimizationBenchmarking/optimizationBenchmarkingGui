@@ -4,7 +4,7 @@
 
 	<groupId>optimizationBenchmarking.org</groupId>
 	<artifactId>optimizationBenchmarkingGui</artifactId>
-	<version>0.8.4</version>
+	<version>0.8.5</version>
 	<packaging>jar</packaging>
 	<name>Optimization Benchmarking Tool Suite: GUI</name>
 	<description>The graphical user interface (GUI) for the Optimization Benchmarking Tool Suite.</description>

@@ -18,9 +18,8 @@
  * <p>
  * The hierarchy of the sub-packages within this package reflects the
  * source package hierarchy, i.e., package
- * {@link test.junit.org.optimizationBenchmarking.utils.text.transformations}
- * contains the tests for the classes in package
- * {@link org.optimizationBenchmarking.utils.text.transformations}.
+ * {@link test.junit.org.optimizationBenchmarking.gui} contains the tests
+ * for the classes in package {@link org.optimizationBenchmarking.gui}.
  * </p>
  */
 package test.junit;
