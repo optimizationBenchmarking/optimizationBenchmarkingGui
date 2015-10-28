@@ -296,6 +296,7 @@ public abstract class EditorModule<T> {
   private final Loaded<T> __loadFromFile(final String basePath,
       final String[] relPaths, final Handle handle) {
     final Controller controller;
+    final Path baseRoot;
     Loaded<T> result;
     BasicFileAttributes bfa;
     Path root, path;
@@ -315,7 +316,7 @@ public abstract class EditorModule<T> {
     }
 
     controller = handle.getController();
-    root = controller.getRootDir();
+    baseRoot = root = controller.getRootDir();
     if (basePath != null) {
       root = controller.resolve(handle, basePath, root);
     }
@@ -333,7 +334,8 @@ public abstract class EditorModule<T> {
           }
 
           if ((bfa != null) && bfa.isRegularFile() && (bfa.size() > 0L)) {
-            result = new Loaded<>(path, root, this.loadFile(path, handle));
+            result = new Loaded<>(path, baseRoot, this.loadFile(path,
+                handle));
 
             if (i < (relPaths.length - 1)) {
               handle.warning(EditorModule.ONLY_ONE);
@@ -347,15 +349,17 @@ public abstract class EditorModule<T> {
             if (bfa == null) {
               Files.createDirectories(path.getParent());
               Files.createFile(path);
-              handle
-                  .info("File '" + relPath + //$NON-NLS-1$
-                      "' did not exist yet (we just created it), so the form will be empty.");//$NON-NLS-1$
+              handle.info(//
+                  "File '" + relPath + //$NON-NLS-1$
+                      "' ('" + baseRoot.relativize(path) + //$NON-NLS-1$
+                      "') did not exist yet (we just created it), so the form will be empty.");//$NON-NLS-1$
             } else {
               handle.info("File '" + relPath + //$NON-NLS-1$
-                  "' is empty, so the form will be empty.");//$NON-NLS-1$
+                  "' ('" + baseRoot.relativize(path) + //$NON-NLS-1$
+                  "') is empty, so the form will be empty.");//$NON-NLS-1$
             }
 
-            result = new Loaded<>(path, root, this.createEmpty(handle));
+            result = new Loaded<>(path, baseRoot, this.createEmpty(handle));
 
             if (i < (relPaths.length - 1)) {
               handle.warning(EditorModule.ONLY_ONE);
