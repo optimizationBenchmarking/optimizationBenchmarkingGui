@@ -262,8 +262,8 @@ public abstract class EditorModule<T> {
               path },//
               handle);
         }
-        handle
-            .failure("No path specified, so we cannot create a new file"); //$NON-NLS-1$
+        handle.failure(//
+            "No path specified, so we cannot create a new file"); //$NON-NLS-1$
         return null;
       }
       return this.__loadFromFile(null,//

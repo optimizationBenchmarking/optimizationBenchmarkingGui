@@ -19,5 +19,5 @@ files outside this folder can be accessed in the <a href="./controller.jsp">cont
 for information about the command line arguments of this system.</p>
 <p><em>Warning:</em> This system does not provide any user management or security features.
 <em><span style="color:red">You must never make it available in the internet, i.e., do not
-run it on a computer which is accessible from the &quot;outside&quot;.</span><em></p> 
+run it on a computer which is accessible from the &quot;outside&quot;.</span></em></p> 
 <%@include file="/includes/defaultFooter.jsp" %>

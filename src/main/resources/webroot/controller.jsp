@@ -27,9 +27,11 @@
   String currentDir = null;
   for(FSElement element : cstate.getPath()) {
      currentDir = element.getRelativePath(); %>  
-    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;<%=ControllerUtils.INPUT_SUBMIT%>=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<% } %>
-    <input type="hidden" name="<%= ControllerUtils.PARAMETER_NEW%>" value="true" />
-    <input type="text" name="<%= ControllerUtils.PARAMETER_SELECTION%>" size="12" />&nbsp;<% ControllerUtils.putFormSelection("path", hpage,
+    <a href="?<%= ControllerUtils.PARAMETER_CD_PATH%>=<%= Encoder.urlEncode(currentDir)%>&amp;<%=ControllerUtils.INPUT_SUBMIT%>=<%= ControllerUtils.COMMAND_CD_ABSOLUTE%>"><%= Encoder.htmlEncode(element.getName()) %></a>/<%
+   } 
+%><input type="hidden" name="<%= ControllerUtils.PARAMETER_NEW%>" value="true" />
+  <input type="text" name="<%= ControllerUtils.PARAMETER_SELECTION%>" size="12" />&nbsp;<%
+    ControllerUtils.putFormSelection("path", hpage,
      new ControllerActionFunctionRenderer("<em>Currently Chosen Action:</em>&nbsp;"),
      ControllerUtils.CD,
      ControllerUtils.NEW_TEXT_FILE,
@@ -104,12 +106,6 @@ Selected element(s):&nbsp;<% ControllerUtils.putFormSelection("main", hpage, sel
      ControllerUtils.DOWNLOAD,
      ControllerUtils.EDIT,
      ControllerUtils.EDIT_AS_TEXT,
-     ControllerUtils.EDIT_AS_DIMENSIONS,
-     ControllerUtils.EDIT_AS_INSTANCES,
-     ControllerUtils.EDIT_AS_EXPERIMENT,
-     ControllerUtils.EDIT_AS_CONFIG,
-     ControllerUtils.EDIT_AS_EVALUATION,
-     ControllerUtils.EXECUTE_EVALUATOR,
      ControllerUtils.DELETE);
 %>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </div>
@@ -174,12 +170,6 @@ Selected remembered element(s):&nbsp;<% ControllerUtils.putFormSelection("rem", 
      ControllerUtils.DOWNLOAD,
      ControllerUtils.EDIT,
      ControllerUtils.EDIT_AS_TEXT,
-     ControllerUtils.EDIT_AS_DIMENSIONS,
-     ControllerUtils.EDIT_AS_INSTANCES,
-     ControllerUtils.EDIT_AS_EXPERIMENT,
-     ControllerUtils.EDIT_AS_CONFIG,
-     ControllerUtils.EDIT_AS_EVALUATION,
-     ControllerUtils.EXECUTE_EVALUATOR,
      ControllerUtils.DELETE);
 %>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
 </p>
