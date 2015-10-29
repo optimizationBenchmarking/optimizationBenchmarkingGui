@@ -263,6 +263,7 @@ public final class Viewer extends HttpServlet {
    * @throws IOException
    *           the io error
    */
+  @SuppressWarnings("null")
   private static final void __process(final HttpServletRequest req,
       final HttpServletResponse resp) throws ServletException, IOException {
     final Controller controller;

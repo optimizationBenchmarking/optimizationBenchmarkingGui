@@ -333,6 +333,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    *          the handle
    * @return the new element, or {@code null} if none could be created
    */
+  @SuppressWarnings("null")
   public static final FSElement fromPath(final Path root,
       final Path listRoot, final Path path,
       final BasicFileAttributes attrs, final Handle handle) {

@@ -16,7 +16,6 @@ import org.optimizationBenchmarking.utils.config.ConfigurationPropertiesInput;
 import org.optimizationBenchmarking.utils.config.ConfigurationXMLInput;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
-import org.optimizationBenchmarking.utils.text.TextUtils;
 import org.optimizationBenchmarking.utils.tools.impl.abstr.ProducedFileSet;
 
 /** A class performing the evaluation procedure. */
@@ -106,34 +105,28 @@ public final class Evaluation {
 
       if (path != null) {
         extension = PathUtils.getFileExtension(path);
-        if (extension != null) {
-          extension = TextUtils.toLowerCase(extension);
-        }
-        try (final ConfigurationBuilder builder = new ConfigurationBuilder()) {
+       
+        try (
+            final ConfigurationBuilder builder = new ConfigurationBuilder()) {
 
           builder.setBasePath(path.getParent());
 
-          switch (extension) {
-            case ".txt"://$NON-NLS-1$
-            case ".properties": {//$NON-NLS-1$
-              if (handle.isLoggable(Level.INFO)) {
-                handle.info("Loading configuration file '" + //$NON-NLS-1$
-                    relPath + "' as Java properties file.");//$NON-NLS-1$
-              }
-              ConfigurationPropertiesInput.getInstance().use()
-                  .setLogger(handle).addPath(path).setDestination(builder)
-                  .create().call();
-              break;
+          if ("txt".equalsIgnoreCase(extension) || //$NON-NLS-1$
+              "properties".equalsIgnoreCase(extension)) {//$NON-NLS-1$
+            if (handle.isLoggable(Level.INFO)) {
+              handle.info("Loading configuration file '" + //$NON-NLS-1$
+                  relPath + "' as Java properties file.");//$NON-NLS-1$
             }
-
-            default: {
-              if (handle.isLoggable(Level.INFO)) {
-                handle.info("Loading configuration file '" + //$NON-NLS-1$
-                    relPath + "' as XML file.");//$NON-NLS-1$
-              }
-              ConfigurationXMLInput.getInstance().use().setLogger(handle)
-                  .addPath(path).setDestination(builder).create().call();
+            ConfigurationPropertiesInput.getInstance().use()
+                .setLogger(handle).addPath(path).setDestination(builder)
+                .create().call();
+          } else {
+            if (handle.isLoggable(Level.INFO)) {
+              handle.info("Loading configuration file '" + //$NON-NLS-1$
+                  relPath + "' as XML file.");//$NON-NLS-1$
             }
+            ConfigurationXMLInput.getInstance().use().setLogger(handle)
+                .addPath(path).setDestination(builder).create().call();
           }
 
           config = builder.getResult();
@@ -154,7 +147,8 @@ public final class Evaluation {
           } catch (final Throwable error) {
             handle.failure(//
                 "Failed to run evaluation process based on configuration file '" //$NON-NLS-1$
-                    + relPath + '\'' + '.', error);
+                    + relPath + '\'' + '.',
+                error);
             return;
           }
         } else {
