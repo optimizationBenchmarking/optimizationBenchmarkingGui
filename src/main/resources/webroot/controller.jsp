@@ -105,6 +105,7 @@ Selected element(s):&nbsp;<% ControllerUtils.putFormSelection("main", hpage, sel
      ControllerUtils.REMEMBER,
      ControllerUtils.DOWNLOAD,
      ControllerUtils.EDIT,
+     ControllerUtils.EXECUTE_EVALUATOR,
      ControllerUtils.EDIT_AS_TEXT,
      ControllerUtils.DELETE);
 %>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
@@ -169,6 +170,7 @@ Selected remembered element(s):&nbsp;<% ControllerUtils.putFormSelection("rem", 
      ControllerUtils.FORGET,
      ControllerUtils.DOWNLOAD,
      ControllerUtils.EDIT,
+     ControllerUtils.EXECUTE_EVALUATOR,
      ControllerUtils.EDIT_AS_TEXT,
      ControllerUtils.DELETE);
 %>&nbsp;<input type="submit" name="<%=ControllerUtils.INPUT_SUBMIT%>" value="<%=ControllerUtils.BUTTON_OK%>" />
