@@ -268,6 +268,7 @@ public class ApplicationTest {
    *          the port
    * @return {@code true} if it can be used, {@code false} otherwise
    */
+  @SuppressWarnings("unused")
   private static final boolean __checkPort(final int port) {
     try {
       try (ServerSocket sock = new ServerSocket(port)) {

@@ -301,6 +301,7 @@ public final class Controller implements Serializable {
    *          the relative path
    * @return the path we cd'ed to, or {@code null} if the cd failed
    */
+  @SuppressWarnings("unused")
   private final Path __cd(final Handle handle, final Path root,
       final String relPath) {
     final Path path;

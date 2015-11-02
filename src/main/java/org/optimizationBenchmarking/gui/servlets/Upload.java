@@ -82,6 +82,7 @@ public final class Upload extends HttpServlet {
    * @param handle
    *          the handle
    */
+  @SuppressWarnings("unused")
   private static final void __upload(final Part part, final Path dest,
       final Handle handle) {
     final Path relPath, destPath;

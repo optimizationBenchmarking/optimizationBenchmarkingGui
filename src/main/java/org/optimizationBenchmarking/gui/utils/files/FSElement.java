@@ -209,6 +209,7 @@ public class FSElement extends FileDesc implements Comparable<FSElement> {
    *          the file size
    * @return the file type
    */
+  @SuppressWarnings("unused")
   private static final EFSElementType __getFileType(final Path file,
       final long size) {
     IFileType type, nextType;

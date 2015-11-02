@@ -293,6 +293,7 @@ public abstract class EditorModule<T> {
    *          the handle
    * @return the dumps
    */
+  @SuppressWarnings("unused")
   private final Loaded<T> __loadFromFile(final String basePath,
       final String[] relPaths, final Handle handle) {
     final Controller controller;
@@ -746,6 +747,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutInteger(final String id, final Object value,
       final NumberParser<?> numpar, final Page page) throws IOException {
     Number lng;
@@ -816,6 +818,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutFloat(final String id, final Object value,
       final NumberParser<?> numpar, final Page page) throws IOException {
     Number dbl;
@@ -890,6 +893,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutBoolean(final String id, final Object value,
       final String onChange, final Page page) throws IOException {
     Boolean bool;
@@ -948,6 +952,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutChar(final String id, final Object value,
       final Page page) throws IOException {
     Character chr;
@@ -1006,6 +1011,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutString(final String id, final Object value,
       final Page page) throws IOException {
     String chr;
@@ -1075,6 +1081,7 @@ public abstract class EditorModule<T> {
    * @throws IOException
    *           if i/o fails
    */
+  @SuppressWarnings("unused")
   protected final void formPutText(final String id, final Object value,
       final boolean autowrap, final Page page) throws IOException {
     String chr;
