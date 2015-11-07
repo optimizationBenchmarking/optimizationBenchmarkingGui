@@ -56,6 +56,7 @@ public final class ServerInstance extends ToolJob implements Closeable {
    * @param webApp
    *          the web application
    */
+  @SuppressWarnings("unused")
   ServerInstance(final Logger logger, final TempDir temp,
       final TempDir temp2, final org.eclipse.jetty.server.Server server,
       final ServerConnector connector, final WebAppContext webApp) {

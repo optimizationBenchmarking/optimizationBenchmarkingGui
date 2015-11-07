@@ -32,6 +32,7 @@ public final class Encoder {
    *          the text to encode
    * @return the encoded text
    */
+  @SuppressWarnings("unused")
   public static final String urlEncode(final String text) {
     String enc;
     try {

@@ -84,6 +84,7 @@ final class _JspHandle extends Handle {
    * @param owner
    *          the owning controller
    */
+  @SuppressWarnings("unused")
   _JspHandle(final Controller owner, final PageContext pageContext) {
     super(owner);
 

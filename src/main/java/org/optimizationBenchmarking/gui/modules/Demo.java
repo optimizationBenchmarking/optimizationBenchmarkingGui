@@ -60,7 +60,7 @@ public final class Demo {
    * @param demo
    *          the demo
    */
-  @SuppressWarnings("resource")
+  @SuppressWarnings({ "resource", "unused" })
   public static final void install(final String currentPath,
       final String demo, final Handle handle) {
     final EOSFamily osf;

@@ -18,6 +18,7 @@ public final class Main {
    * @throws Throwable
    *           if something goes wrong
    */
+  @SuppressWarnings("unused")
   public static final void main(final String[] args) throws Throwable {
 
     Configuration.setup(args);
@@ -48,7 +49,7 @@ public final class Main {
           screen.close();
         }
       }
-    } catch (final Throwable ignorable) {
+    } catch (@SuppressWarnings("unused") final Throwable ignorable) {
       // iignore
     }
   }
