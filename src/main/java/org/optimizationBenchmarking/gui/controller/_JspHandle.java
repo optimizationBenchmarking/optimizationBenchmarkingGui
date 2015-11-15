@@ -35,21 +35,21 @@ import org.optimizationBenchmarking.utils.text.transformations.XMLCharTransforme
 final class _JspHandle extends Handle {
 
   /** the level values */
-  private static final int[] LEVEL_VALUES = {//
-  Level.ALL.intValue(),//
-      Level.FINEST.intValue(),//
-      Level.FINER.intValue(),//
-      Level.FINE.intValue(),//
-      Level.CONFIG.intValue(),//
-      Level.INFO.intValue(),//
-      Result.SUCCESS.intValue(),//
-      Level.WARNING.intValue(),//
-      Result.FAILURE.intValue(),//
+  private static final int[] LEVEL_VALUES = { //
+      Level.ALL.intValue(), //
+      Level.FINEST.intValue(), //
+      Level.FINER.intValue(), //
+      Level.FINE.intValue(), //
+      Level.CONFIG.intValue(), //
+      Level.INFO.intValue(), //
+      Result.SUCCESS.intValue(), //
+      Level.WARNING.intValue(), //
+      Result.FAILURE.intValue(), //
       Level.SEVERE.intValue() //
   };
   /** the level classes */
-  private static final String[] LEVEL_CLASSES = {//
-  "logAll", //$NON-NLS-1$
+  private static final String[] LEVEL_CLASSES = { //
+      "logAll", //$NON-NLS-1$
       "logFinest", //$NON-NLS-1$
       "logFiner", //$NON-NLS-1$
       "logFine", //$NON-NLS-1$
@@ -75,6 +75,9 @@ final class _JspHandle extends Handle {
 
   /** is this the first invocation? */
   private volatile int m_count;
+
+  /** the last time we did an auto-scroll */
+  private volatile long m_lastAutoScroll;
 
   /**
    * Create the HTML formatter
@@ -150,8 +153,8 @@ final class _JspHandle extends Handle {
    */
   private final ITextOutput __getEncoded() {
     if (this.m_encoded == null) {
-      this.m_encoded = XMLCharTransformer.getInstance().transform(
-          new _JspWriterTextable(this.m_out));
+      this.m_encoded = XMLCharTransformer.getInstance()
+          .transform(new _JspWriterTextable(this.m_out));
     }
     return this.m_encoded;
   }
@@ -179,11 +182,11 @@ final class _JspHandle extends Handle {
    */
   private final void __first(final JspWriter out) throws IOException {
     out.write(//
-    "<h2>Events</h2>"); //$NON-NLS-1$
+        "<h2>Events</h2>"); //$NON-NLS-1$
     out.write(//
-    "<script type=\"text/javascript\">function _sc(id){var o=document.getElementById(id);var height=height=window.innerHeight?window.innerHeight:document.documento.clientHeight;var rects=o.getClientRects();for(var i=rects.length;(--i)>=0;){var r=rects[i];if((r.top<0)||(r.top>=height)){location.href='#';location.href=('#'+id);}}}</script>"); //$NON-NLS-1$
+        "<script type=\"text/javascript\">function _sc(id){var o=document.getElementById(id);var height=height=window.innerHeight?window.innerHeight:document.documento.clientHeight;var rects=o.getClientRects();for(var i=rects.length;(--i)>=0;){var r=rects[i];if((r.top<0)||(r.top>=height)){location.href='#';location.href=('#'+id);}}}</script>"); //$NON-NLS-1$
     out.write(//
-    "<table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
+        "<table class=\"logTable\"><tr class=\"logHeaderRow\"><th class=\"logHeaderCell\">Type</th><th class=\"logHeaderCell\">When</th><th class=\"logHeaderCell\">What</th></tr>"); //$NON-NLS-1$
   }
 
   /** {@inheritDoc} */
@@ -199,7 +202,8 @@ final class _JspHandle extends Handle {
     final Logger parent;
     final Level level;
     final int count;
-    final boolean scroll;
+    final long timestamp;
+    boolean scroll;
     String id;
     int index;
 
@@ -215,6 +219,17 @@ final class _JspHandle extends Handle {
     synchronized (out) {
       try {
         scroll = (level.intValue() >= Level.INFO.intValue());
+        timestamp = System.currentTimeMillis();
+        setTS: {
+          if (!scroll) {
+            if ((timestamp - this.m_lastAutoScroll) > 10000L) {
+              scroll = true;
+            } else {
+              break setTS;
+            }
+          }
+          this.m_lastAutoScroll = timestamp;
+        }
 
         count = this.m_count;
         if (count <= 0) {
@@ -247,7 +262,7 @@ final class _JspHandle extends Handle {
         out.write("\"><td class=\"logIconCol\">"); //$NON-NLS-1$
 
         encoded = this.__getEncoded();
-        Image.image(true, levelClass, level.getName(), "logIcon",//$NON-NLS-1$
+        Image.image(true, levelClass, level.getName(), "logIcon", //$NON-NLS-1$
             out, encoded);
 
         out.write("</td><td class=\"logTimeCol\">"); //$NON-NLS-1$
