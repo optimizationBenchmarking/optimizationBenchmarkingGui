@@ -16,6 +16,7 @@ import org.optimizationBenchmarking.utils.config.ConfigurationPropertiesInput;
 import org.optimizationBenchmarking.utils.config.ConfigurationXMLInput;
 import org.optimizationBenchmarking.utils.error.ErrorUtils;
 import org.optimizationBenchmarking.utils.io.paths.PathUtils;
+import org.optimizationBenchmarking.utils.parallel.Execute;
 import org.optimizationBenchmarking.utils.tools.impl.abstr.ProducedFileSet;
 
 /** A class performing the evaluation procedure. */
@@ -105,9 +106,9 @@ public final class Evaluation {
 
       if (path != null) {
         extension = PathUtils.getFileExtension(path);
-       
-        try (
-            final ConfigurationBuilder builder = new ConfigurationBuilder()) {
+
+        try (final ConfigurationBuilder builder = //
+        new ConfigurationBuilder()) {
 
           builder.setBasePath(path.getParent());
 
@@ -139,9 +140,9 @@ public final class Evaluation {
 
         if (config != null) {
           try {
-            Evaluator.getInstance().use().configure(config)
-                .setFileProducerListener(created).setLogger(handle)
-                .create().run();
+            Execute.submitToCommonPool(Evaluator.getInstance().use()
+                .configure(config).setFileProducerListener(created)
+                .setLogger(handle).create(), null).get();
             handle.success(//
                 "The evaluation procedure has been completed successfully (seemingly).");//$NON-NLS-1$
           } catch (final Throwable error) {
