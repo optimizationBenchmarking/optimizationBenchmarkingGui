@@ -12,18 +12,16 @@ cache:
   directories:
   - $HOME/.m2
   
-# load base project
-before_install:
-  - chmod 755 "buildDependencies.sh"
-  - "./buildDependencies.sh" 
-    
-# custom build step
-script: mvn -C -B compile package test install
-
-# fix for buffer overflows in getLocalHostName
-# https://github.com/travis-ci/travis-ci/issues/5227
+# 1. fix for buffer overflows in getLocalHostName
+#    https://github.com/travis-ci/travis-ci/issues/5227
+# 2. load base project
 before_install:
   - cat /etc/hosts # optionally check the content *before*
   - sudo hostname "$(hostname | cut -c1-63)"
   - sed -e "s/^\\(127\\.0\\.0\\.1.*\\)/\\1 $(hostname | cut -c1-63)/" /etc/hosts | sudo tee /etc/hosts
   - cat /etc/hosts # optionally check the content *after*
+  - chmod 755 "buildDependencies.sh"
+  - "./buildDependencies.sh" 
+    
+# custom build step
+script: mvn -C -B compile package test install
