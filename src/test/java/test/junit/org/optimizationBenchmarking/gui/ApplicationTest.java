@@ -309,7 +309,13 @@ public class ApplicationTest {
     builder.setPort(port);
 
     try (final ApplicationInstance instance = builder.create()) {
-
+      if (!(noBrowser)) {
+        try {
+          Thread.sleep(10000L);
+        } catch (@SuppressWarnings("unused") final Throwable error) {
+          // ignore
+        }
+      }
       mainLoop: for (final String page : new String[] { //
           "/index.jsp", //$NON-NLS-1$
           "/controller.jsp", //$NON-NLS-1$
