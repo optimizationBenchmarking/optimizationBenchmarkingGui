@@ -296,6 +296,8 @@ public class ApplicationTest {
   private final void __checkServerAtPort(final boolean noBrowser,
       final int port, final int streamSource) {
     final ApplicationInstanceBuilder builder;
+    Throwable lastError;
+    int trials;
 
     if (port < 0) {
       return;
@@ -307,54 +309,70 @@ public class ApplicationTest {
     builder.setPort(port);
 
     try (final ApplicationInstance instance = builder.create()) {
-      Thread.sleep(30000);
 
-      for (final String page : new String[] {//
-      "/index.jsp", //$NON-NLS-1$
+      mainLoop: for (final String page : new String[] { //
+          "/index.jsp", //$NON-NLS-1$
           "/controller.jsp", //$NON-NLS-1$
           "/logLevel.jsp" //$NON-NLS-1$
       }) {
-        Thread.sleep(5000);
+        lastError = null;
+        for (trials = 1; trials <= 5; trials++) {
+          try {
+            switch (streamSource) {
+              case 0: {
+                try (Socket sock = new Socket("localhost", port)) {//$NON-NLS-1$
 
-        switch (streamSource) {
-          case 0: {
-            try (Socket sock = new Socket("localhost", port)) {//$NON-NLS-1$
+                  try (OutputStreamWriter osw = new OutputStreamWriter(
+                      sock.getOutputStream())) {
+                    osw.write("GET ");//$NON-NLS-1$
+                    osw.write(page);
+                    osw.write(" HTTP/1.1\r\n\r\n\r\n");//$NON-NLS-1$
+                    osw.flush();
+                    sock.shutdownOutput();
 
-              try (OutputStreamWriter osw = new OutputStreamWriter(
-                  sock.getOutputStream())) {
-                osw.write("GET ");//$NON-NLS-1$
-                osw.write(page);
-                osw.write(" HTTP/1.1\r\n\r\n\r\n");//$NON-NLS-1$
-                osw.flush();
-                sock.shutdownOutput();
+                    try (final InputStream is = sock.getInputStream()) {
+                      ApplicationTest.__checkInputStream(is, page);
+                    }
+                  }
+                }
+                break;
+              }
 
-                try (final InputStream is = sock.getInputStream()) {
+              case 1: {
+                try (final InputStream is = new URL(
+                    instance.getGlobalURL().toString() + page.substring(1))
+                        .openStream()) {
                   ApplicationTest.__checkInputStream(is, page);
                 }
+                break;
+              }
+
+              default: {
+                try (final InputStream is = new URL(
+                    instance.getLocalURL().toString() + page.substring(1))
+                        .openStream()) {
+                  ApplicationTest.__checkInputStream(is, page);
+                }
+                break;
               }
             }
-            break;
+
+            lastError = null;
+            continue mainLoop;
+          } catch (final Throwable error) {
+            lastError = error;
           }
 
-          case 1: {
-            try (final InputStream is = new URL(instance.getGlobalURL()
-                .toString() + page.substring(1)).openStream()) {
-              ApplicationTest.__checkInputStream(is, page);
-            }
-            break;
-          }
-
-          default: {
-            try (final InputStream is = new URL(instance.getLocalURL()
-                .toString() + page.substring(1)).openStream()) {
-              ApplicationTest.__checkInputStream(is, page);
-            }
-            break;
-          }
+          Thread.sleep(trials * 5000);
         }
+
+        throw new AssertionError("Server does not behave as expected.", //$NON-NLS-1$
+            lastError);
       }
+    } catch (final AssertionError asserte) {
+      throw asserte;
     } catch (final Throwable error) {
-      throw new AssertionError("Server does not behave as expected.",//$NON-NLS-1$
+      throw new AssertionError("Server could not be started.", //$NON-NLS-1$
           error);
     }
   }
